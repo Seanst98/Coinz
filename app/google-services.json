@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "220757809029",
+    "firebase_url": "https://coinz-715de.firebaseio.com",
+    "project_id": "coinz-715de",
+    "storage_bucket": "coinz-715de.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:220757809029:android:70e5984bdb7c53cd",
+        "android_client_info": {
+          "package_name": "com.kiwi.moon.coinz"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "220757809029-624emh2u431t143ugnsb2kb4g96iu515.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kiwi.moon.coinz",
+            "certificate_hash": "b4bd5da9634e060c18f9ce6b15de5c687af01963"
+          }
+        },
+        {
+          "client_id": "220757809029-tom0p6fmi8m1jnrl63cc0gprevvil3le.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_VS61a17xF_Vt3i4Mxe7xSGNYBcaKZ1E"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "220757809029-tom0p6fmi8m1jnrl63cc0gprevvil3le.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

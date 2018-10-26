@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Coinz</string>
     <string name="action_settings">Settings</string>
+    <string name="login">Login</string>
+    <string name="createAcc">Create An Account</string>
+    <string name="title">Coinz</string>
+    <string name="title_activity_login">loginActivity</string>
 </resources>
