@@ -23,6 +23,8 @@ public class MainActivity extends AppCompatActivity {
 
         final Button loginButton = findViewById(R.id.loginButton);
 
+        final Button createAcc = findViewById(R.id.createAccButton);
+
 
         //When the login button is pressed
         loginButton.setOnClickListener(new View.OnClickListener() {
@@ -30,6 +32,17 @@ public class MainActivity extends AppCompatActivity {
 
                 //Start Activity to the login screen
                 Intent myIntent = new Intent(MainActivity.this, loginActivity.class);
+                startActivity(myIntent);
+            }
+        });
+
+
+        //When the create account button is pressed
+        createAcc.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+                //Start Activity to the create account screen
+                Intent myIntent = new Intent(MainActivity.this, createAccActivity.class);
                 startActivity(myIntent);
             }
         });
