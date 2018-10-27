@@ -5,4 +5,6 @@
     <string name="createAcc">Create An Account</string>
     <string name="title">Coinz</string>
     <string name="title_activity_login">loginActivity</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
 </resources>
