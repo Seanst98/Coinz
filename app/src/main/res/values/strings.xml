@@ -9,4 +9,5 @@
     <string name="password">Password</string>
     <string name="confpassword">Confirm Password</string>
     <string name="createAcc">Create Account</string>
+    <string name="access_token">pk.eyJ1Ijoic2VhbnN0OTgiLCJhIjoiY2pudnZ5ZXpvMWRrajNrcXFsdHplYjM2YyJ9.q3PKOuUDWjhjfwdCo0iXVw</string>
 </resources>
