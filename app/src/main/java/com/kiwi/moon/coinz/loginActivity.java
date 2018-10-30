@@ -1,5 +1,6 @@
 package com.kiwi.moon.coinz;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -76,6 +77,8 @@ public class loginActivity extends AppCompatActivity {
                                     Toast.LENGTH_SHORT).show();
                             FirebaseUser user = mAuth.getCurrentUser();
                             //Take to map
+                            Intent myIntent = new Intent(loginActivity.this, mapActivity.class);
+                            startActivity(myIntent);
                         }
                         else {
                             //If sign in fails, display error

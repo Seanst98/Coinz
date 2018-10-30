@@ -1,5 +1,6 @@
 package com.kiwi.moon.coinz;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
@@ -75,6 +76,9 @@ public class createAccActivity extends AppCompatActivity {
                                 Log.d(TAG, "createUserWithEmail:success");
                                 FirebaseUser user = mAuth.getCurrentUser();
                                 //updateUI(user);
+                                //Start Activity to the create account screen
+                                Intent myIntent = new Intent(createAccActivity.this, mapActivity.class);
+                                startActivity(myIntent);
                             } else {
                                 // If sign in fails, display a message to the user.
                                 Log.w(TAG, "createUserWithEmail:failure", task.getException());

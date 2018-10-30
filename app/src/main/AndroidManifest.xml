@@ -26,7 +26,8 @@
             android:name=".loginActivity"
             android:label="@string/title_activity_login"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".createAccActivity"></activity>
+        <activity android:name=".createAccActivity" />
+        <activity android:name=".mapActivity"></activity>
     </application>
 
 </manifest>
