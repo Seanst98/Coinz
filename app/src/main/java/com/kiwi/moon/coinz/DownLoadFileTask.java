@@ -12,6 +12,8 @@ import java.net.URL;
 
 public class DownLoadFileTask extends AsyncTask<String, Void, String> {
 
+    public DownloadCompleteRunner delegate = null;
+
     @Override
     protected String doInBackground(String... urls) {
         try {
@@ -63,6 +65,6 @@ public class DownLoadFileTask extends AsyncTask<String, Void, String> {
     @Override
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
-        DownloadCompleteRunner.downloadComplete(result);
+        delegate.downloadComplete(result);
     }
  }

@@ -29,8 +29,8 @@ import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerPlugin;
 
 import java.util.List;
 
-public class mapActivity extends AppCompatActivity  implements
-        OnMapReadyCallback, LocationEngineListener, PermissionsListener {
+public class mapActivity extends AppCompatActivity implements
+        OnMapReadyCallback, LocationEngineListener, PermissionsListener, DownloadCompleteRunner{
 
     private String TAG = "mapActivity";
     private MapView mapView;
@@ -40,6 +40,8 @@ public class mapActivity extends AppCompatActivity  implements
     private LocationEngine locationEngine;
     private LocationLayerPlugin locationLayerPlugin;
     private Location originLocation;
+
+    String data;
 
 
     @Override
@@ -53,18 +55,20 @@ public class mapActivity extends AppCompatActivity  implements
 
         //Get markers
         DownLoadFileTask downLoadFileTask = new DownLoadFileTask();
+        downLoadFileTask.delegate = this;
         downLoadFileTask.execute("http://homepages.inf.ed.ac.uk/stg/coinz/2018/10/03/coinzmap.geojson");
-
-        String result = DownloadCompleteRunner.result;
-
-        TextView text = (TextView) findViewById(R.id.textView2);
-        text.setText(result);
-
-        Toast.makeText(mapActivity.this, result, Toast.LENGTH_SHORT).show();
 
 
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
+    }
+
+    @Override
+    public void downloadComplete(String result) {
+        data = result;
+
+        Toast.makeText(mapActivity.this, result,
+                Toast.LENGTH_SHORT).show();
     }
 
     @Override
