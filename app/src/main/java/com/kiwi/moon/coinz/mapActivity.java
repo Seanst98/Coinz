@@ -1,9 +1,15 @@
 package com.kiwi.moon.coinz;
 
+import android.content.Intent;
 import android.location.Location;
+import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.type.LatLng;
 import com.mapbox.android.core.location.LocationEngine;
@@ -45,6 +51,18 @@ public class mapActivity extends AppCompatActivity  implements
 
         mapView = (MapView) findViewById(R.id.mapboxMapView);
 
+        //Get markers
+        DownLoadFileTask downLoadFileTask = new DownLoadFileTask();
+        downLoadFileTask.execute("http://homepages.inf.ed.ac.uk/stg/coinz/2018/10/03/coinzmap.geojson");
+
+        String result = DownloadCompleteRunner.result;
+
+        TextView text = (TextView) findViewById(R.id.textView2);
+        text.setText(result);
+
+        Toast.makeText(mapActivity.this, result, Toast.LENGTH_SHORT).show();
+
+
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
     }
@@ -63,6 +81,8 @@ public class mapActivity extends AppCompatActivity  implements
 
             //Make location information available
             enableLocation();
+
+            //Place all the markers
         }
     }
 
@@ -143,6 +163,11 @@ public class mapActivity extends AppCompatActivity  implements
     public void onExplanationNeeded(List<String> permissionsToExplain){
         Log.d(TAG, "Permissions: " + permissionsToExplain.toString());
         // Present toast or dialog.
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        permissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override
