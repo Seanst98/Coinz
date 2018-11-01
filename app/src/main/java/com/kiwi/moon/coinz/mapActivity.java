@@ -1,6 +1,7 @@
 package com.kiwi.moon.coinz;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
@@ -11,6 +12,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.type.LatLng;
 import com.mapbox.android.core.location.LocationEngine;
 import com.mapbox.android.core.location.LocationEngineListener;
@@ -18,7 +21,14 @@ import com.mapbox.android.core.location.LocationEnginePriority;
 import com.mapbox.android.core.location.LocationEngineProvider;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
+import com.mapbox.geojson.Feature;
+import com.mapbox.geojson.FeatureCollection;
+import com.mapbox.geojson.GeoJson;
+import com.mapbox.geojson.Geometry;
+import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.annotations.Icon;
+import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.location.modes.CameraMode;
 import com.mapbox.mapboxsdk.location.modes.RenderMode;
@@ -26,6 +36,12 @@ import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerPlugin;
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
+import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
+import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
+import com.mapbox.mapboxsdk.style.sources.Source;
+
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -67,6 +83,54 @@ public class mapActivity extends AppCompatActivity implements
     public void downloadComplete(String result) {
         data = result;
 
+        try {
+
+            FeatureCollection fc = FeatureCollection.fromJson(data);
+
+            List<Feature> f = fc.features();
+
+            for(int i = 0; i < f.size(); i++) {
+
+                Geometry g = f.get(i).geometry();
+
+                String gt = g.toJson();
+
+                Point p = Point.fromJson(gt);
+
+                com.mapbox.mapboxsdk.geometry.LatLng latLng = new com.mapbox.mapboxsdk.geometry.LatLng(p.latitude(), p.longitude());
+
+                JsonObject obj = f.get(i).properties();
+                JsonElement currencyt = obj.get("currency");
+
+                String currency = currencyt.getAsString();
+
+                JsonElement idt = obj.get("id");
+
+                String id = currencyt.getAsString();
+
+
+                map.addMarker(new MarkerOptions().title(id).position(latLng));
+            }
+
+            /*FeatureCollection featureCollection = FeatureCollection.fromJson(data);
+            Source source = new GeoJsonSource("my.data.source", featureCollection);
+            map.addSource(source);
+
+            SymbolLayer myLayer = new SymbolLayer("my.layer.id", "my.source.id");
+            map.addLayer(myLayer);
+
+            Bitmap myImage = loadBitmap();
+            map.addImage("my.image", myImage);
+            map.addLayer(myLayer).withProperties(PropertyFactory.iconImage("{poi}-15"));*/
+
+
+
+
+            Log.d("My App", data);
+        } catch (Throwable t) {
+            Log.e("My App", "Could not parse malformed JSON: \"" + result + "\"");
+        }
+
         Toast.makeText(mapActivity.this, result,
                 Toast.LENGTH_SHORT).show();
     }
@@ -86,7 +150,6 @@ public class mapActivity extends AppCompatActivity implements
             //Make location information available
             enableLocation();
 
-            //Place all the markers
         }
     }
 
