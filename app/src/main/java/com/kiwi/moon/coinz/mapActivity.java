@@ -2,9 +2,16 @@ package com.kiwi.moon.coinz;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +19,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.common.collect.BiMap;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.type.LatLng;
@@ -28,7 +36,9 @@ import com.mapbox.geojson.Geometry;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.Icon;
+import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
+import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.location.modes.CameraMode;
 import com.mapbox.mapboxsdk.location.modes.RenderMode;
@@ -38,11 +48,14 @@ import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerPlugin;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
+import com.mapbox.mapboxsdk.style.sources.GeoJsonOptions;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.mapboxsdk.style.sources.Source;
 
 import org.json.JSONObject;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 public class mapActivity extends AppCompatActivity implements
@@ -65,14 +78,12 @@ public class mapActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
+        Log.d(TAG, "BEGIN");
+
+
         Mapbox.getInstance(this, getString(R.string.access_token));
 
         mapView = (MapView) findViewById(R.id.mapboxMapView);
-
-        //Get markers
-        DownLoadFileTask downLoadFileTask = new DownLoadFileTask();
-        downLoadFileTask.delegate = this;
-        downLoadFileTask.execute("http://homepages.inf.ed.ac.uk/stg/coinz/2018/10/03/coinzmap.geojson");
 
 
         mapView.onCreate(savedInstanceState);
@@ -83,56 +94,73 @@ public class mapActivity extends AppCompatActivity implements
     public void downloadComplete(String result) {
         data = result;
 
-        try {
+        /*try {
+            GeoJsonOptions geoJsonOptions = new GeoJsonOptions().withCluster(false);
+            GeoJsonSource geoJsonSource = new GeoJsonSource("geojson-source", data, geoJsonOptions);
+            map.addSource(geoJsonSource);
+        } catch (Throwable t) {
+            Log.d(TAG, "FAIL");
+        }*/
 
-            FeatureCollection fc = FeatureCollection.fromJson(data);
-
-            List<Feature> f = fc.features();
-
-            for(int i = 0; i < f.size(); i++) {
-
-                Geometry g = f.get(i).geometry();
-
-                String gt = g.toJson();
-
-                Point p = Point.fromJson(gt);
-
-                com.mapbox.mapboxsdk.geometry.LatLng latLng = new com.mapbox.mapboxsdk.geometry.LatLng(p.latitude(), p.longitude());
-
-                JsonObject obj = f.get(i).properties();
-                JsonElement currencyt = obj.get("currency");
-
-                String currency = currencyt.getAsString();
-
-                JsonElement idt = obj.get("id");
-
-                String id = currencyt.getAsString();
+        /*SymbolLayer myLayer = new SymbolLayer("my.layer.id", "geojson-source");
+        myLayer.setProperties(PropertyFactory.iconImage("{marker-symbol}"), PropertyFactory.iconAllowOverlap(true));
+        map.addLayer(myLayer);*/
 
 
-                map.addMarker(new MarkerOptions().title(id).position(latLng));
+        IconFactory iconFactory = IconFactory.getInstance(mapActivity.this);
+
+        Icon iconRed = iconFactory.fromResource(R.drawable.marker_red);
+        Icon iconBlue = iconFactory.fromResource(R.drawable.marker_blue);
+        Icon iconGreen = iconFactory.fromResource(R.drawable.marker_green);
+        Icon iconYellow = iconFactory.fromResource(R.drawable.marker_yellow);
+
+        FeatureCollection fc = FeatureCollection.fromJson(data);
+        List<Feature> fs = fc.features();
+
+        for (int i = 0; i < fs.size(); i++) {
+            Geometry g = fs.get(i).geometry();
+            String gt = g.toJson();
+            Point p = Point.fromJson(gt);
+
+            com.mapbox.mapboxsdk.geometry.LatLng latLng = new com.mapbox.mapboxsdk.geometry.LatLng(p.latitude(), p.longitude());
+
+            JsonObject obj = fs.get(i).properties();
+            JsonElement currencyt = obj.get("currency");
+            JsonElement idt = obj.get("id");
+            JsonElement valuet = obj.get("value");
+            JsonElement marker_symbolt = obj.get("marker-symbol");
+            JsonElement marker_colort = obj.get("marker-color");
+
+            String currency = currencyt.getAsString();
+            String id = idt.getAsString();
+            String value = valuet.getAsString();
+            String marker_symbol = marker_symbolt.getAsString();
+            String marker_color = marker_colort.getAsString();
+
+            Icon icon;
+
+
+            if (marker_color.equals("#ffdf00")) {
+                icon = iconYellow;
+
+            }
+            else if (marker_color.equals("#0000ff")) {
+                icon = iconBlue;
+            }
+            else if (marker_color.equals("#ff0000")){
+                icon = iconRed;
+
+            }
+            else {
+                icon = iconGreen;
             }
 
-            /*FeatureCollection featureCollection = FeatureCollection.fromJson(data);
-            Source source = new GeoJsonSource("my.data.source", featureCollection);
-            map.addSource(source);
+            map.addMarker(new MarkerOptions().title(value).snippet(currency).icon(icon).position(latLng));
 
-            SymbolLayer myLayer = new SymbolLayer("my.layer.id", "my.source.id");
-            map.addLayer(myLayer);
-
-            Bitmap myImage = loadBitmap();
-            map.addImage("my.image", myImage);
-            map.addLayer(myLayer).withProperties(PropertyFactory.iconImage("{poi}-15"));*/
-
-
-
-
-            Log.d("My App", data);
-        } catch (Throwable t) {
-            Log.e("My App", "Could not parse malformed JSON: \"" + result + "\"");
         }
 
-        Toast.makeText(mapActivity.this, result,
-                Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "success ");
+
     }
 
     @Override
@@ -142,6 +170,7 @@ public class mapActivity extends AppCompatActivity implements
 
         }
         else {
+            Log.d(TAG, "mapbox is not null");
             map = mapboxMap;
             //Set user interface options
             map.getUiSettings().setCompassEnabled(true);
@@ -149,6 +178,11 @@ public class mapActivity extends AppCompatActivity implements
 
             //Make location information available
             enableLocation();
+
+            //Get markers
+            DownLoadFileTask downLoadFileTask = new DownLoadFileTask();
+            downLoadFileTask.delegate = this;
+            downLoadFileTask.execute("http://homepages.inf.ed.ac.uk/stg/coinz/2018/10/03/coinzmap.geojson");
 
         }
     }
