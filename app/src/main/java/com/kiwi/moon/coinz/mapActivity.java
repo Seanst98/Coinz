@@ -73,6 +73,8 @@ public class mapActivity extends AppCompatActivity implements
 
     String data;
 
+    int totalCoinsCol;
+    TextView totalCoins;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +91,11 @@ public class mapActivity extends AppCompatActivity implements
 
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
+
+        totalCoinsCol = 0;
+        totalCoins = (TextView) findViewById(R.id.totalCoins);
+
+        totalCoins.setText("Total Coins Collected: " + totalCoinsCol);
     }
 
     @Override
@@ -265,10 +272,24 @@ public class mapActivity extends AppCompatActivity implements
                 Double dist = olatLng.distanceTo(markers.get(i).getPosition());
 
                 if (dist <= 25) {
+
+                    removeMarker(markers.get(i));
+                    Toast.makeText(mapActivity.this, "Coin collected!",
+                            Toast.LENGTH_SHORT).show();
                     map.removeMarker(markers.get(i));
+
+                    totalCoinsCol++;
+                    totalCoins.setText("Total Coins Collected: " + totalCoinsCol);
                 }
             }
         }
+    }
+
+    public void removeMarker(Marker marker) {
+
+        String currency = marker.getSnippet();
+        String value = marker.getTitle();
+
     }
 
     @Override
