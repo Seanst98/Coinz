@@ -22,7 +22,6 @@ import android.widget.Toast;
 import com.google.common.collect.BiMap;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.type.LatLng;
 import com.mapbox.android.core.location.LocationEngine;
 import com.mapbox.android.core.location.LocationEngineListener;
 import com.mapbox.android.core.location.LocationEnginePriority;
@@ -37,9 +36,11 @@ import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
+import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.location.modes.CameraMode;
 import com.mapbox.mapboxsdk.location.modes.RenderMode;
 import com.mapbox.mapboxsdk.maps.MapView;
@@ -122,7 +123,7 @@ public class mapActivity extends AppCompatActivity implements
             String gt = g.toJson();
             Point p = Point.fromJson(gt);
 
-            com.mapbox.mapboxsdk.geometry.LatLng latLng = new com.mapbox.mapboxsdk.geometry.LatLng(p.latitude(), p.longitude());
+            LatLng latLng = new LatLng(p.latitude(), p.longitude());
 
             JsonObject obj = fs.get(i).properties();
             JsonElement currencyt = obj.get("currency");
@@ -140,6 +141,8 @@ public class mapActivity extends AppCompatActivity implements
             Icon icon;
 
 
+
+
             if (marker_color.equals("#ffdf00")) {
                 icon = iconYellow;
 
@@ -154,6 +157,7 @@ public class mapActivity extends AppCompatActivity implements
             else {
                 icon = iconGreen;
             }
+
 
             map.addMarker(new MarkerOptions().title(value).snippet(currency).icon(icon).position(latLng));
 
@@ -250,6 +254,20 @@ public class mapActivity extends AppCompatActivity implements
             Log.d(TAG, "[onLocationChanged] location is not null");
             originLocation = location;
             setCameraPosition(location);
+
+
+            LatLng olatLng= new LatLng(originLocation.getLatitude(), originLocation.getLongitude());
+
+            List<Marker> markers = map.getMarkers();
+
+            for (int i = 0; i < markers.size(); i++) {
+
+                Double dist = olatLng.distanceTo(markers.get(i).getPosition());
+
+                if (dist <= 25) {
+                    map.removeMarker(markers.get(i));
+                }
+            }
         }
     }
 
