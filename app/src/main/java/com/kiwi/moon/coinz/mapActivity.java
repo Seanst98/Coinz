@@ -58,6 +58,7 @@ import org.json.JSONObject;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.MissingFormatArgumentException;
 
 public class mapActivity extends AppCompatActivity implements
         OnMapReadyCallback, LocationEngineListener, PermissionsListener, DownloadCompleteRunner{
@@ -320,10 +321,27 @@ public class mapActivity extends AppCompatActivity implements
         }
     }
 
+    private void stopLocationListener() {
+        Log.d(TAG, "Stopping Location Engine Listener");
+        if (locationEngine !=null) locationEngine.removeLocationUpdates();
+        if (locationEngine !=null) locationEngine.deactivate();
+        if (locationEngine !=null) locationEngine.removeLocationEngineListener(this);
+        if (locationEngine !=null) locationEngine = null;
+    }
+
     @Override
+    @SuppressWarnings({"MissingPermission"})
     protected void onStart() {
         super.onStart();
         mapView.onStart();
+
+        if (locationLayerPlugin != null) {
+            locationLayerPlugin.onStart();
+        }
+
+        if (locationEngine != null) {
+            locationEngine.requestLocationUpdates();
+        }
     }
 
     @Override
@@ -342,18 +360,28 @@ public class mapActivity extends AppCompatActivity implements
     public void onStop() {
         super.onStop();
         mapView.onStop();
+
+        if (locationLayerPlugin != null) {
+            locationLayerPlugin.onStop();
+        }
+
+        if (locationEngine != null) {
+            stopLocationListener();
+        }
     }
 
     @Override
     public void onLowMemory() {
         super.onLowMemory();
         mapView.onLowMemory();
+        stopLocationListener();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         mapView.onDestroy();
+        stopLocationListener();
     }
 
     @Override

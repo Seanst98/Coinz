@@ -42,7 +42,9 @@ dependencies {
     implementation 'android.arch.core:common:1.1.1'
     implementation 'com.google.android.gms:play-services-location:16.0.0'
     implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:6.6.2'
-    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-locationlayer:0.5.2'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-locationlayer:0.6.0'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.2'
+    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.2'
 }
 
 apply plugin: 'com.google.gms.google-services'
