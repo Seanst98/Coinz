@@ -275,7 +275,7 @@ public class mapActivity extends AppCompatActivity implements
                 if (dist <= 25) {
 
                     removeMarker(markers.get(i));
-                    Toast.makeText(mapActivity.this, "Coin collected!",
+                    Toast.makeText(getApplicationContext(), "Coin collected!",
                             Toast.LENGTH_SHORT).show();
                     map.removeMarker(markers.get(i));
 

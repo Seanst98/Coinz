@@ -63,6 +63,11 @@ public class loginActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
     public void signIn(String email, String password) {
 
         //Sign in user with email and password
@@ -73,7 +78,7 @@ public class loginActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             //Sign in success and take to map screen
                             Log.d(TAG, "sign in success");
-                            Toast.makeText(loginActivity.this, "Authentication success.",
+                            Toast.makeText(getApplicationContext(), "Authentication success.",
                                     Toast.LENGTH_SHORT).show();
                             FirebaseUser user = mAuth.getCurrentUser();
                             //Take to map
@@ -83,7 +88,7 @@ public class loginActivity extends AppCompatActivity {
                         else {
                             //If sign in fails, display error
                             Log.w(TAG, "sign in failure", task.getException());
-                            Toast.makeText(loginActivity.this, "Authentication failed.",
+                            Toast.makeText(getApplicationContext(), "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                             //Update UI
                         }
