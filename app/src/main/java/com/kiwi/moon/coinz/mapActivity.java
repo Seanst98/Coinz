@@ -1,6 +1,8 @@
 package com.kiwi.moon.coinz;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -57,8 +59,12 @@ import org.json.JSONObject;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.MissingFormatArgumentException;
+
+import java.util.Calendar;
 
 public class mapActivity extends AppCompatActivity implements
         OnMapReadyCallback, LocationEngineListener, PermissionsListener, DownloadCompleteRunner{
@@ -77,12 +83,20 @@ public class mapActivity extends AppCompatActivity implements
     int totalCoinsCol;
     TextView totalCoins;
 
+    private String downloadDate = "";   //Format:YYYY/MM/DD
+    private final String preferencesFile = "MyPrefsFile";   //For storing preferences
+    Date now = new Date();
+    //String currentDate = Calendar.YEAR + "/" + Calendar.MONTH + "/" + Calendar.DAY_OF_MONTH;
+    String currentDate = new SimpleDateFormat("yyyy/MM/dd").format(now);
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
         Log.d(TAG, "BEGIN");
+
 
 
         Mapbox.getInstance(this, getString(R.string.access_token));
@@ -103,19 +117,12 @@ public class mapActivity extends AppCompatActivity implements
     public void downloadComplete(String result) {
         data = result;
 
-        /*try {
-            GeoJsonOptions geoJsonOptions = new GeoJsonOptions().withCluster(false);
-            GeoJsonSource geoJsonSource = new GeoJsonSource("geojson-source", data, geoJsonOptions);
-            map.addSource(geoJsonSource);
-        } catch (Throwable t) {
-            Log.d(TAG, "FAIL");
-        }*/
+        Log.d(TAG, "Download was " + data);
+        displayMarkers();
 
-        /*SymbolLayer myLayer = new SymbolLayer("my.layer.id", "geojson-source");
-        myLayer.setProperties(PropertyFactory.iconImage("{marker-symbol}"), PropertyFactory.iconAllowOverlap(true));
-        map.addLayer(myLayer);*/
+    }
 
-
+    public void displayMarkers() {
         IconFactory iconFactory = IconFactory.getInstance(mapActivity.this);
 
         Icon iconRed = iconFactory.fromResource(R.drawable.marker_red);
@@ -148,9 +155,6 @@ public class mapActivity extends AppCompatActivity implements
 
             Icon icon;
 
-
-
-
             if (marker_color.equals("#ffdf00")) {
                 icon = iconYellow;
 
@@ -172,7 +176,6 @@ public class mapActivity extends AppCompatActivity implements
         }
 
         Log.d(TAG, "success ");
-
     }
 
     @Override
@@ -192,10 +195,27 @@ public class mapActivity extends AppCompatActivity implements
             enableLocation();
 
             //Get markers
-            DownLoadFileTask downLoadFileTask = new DownLoadFileTask();
-            downLoadFileTask.delegate = this;
-            downLoadFileTask.execute("http://homepages.inf.ed.ac.uk/stg/coinz/2018/10/03/coinzmap.geojson");
+            if (!currentDate.equals(downloadDate)) {
+                DownLoadFileTask downLoadFileTask = new DownLoadFileTask();
+                downLoadFileTask.delegate = this;
+                Log.d(TAG, "Downloading file from " + "http://homepages.inf.ed.ac.uk/stg/coinz/" + currentDate + "/coinzmap.geojson");
+                downLoadFileTask.execute("http://homepages.inf.ed.ac.uk/stg/coinz/" + currentDate + "/coinzmap.geojson");
+                downloadDate = currentDate;
+                Log.d(TAG, "[OnMapReady] Downloading map since it is a new day");
+            }
+            else {
 
+                //Restore preferences
+                SharedPreferences settings = getSharedPreferences(preferencesFile, Context.MODE_PRIVATE);
+
+                //Use "" as default value (this might be the first time the app is run)
+                String json = settings.getString("JSON", "");
+                Log.d(TAG, "[onMapReady] Recalled JSON is '" + json + "'");
+
+                data = json;
+
+                displayMarkers();
+            }
         }
     }
 
@@ -231,7 +251,7 @@ public class mapActivity extends AppCompatActivity implements
         }
     }
 
-    @SuppressWarnings("MissingPermission")
+    @SuppressWarnings({"MissingPermission", "ResourceType"})
     private void initializeLocationLayer(){
         if (mapView == null) {
             Log.d(TAG, "mapView is null");
@@ -254,34 +274,19 @@ public class mapActivity extends AppCompatActivity implements
         map.animateCamera(CameraUpdateFactory.newLatLng((latLng)));
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
-        if (location == null) {
-            Log.d(TAG, "[onLocationChanged] location is null");
-        } else {
-            Log.d(TAG, "[onLocationChanged] location is not null");
-            originLocation = location;
-            setCameraPosition(location);
+    public void checkMarkers() {
+        LatLng olatLng= new LatLng(originLocation.getLatitude(), originLocation.getLongitude());
 
+        List<Marker> markers = map.getMarkers();
 
-            LatLng olatLng= new LatLng(originLocation.getLatitude(), originLocation.getLongitude());
+        for (int i = 0; i < markers.size(); i++) {
 
-            List<Marker> markers = map.getMarkers();
+            Double dist = olatLng.distanceTo(markers.get(i).getPosition());
 
-            for (int i = 0; i < markers.size(); i++) {
+            if (dist <= 25) {
 
-                Double dist = olatLng.distanceTo(markers.get(i).getPosition());
+                removeMarker(markers.get(i));
 
-                if (dist <= 25) {
-
-                    removeMarker(markers.get(i));
-                    Toast.makeText(getApplicationContext(), "Coin collected!",
-                            Toast.LENGTH_SHORT).show();
-                    map.removeMarker(markers.get(i));
-
-                    totalCoinsCol++;
-                    totalCoins.setText("Total Coins Collected: " + totalCoinsCol);
-                }
             }
         }
     }
@@ -291,6 +296,27 @@ public class mapActivity extends AppCompatActivity implements
         String currency = marker.getSnippet();
         String value = marker.getTitle();
 
+        Toast.makeText(getApplicationContext(), "Coin collected!",
+                Toast.LENGTH_SHORT).show();
+
+        map.removeMarker(marker);
+
+        totalCoinsCol++;
+        totalCoins.setText("Total Coins Collected: " + totalCoinsCol);
+
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        if (location == null) {
+            Log.d(TAG, "[onLocationChanged] location is null");
+        } else {
+            Log.d(TAG, "[onLocationChanged] location is not null");
+            originLocation = location;
+            setCameraPosition(location);
+
+            checkMarkers();
+        }
     }
 
     @Override
@@ -342,6 +368,13 @@ public class mapActivity extends AppCompatActivity implements
         if (locationEngine != null) {
             locationEngine.requestLocationUpdates();
         }
+
+        //Restore preferences
+        SharedPreferences settings = getSharedPreferences(preferencesFile, Context.MODE_PRIVATE);
+
+        //Use "" as default value (this might be the first time the app is run)
+        downloadDate = settings.getString("lastDownloadDate", "");
+        Log.d(TAG, "[onStart] Recalled lastDownloadDate is '" + downloadDate + "'");
     }
 
     @Override
@@ -368,6 +401,20 @@ public class mapActivity extends AppCompatActivity implements
         if (locationEngine != null) {
             stopLocationListener();
         }
+
+        Log.d(TAG, "[onStop] Storing lastDownloadDate of " + downloadDate);
+        Log.d(TAG, "[onStop] Storing JSON " + data);
+        //All objects are from android.context.Context
+        SharedPreferences settings = getSharedPreferences(preferencesFile, Context.MODE_PRIVATE);
+
+        //We need an Editor object to make preference changes
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("lastDownloadDate", downloadDate);
+        editor.putString("JSON", data);
+
+        //Apply the edits
+        editor.apply();
+
     }
 
     @Override
