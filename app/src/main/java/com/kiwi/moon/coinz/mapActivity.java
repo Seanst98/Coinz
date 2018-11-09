@@ -12,24 +12,31 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.JsonReader;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.common.collect.BiMap;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.annotations.SerializedName;
 import com.mapbox.android.core.location.LocationEngine;
 import com.mapbox.android.core.location.LocationEngineListener;
 import com.mapbox.android.core.location.LocationEnginePriority;
 import com.mapbox.android.core.location.LocationEngineProvider;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
+import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.GeoJson;
@@ -55,13 +62,18 @@ import com.mapbox.mapboxsdk.style.sources.GeoJsonOptions;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.mapboxsdk.style.sources.Source;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.MissingFormatArgumentException;
 
 import java.util.Calendar;
@@ -88,6 +100,101 @@ public class mapActivity extends AppCompatActivity implements
     Date now = new Date();
     //String currentDate = Calendar.YEAR + "/" + Calendar.MONTH + "/" + Calendar.DAY_OF_MONTH;
     String currentDate = new SimpleDateFormat("yyyy/MM/dd").format(now);
+
+
+    public class Properties {
+
+        public Properties(String i, String v, String c, String ms, String mc) {
+            id = i;
+            value = v;
+            currency = c;
+            marker_symbol = ms;
+            marker_color = mc;
+        }
+
+        public String id;
+        public String value;
+        public String currency;
+
+        @SerializedName("marker-symbol")
+        public String marker_symbol;
+
+        @SerializedName("marker-color")
+        public String marker_color;
+    }
+
+    public class Coin {
+
+        public String type;
+        public Properties properties;
+        public Geometry geometry;
+
+        public Coin(String t, Geometry g, Properties p) {
+            type = t;
+            properties = p;
+            geometry = g;
+        }
+
+
+        /*public String toJson() {
+            GsonBuilder builder = new GsonBuilder();
+            Gson gson = builder.create();
+            return gson.toJson(this);
+        }*/
+
+    }
+
+    public class JsonData {
+
+        public String type;
+
+        @SerializedName("date-generated")
+        public String date_generated;
+
+        @SerializedName("time-generated")
+        public String time_generated;
+
+        @SerializedName("approximate-time-remaining")
+        public String approximate_time_remaining;
+
+        public Rates rates;
+
+        public List<Coin> features;
+
+        public JsonData(String t, String d, String tg, String app, Rates r, List<Coin> f) {
+            type = t;
+            date_generated = d;
+            time_generated = tg;
+            approximate_time_remaining = app;
+            rates = r;
+            features = f;
+        }
+
+
+        public String toJson() {
+            GsonBuilder builder = new GsonBuilder();
+            Gson gson = builder.create();
+            return gson.toJson(this);
+        }
+    }
+
+    public class Rates {
+
+        public String SHIL;
+        public String DOLR;
+        public String QUID;
+        public String PENY;
+
+        public Rates(String s, String d, String q, String p) {
+            SHIL = s;
+            DOLR = d;
+            QUID = q;
+            PENY = p;
+        }
+    }
+
+    private JsonData jsonData;
+
 
 
     @Override
@@ -123,6 +230,38 @@ public class mapActivity extends AppCompatActivity implements
     }
 
     public void displayMarkers() {
+
+        String dg = "";
+        String tg = "";
+        String app = "";
+
+        Rates rates = null;
+
+        String shil = "";
+        String dolr = "";
+        String quid = "";
+        String peny = "";
+
+        try {
+
+            JSONObject collection = new JSONObject(data);
+            dg = collection.getString("date-generated");
+            tg = collection.getString("time-generated");
+            app = collection.getString("approximate-time-remaining");
+
+            JSONObject ratesl = collection.getJSONObject("rates");
+            shil = ratesl.getString("SHIL");
+            dolr = ratesl.getString("DOLR");
+            quid = ratesl.getString("QUID");
+            peny = ratesl.getString("PENY");
+
+            rates = new Rates(shil, dolr, quid, peny);
+
+
+        } catch (JSONException e) {
+            Log.d(TAG, "JSONException " + e.toString());
+        }
+
         IconFactory iconFactory = IconFactory.getInstance(mapActivity.this);
 
         Icon iconRed = iconFactory.fromResource(R.drawable.marker_red);
@@ -132,6 +271,8 @@ public class mapActivity extends AppCompatActivity implements
 
         FeatureCollection fc = FeatureCollection.fromJson(data);
         List<Feature> fs = fc.features();
+
+        List<Coin> coins = new ArrayList<>();
 
         for (int i = 0; i < fs.size(); i++) {
             Geometry g = fs.get(i).geometry();
@@ -170,8 +311,14 @@ public class mapActivity extends AppCompatActivity implements
                 icon = iconGreen;
             }
 
+            Properties props = new Properties(id, value, currency, marker_symbol, marker_color);
+            Coin coin = new Coin("Feature", g, props);
+            coins.add(coin);
 
-            map.addMarker(new MarkerOptions().title(value).snippet(currency).icon(icon).position(latLng));
+            Marker marker = map.addMarker(new MarkerOptions().title(value).snippet(currency).icon(icon).position(latLng));
+
+            jsonData = new JsonData(fc.type(), dg, tg, app, rates, coins);
+
 
         }
 
@@ -285,21 +432,22 @@ public class mapActivity extends AppCompatActivity implements
 
             if (dist <= 25) {
 
-                removeMarker(markers.get(i));
+                removeMarker(markers.get(i), i);
 
             }
         }
     }
 
-    public void removeMarker(Marker marker) {
-
-        String currency = marker.getSnippet();
-        String value = marker.getTitle();
+    public void removeMarker(Marker marker, int i) {
 
         Toast.makeText(getApplicationContext(), "Coin collected!",
                 Toast.LENGTH_SHORT).show();
 
+
+        jsonData.features.remove(i);
         map.removeMarker(marker);
+
+        marker.remove();
 
         totalCoinsCol++;
         totalCoins.setText("Total Coins Collected: " + totalCoinsCol);
@@ -410,7 +558,11 @@ public class mapActivity extends AppCompatActivity implements
         //We need an Editor object to make preference changes
         SharedPreferences.Editor editor = settings.edit();
         editor.putString("lastDownloadDate", downloadDate);
-        editor.putString("JSON", data);
+        //editor.putString("JSON", data);
+        editor.putString("JSON", jsonData.toJson());
+
+
+        Log.d(TAG, "[onStop] JSON CONVERSION " + jsonData.toJson());
 
         //Apply the edits
         editor.apply();
