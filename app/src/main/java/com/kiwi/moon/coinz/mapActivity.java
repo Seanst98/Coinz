@@ -13,15 +13,24 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.JsonReader;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.support.v7.widget.Toolbar;
 
 import com.google.common.collect.BiMap;
 import com.google.gson.Gson;
@@ -90,15 +99,14 @@ public class mapActivity extends AppCompatActivity implements
     private LocationLayerPlugin locationLayerPlugin;
     private Location originLocation;
 
-    String data;
+    private DrawerLayout drawerLayout;
 
+    String data;
     int totalCoinsCol;
     TextView totalCoins;
-
     private String downloadDate = "";   //Format:YYYY/MM/DD
     private final String preferencesFile = "MyPrefsFile";   //For storing preferences
     Date now = new Date();
-    //String currentDate = Calendar.YEAR + "/" + Calendar.MONTH + "/" + Calendar.DAY_OF_MONTH;
     String currentDate = new SimpleDateFormat("yyyy/MM/dd").format(now);
 
 
@@ -134,13 +142,6 @@ public class mapActivity extends AppCompatActivity implements
             properties = p;
             geometry = g;
         }
-
-
-        /*public String toJson() {
-            GsonBuilder builder = new GsonBuilder();
-            Gson gson = builder.create();
-            return gson.toJson(this);
-        }*/
 
     }
 
@@ -204,7 +205,48 @@ public class mapActivity extends AppCompatActivity implements
 
         Log.d(TAG, "BEGIN");
 
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
 
+        drawerLayout = findViewById(R.id.drawer_layout);
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+
+                        int id = menuItem.getItemId();
+
+                        switch (id) {
+
+                            case R.id.drawer_bank:
+                                Toast.makeText(getApplicationContext(), "drawer selected", Toast.LENGTH_SHORT).show();
+
+                            case R.id.drawer_optional:
+                                Toast.makeText(getApplicationContext(), "optional selected", Toast.LENGTH_SHORT).show();
+
+                            case R.id.drawer_personal:
+                                Toast.makeText(getApplicationContext(), "personal selected", Toast.LENGTH_SHORT).show();
+
+                            case R.id.drawer_statistics:
+                                Toast.makeText(getApplicationContext(), "statistics selected", Toast.LENGTH_SHORT).show();
+                        }
+                        //Set item as selected to persist highlight
+                        menuItem.setChecked(true);
+
+                        //Close drawer when item is tapped
+                        drawerLayout.closeDrawers();
+
+                        //Take user to screen depending on menuItem
+
+                        return true;
+                    }
+                }
+        );
 
         Mapbox.getInstance(this, getString(R.string.access_token));
 
@@ -218,6 +260,16 @@ public class mapActivity extends AppCompatActivity implements
         totalCoins = (TextView) findViewById(R.id.totalCoins);
 
         totalCoins.setText("Total Coins Collected: " + totalCoinsCol);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case android.R.id.home:
+                drawerLayout.openDrawer(GravityCompat.START);
+                return true;
+        }
+        return super.onOptionsItemSelected(menuItem);
     }
 
     @Override
