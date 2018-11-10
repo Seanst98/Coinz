@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/drawer_bank"
+            android:title="@string/bank_wallet" />
+        <item
+            android:id="@+id/drawer_personal"
+            android:title="@string/personal_info" />
+        <item
+            android:id="@+id/drawer_optional"
+            android:title="@string/optFeatures" />
+        <item
+            android:id="@+id/drawer_statistics"
+            android:title="@string/statistics" />
+    </group>
+
+</menu>

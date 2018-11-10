@@ -10,4 +10,10 @@
     <string name="confpassword">Confirm Password</string>
     <string name="createAcc">Create Account</string>
     <string name="access_token">pk.eyJ1Ijoic2VhbnN0OTgiLCJhIjoiY2pudnZ5ZXpvMWRrajNrcXFsdHplYjM2YyJ9.q3PKOuUDWjhjfwdCo0iXVw</string>
+    <string name="bank_wallet">Bank Account and Wallet</string>
+    <string name="personal_info">Personal Information</string>
+    <string name="optFeatures">Optional Features</string>
+    <string name="statistics">Statistics</string>
+
+
 </resources>
