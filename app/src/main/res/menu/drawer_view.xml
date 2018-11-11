@@ -7,16 +7,20 @@
 
         <item
             android:id="@+id/drawer_bank"
-            android:title="@string/bank_wallet" />
+            android:title="@string/bank_wallet"
+            android:icon="@drawable/ic_bank"/>
         <item
             android:id="@+id/drawer_personal"
-            android:title="@string/personal_info" />
+            android:title="@string/personal_info"
+            android:icon="@drawable/ic_person"/>
         <item
             android:id="@+id/drawer_optional"
-            android:title="@string/optFeatures" />
+            android:title="@string/optFeatures"
+            android:icon="@drawable/ic_features"/>
         <item
             android:id="@+id/drawer_statistics"
-            android:title="@string/statistics" />
+            android:title="@string/statistics"
+            android:icon="@drawable/ic_statistics"/>
 
     </group>
 
