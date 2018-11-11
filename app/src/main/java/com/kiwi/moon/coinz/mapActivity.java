@@ -224,17 +224,30 @@ public class mapActivity extends AppCompatActivity implements
                         switch (id) {
 
                             case R.id.drawer_bank:
-                                Toast.makeText(getApplicationContext(), "drawer selected", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "bank selected", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(mapActivity.this, BankActivity.class);
+                                startActivity(intent);
+                                break;
 
                             case R.id.drawer_optional:
                                 Toast.makeText(getApplicationContext(), "optional selected", Toast.LENGTH_SHORT).show();
+                                Intent intent1 = new Intent(mapActivity.this, OptionalFeaturesActivity.class);
+                                startActivity(intent1);
+                                break;
 
                             case R.id.drawer_personal:
                                 Toast.makeText(getApplicationContext(), "personal selected", Toast.LENGTH_SHORT).show();
+                                Intent intent2 = new Intent(mapActivity.this, PersonalActivity.class);
+                                startActivity(intent2);
+                                break;
 
                             case R.id.drawer_statistics:
                                 Toast.makeText(getApplicationContext(), "statistics selected", Toast.LENGTH_SHORT).show();
+                                Intent intent3 = new Intent(mapActivity.this, StatisticsActivity.class);
+                                startActivity(intent3);
+                                break;
                         }
+
                         //Set item as selected to persist highlight
                         menuItem.setChecked(true);
 
