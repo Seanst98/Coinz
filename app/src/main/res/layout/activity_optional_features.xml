@@ -6,4 +6,20 @@
     android:layout_height="match_parent"
     tools:context=".OptionalFeaturesActivity">
 
+    <Button
+        android:id="@+id/ghostButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button"
+        tools:layout_editor_absoluteX="161dp"
+        tools:layout_editor_absoluteY="125dp" />
+
+    <Button
+        android:id="@+id/timeTrialButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button"
+        tools:layout_editor_absoluteX="161dp"
+        tools:layout_editor_absoluteY="273dp" />
+
 </android.support.constraint.ConstraintLayout>
