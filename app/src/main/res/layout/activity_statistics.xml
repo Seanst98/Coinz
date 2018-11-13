@@ -6,4 +6,51 @@
     android:layout_height="match_parent"
     tools:context=".StatisticsActivity">
 
+    <TextView
+        android:id="@+id/coinsCollectedtxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        tools:layout_editor_absoluteX="177dp"
+        tools:layout_editor_absoluteY="386dp" />
+
+    <TextView
+        android:id="@+id/coinsDepositedtxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        tools:layout_editor_absoluteX="177dp"
+        tools:layout_editor_absoluteY="454dp" />
+
+    <TextView
+        android:id="@+id/distanceWalkedtxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        tools:layout_editor_absoluteX="177dp"
+        tools:layout_editor_absoluteY="320dp" />
+
+    <TextView
+        android:id="@+id/distanceWalkedDaytxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        tools:layout_editor_absoluteX="177dp"
+        tools:layout_editor_absoluteY="104dp" />
+
+    <TextView
+        android:id="@+id/coinsCollectedDaytxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        tools:layout_editor_absoluteX="176dp"
+        tools:layout_editor_absoluteY="157dp" />
+
+    <TextView
+        android:id="@+id/coinsDepositedDaytxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        tools:layout_editor_absoluteX="177dp"
+        tools:layout_editor_absoluteY="219dp" />
 </android.support.constraint.ConstraintLayout>
