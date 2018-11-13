@@ -10,47 +10,59 @@
         android:id="@+id/coinsCollectedtxt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="144dp"
         android:text="TextView"
-        tools:layout_editor_absoluteX="46dp"
-        tools:layout_editor_absoluteY="140dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/coinsInBanktxt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="40dp"
         android:text="TextView"
-        tools:layout_editor_absoluteX="46dp"
-        tools:layout_editor_absoluteY="198dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/coinsCollectedtxt" />
 
     <Button
         android:id="@+id/depositButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="84dp"
         android:text="Button"
-        tools:layout_editor_absoluteX="46dp"
-        tools:layout_editor_absoluteY="322dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/coinsInBanktxt" />
 
     <TextView
         android:id="@+id/depositCoinstxt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="320dp"
         android:text="TextView"
-        tools:layout_editor_absoluteX="226dp"
-        tools:layout_editor_absoluteY="320dp" />
+        app:layout_constraintStart_toEndOf="@+id/depositButton"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/giftButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="72dp"
         android:text="Button"
-        tools:layout_editor_absoluteX="46dp"
-        tools:layout_editor_absoluteY="501dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/depositButton" />
 
     <TextView
         android:id="@+id/gifttxt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="104dp"
         android:text="TextView"
-        tools:layout_editor_absoluteX="226dp"
-        tools:layout_editor_absoluteY="511dp" />
+        app:layout_constraintStart_toEndOf="@+id/giftButton"
+        app:layout_constraintTop_toBottomOf="@+id/depositCoinstxt" />
 </android.support.constraint.ConstraintLayout>
