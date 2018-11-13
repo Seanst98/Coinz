@@ -6,4 +6,35 @@
     android:layout_height="match_parent"
     tools:context=".PersonalActivity">
 
+    <Button
+        android:id="@+id/updateEmailButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button"
+        tools:layout_editor_absoluteX="161dp"
+        tools:layout_editor_absoluteY="158dp" />
+
+    <Button
+        android:id="@+id/updatePassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button"
+        tools:layout_editor_absoluteX="161dp"
+        tools:layout_editor_absoluteY="273dp" />
+
+    <Button
+        android:id="@+id/logoutButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button"
+        tools:layout_editor_absoluteX="161dp"
+        tools:layout_editor_absoluteY="394dp" />
+
+    <Button
+        android:id="@+id/deleteAccountButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button"
+        tools:layout_editor_absoluteX="161dp"
+        tools:layout_editor_absoluteY="525dp" />
 </android.support.constraint.ConstraintLayout>

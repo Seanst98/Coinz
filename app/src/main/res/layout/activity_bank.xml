@@ -6,4 +6,51 @@
     android:layout_height="match_parent"
     tools:context=".BankActivity">
 
+    <TextView
+        android:id="@+id/coinsCollectedtxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        tools:layout_editor_absoluteX="46dp"
+        tools:layout_editor_absoluteY="140dp" />
+
+    <TextView
+        android:id="@+id/coinsInBanktxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        tools:layout_editor_absoluteX="46dp"
+        tools:layout_editor_absoluteY="198dp" />
+
+    <Button
+        android:id="@+id/depositButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button"
+        tools:layout_editor_absoluteX="46dp"
+        tools:layout_editor_absoluteY="322dp" />
+
+    <TextView
+        android:id="@+id/depositCoinstxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        tools:layout_editor_absoluteX="226dp"
+        tools:layout_editor_absoluteY="320dp" />
+
+    <Button
+        android:id="@+id/giftButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button"
+        tools:layout_editor_absoluteX="46dp"
+        tools:layout_editor_absoluteY="501dp" />
+
+    <TextView
+        android:id="@+id/gifttxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        tools:layout_editor_absoluteX="226dp"
+        tools:layout_editor_absoluteY="511dp" />
 </android.support.constraint.ConstraintLayout>
