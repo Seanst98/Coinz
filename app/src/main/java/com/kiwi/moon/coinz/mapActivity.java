@@ -533,6 +533,20 @@ public class mapActivity extends AppCompatActivity implements
             Log.d(TAG, "[onLocationChanged] location is null");
         } else {
             Log.d(TAG, "[onLocationChanged] location is not null");
+
+
+            if (originLocation!=null) {
+                LatLng latLng = new LatLng(originLocation.getLatitude(), originLocation.getLongitude());
+                LatLng latLng1 = new LatLng(location.getLatitude(), location.getLongitude());
+
+                Double dist = latLng.distanceTo(latLng1);
+
+                user.dayWalked = user.dayWalked + dist;
+                user.totalWalked = user.totalWalked + dist;
+
+                Toast.makeText(getApplicationContext(), "DISTANCE WALKED: " + user.dayWalked, Toast.LENGTH_SHORT).show();
+            }
+
             originLocation = location;
             setCameraPosition(location);
 
