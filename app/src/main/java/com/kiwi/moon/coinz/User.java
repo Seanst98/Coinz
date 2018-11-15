@@ -6,8 +6,4 @@ public class User {
     public double dayWalked; //in metres
     public double totalWalked;
     public double bankGold;
-
-    public User(int dC, int tC, int dW, int tW, int bG) {
-
-    }
 }

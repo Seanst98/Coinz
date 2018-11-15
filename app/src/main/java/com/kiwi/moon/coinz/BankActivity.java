@@ -27,7 +27,12 @@ public class BankActivity extends AppCompatActivity {
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     private String TAG = "mapActivity";
+    private mapActivity.Rates rates;
 
+    String dolr;
+    String peny;
+    String shil;
+    String quid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +44,15 @@ public class BankActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+        Bundle extras = getIntent().getExtras();
+
+        if(extras != null) {
+            dolr = extras.getString("DOLR");
+            peny = extras.getString("PENY");
+            shil = extras.getString("SHIL");
+            quid = extras.getString("QUID");
+
+        }
 
         /*DocumentReference docRef = db.collection("users").document(mAuth.getUid());
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {

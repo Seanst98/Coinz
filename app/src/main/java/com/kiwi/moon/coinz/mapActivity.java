@@ -67,6 +67,9 @@ import java.util.Map;
 public class mapActivity extends AppCompatActivity implements
         OnMapReadyCallback, LocationEngineListener, PermissionsListener, DownloadCompleteRunner{
 
+    //*******************************************
+    //Declare variables
+    //*******************************************
     private String TAG = "mapActivity";
     private MapView mapView;
     private MapboxMap map;
@@ -91,6 +94,9 @@ public class mapActivity extends AppCompatActivity implements
 
     User user;
 
+    //*******************************************
+    //Properties, Coin, JSONData and Rates class
+    //*******************************************
     public class Properties {
 
         public Properties(String i, String v, String c, String ms, String mc) {
@@ -178,7 +184,6 @@ public class mapActivity extends AppCompatActivity implements
     private JsonData jsonData;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -186,12 +191,19 @@ public class mapActivity extends AppCompatActivity implements
 
         Log.d(TAG, "BEGIN");
 
+        //*******************************************
+        //Toolbar for navigation drawer
+        //*******************************************
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
 
+
+        //*******************************************
+        //Navigation drawer and its functionality
+        //*******************************************
         drawerLayout = findViewById(R.id.drawer_layout);
 
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -206,8 +218,20 @@ public class mapActivity extends AppCompatActivity implements
 
                             case R.id.drawer_bank:
                                 Toast.makeText(getApplicationContext(), "bank selected", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(mapActivity.this, BankActivity.class);
-                                startActivity(intent);
+
+                                if (jsonData.rates.DOLR.equals("")){
+                                    Toast.makeText(getApplicationContext(), "Please wait until the map data has finished downloading", Toast.LENGTH_LONG).show();
+
+                                }
+                                else {
+                                    Intent intent = new Intent(mapActivity.this, BankActivity.class);
+                                    intent.putExtra("DOLR", jsonData.rates.DOLR);
+                                    intent.putExtra("PENY", jsonData.rates.PENY);
+                                    intent.putExtra("QUID", jsonData.rates.QUID);
+                                    intent.putExtra("SHIL", jsonData.rates.SHIL);
+                                    startActivity(intent);
+                                }
+
                                 break;
 
                             case R.id.drawer_optional:
@@ -242,6 +266,9 @@ public class mapActivity extends AppCompatActivity implements
                 }
         );
 
+        //*******************************************
+        //Set up Mapbox
+        //*******************************************
         Mapbox.getInstance(this, getString(R.string.access_token));
 
         mapView = (MapView) findViewById(R.id.mapboxMapView);
@@ -250,6 +277,9 @@ public class mapActivity extends AppCompatActivity implements
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
 
+        //*******************************************
+        //Set up any text boxes on the screen
+        //*******************************************
         totalCoins = (TextView) findViewById(R.id.totalCoins);
 
         totalCoins.setText("Coins Collected: " + 0);
@@ -567,7 +597,7 @@ public class mapActivity extends AppCompatActivity implements
         downloadDate = settings.getString("lastDownloadDate", "");
         Log.d(TAG, "[onStart] Recalled lastDownloadDate is '" + downloadDate + "'");
 
-        user = new User(0,0,0, 0,0);
+        user = new User();
         DocumentReference docRef = db.collection("users").document(mAuth.getUid());
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -577,6 +607,11 @@ public class mapActivity extends AppCompatActivity implements
                     if (document.exists()) {
 
                         user.dayCoins = document.getLong("Day Coins").intValue();
+                        user.dayWalked = document.getLong("Day Walked");
+                        user.bankGold = document.getLong("Bank GOLD");
+                        user.totalCoins = document.getLong("Total Coins").intValue();
+                        user.totalWalked = document.getLong("Total Walked");
+
                         totalCoins.setText("Coins Collected: " + user.dayCoins);
                         Log.d(TAG, "Coins collected = " + user.dayCoins);
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
@@ -588,6 +623,11 @@ public class mapActivity extends AppCompatActivity implements
                 }
             }
         });
+
+        if (!currentDate.equals(downloadDate)){
+            user.dayCoins = 0;
+            user.dayWalked = 0;
+        }
     }
 
     @Override
@@ -636,6 +676,11 @@ public class mapActivity extends AppCompatActivity implements
         //Save data in FireStore
         Map<String, Object> userStore = new HashMap<>();
         userStore.put("Day Coins" , user.dayCoins);
+        userStore.put("Day Walked", user.dayWalked);
+        userStore.put("Total Coins", user.totalCoins);
+        userStore.put("Total Walked", user.totalWalked);
+        userStore.put("Bank GOLD", user.bankGold);
+
 
         Log.d(TAG, "User ID is: " + mAuth.getUid());
 
