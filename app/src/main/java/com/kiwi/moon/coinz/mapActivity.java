@@ -110,7 +110,6 @@ public class mapActivity extends AppCompatActivity implements
     private DrawerLayout drawerLayout;
 
     String data;
-    int totalCoinsCol;
     TextView totalCoins;
     private String downloadDate = "";   //Format:YYYY/MM/DD
     private final String preferencesFile = "MyPrefsFile";   //For storing preferences
@@ -121,6 +120,7 @@ public class mapActivity extends AppCompatActivity implements
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseAuth mAuth =  FirebaseAuth.getInstance();
 
+    User user;
 
     public class Properties {
 
@@ -281,10 +281,9 @@ public class mapActivity extends AppCompatActivity implements
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
 
-        totalCoinsCol = 0;
         totalCoins = (TextView) findViewById(R.id.totalCoins);
 
-        totalCoins.setText("Total Coins Collected: " + totalCoinsCol);
+        totalCoins.setText("Coins Collected: " + 0);
     }
 
     @Override
@@ -375,14 +374,12 @@ public class mapActivity extends AppCompatActivity implements
 
             if (marker_color.equals("#ffdf00")) {
                 icon = iconYellow;
-
             }
             else if (marker_color.equals("#0000ff")) {
                 icon = iconBlue;
             }
             else if (marker_color.equals("#ff0000")){
                 icon = iconRed;
-
             }
             else {
                 icon = iconGreen;
@@ -526,8 +523,8 @@ public class mapActivity extends AppCompatActivity implements
 
         marker.remove();
 
-        totalCoinsCol++;
-        totalCoins.setText("Total Coins Collected: " + totalCoinsCol);
+        user.dayCoins++;
+        totalCoins.setText("Coins Collected: " + user.dayCoins);
 
     }
 
@@ -601,7 +598,7 @@ public class mapActivity extends AppCompatActivity implements
         downloadDate = settings.getString("lastDownloadDate", "");
         Log.d(TAG, "[onStart] Recalled lastDownloadDate is '" + downloadDate + "'");
 
-
+        user = new User(0,0,0, 0,0);
         DocumentReference docRef = db.collection("users").document(mAuth.getUid());
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -610,8 +607,9 @@ public class mapActivity extends AppCompatActivity implements
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
 
-                        totalCoinsCol = document.getLong("Coins Collected").intValue();
-                        Log.d(TAG, "Coins collected = " + totalCoinsCol);
+                        user.dayCoins = document.getLong("Day Coins").intValue();
+                        totalCoins.setText("Coins Collected: " + user.dayCoins);
+                        Log.d(TAG, "Coins collected = " + user.dayCoins);
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
                     } else {
                         Log.d(TAG, "No such document");
@@ -667,13 +665,13 @@ public class mapActivity extends AppCompatActivity implements
 
 
         //Save data in FireStore
-        Map<String, Object> user = new HashMap<>();
-        user.put("Coins Collected" , totalCoinsCol);
+        Map<String, Object> userStore = new HashMap<>();
+        userStore.put("Day Coins" , user.dayCoins);
 
         Log.d(TAG, "User ID is: " + mAuth.getUid());
 
         db.collection("users").document(mAuth.getUid())
-                .set(user)
+                .set(userStore)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
