@@ -32,7 +32,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.support.v7.widget.Toolbar;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.common.collect.BiMap;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -108,6 +113,10 @@ public class mapActivity extends AppCompatActivity implements
     private final String preferencesFile = "MyPrefsFile";   //For storing preferences
     Date now = new Date();
     String currentDate = new SimpleDateFormat("yyyy/MM/dd").format(now);
+
+    //Access a cloud firestore instance from the bank activity
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseAuth mAuth =  FirebaseAuth.getInstance();
 
 
     public class Properties {
@@ -631,6 +640,28 @@ public class mapActivity extends AppCompatActivity implements
 
         //Apply the edits
         editor.apply();
+
+
+        //Save data in FireStore
+        Map<String, Object> user = new HashMap<>();
+        user.put("Coins Collected" , totalCoinsCol);
+
+        Log.d(TAG, "User ID is: " + mAuth.getUid());
+
+        db.collection("users").document(mAuth.getUid())
+                .set(user)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "Document Snapshot successfully written!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "Error writing document", e);
+                    }
+                });
 
     }
 
