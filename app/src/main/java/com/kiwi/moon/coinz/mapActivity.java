@@ -518,14 +518,32 @@ public class mapActivity extends AppCompatActivity implements
                 Toast.LENGTH_SHORT).show();
 
 
+        user.dayCoins++;
+        user.totalCoins++;
+        switch (marker.getSnippet()) {
+
+            case "SHIL":
+                user.shil = user.shil + Double.parseDouble(marker.getTitle());
+                break;
+
+            case "DOLR":
+                user.dolr = user.dolr + Double.parseDouble(marker.getTitle());
+                break;
+
+            case "PENY":
+                user.peny = user.peny + Double.parseDouble(marker.getTitle());
+                break;
+
+            case "QUID":
+                user.quid = user.quid + Double.parseDouble(marker.getTitle());
+                break;
+        }
+        updateFireBaseUser();
+        totalCoins.setText("Coins Collected: " + user.dayCoins);
+
         jsonData.features.remove(i);
         map.removeMarker(marker);
         marker.remove();
-
-        user.dayCoins++;
-        user.totalCoins++;
-        updateFireBaseUser();
-        totalCoins.setText("Coins Collected: " + user.dayCoins);
 
     }
 
@@ -640,6 +658,10 @@ public class mapActivity extends AppCompatActivity implements
                         if (!currentDate.equals(fireStoreDate)){
                             user.dayCoins = 0;
                             user.dayWalked = 0;
+                            user.shil = 0;
+                            user.peny = 0;
+                            user.quid = 0;
+                            user.dolr = 0;
                             updateFireBaseUser();
                         }
 
@@ -664,6 +686,11 @@ public class mapActivity extends AppCompatActivity implements
         userStore.put("Total Coins", user.totalCoins);
         userStore.put("Total Walked", user.totalWalked);
         userStore.put("Bank GOLD", user.bankGold);
+        userStore.put("SHIL collected", user.shil);
+        userStore.put("QUID collected", user.quid);
+        userStore.put("PENY collected", user.peny);
+        userStore.put("DOLR collected", user.dolr);
+
 
         Log.d(TAG, "Storing day coins as: " + user.dayCoins);
         Log.d(TAG, "Storing total coins as: " + user.totalCoins);

@@ -14,6 +14,11 @@
     <string name="personal_info">Personal Information</string>
     <string name="optFeatures">Optional Features</string>
     <string name="statistics">Statistics</string>
-
+    <string name="deposit">Deposit</string>
+    <string name="gift">Gift</string>
+    <string name="bankcoinstxt">You Have Collected </string>
+    <string name="bankcoinstxt2">Coins Today</string>
+    <string name="bankgoldtxt">You Have </string>
+    <string name="bankgoldtxt2">GOLD Stored In The Bank</string>
 
 </resources>
