@@ -84,6 +84,7 @@ public class mapActivity extends AppCompatActivity implements
     String data;
     TextView totalCoins;
     private String downloadDate = "";   //Format:YYYY/MM/DD
+    private String fireStoreDate = "";
     private final String preferencesFile = "MyPrefsFile";   //For storing preferences
     Date now = new Date();
     String currentDate = new SimpleDateFormat("yyyy/MM/dd").format(now);
@@ -519,10 +520,11 @@ public class mapActivity extends AppCompatActivity implements
 
         jsonData.features.remove(i);
         map.removeMarker(marker);
-
         marker.remove();
 
         user.dayCoins++;
+        user.totalCoins++;
+        updateFireBaseUser();
         totalCoins.setText("Coins Collected: " + user.dayCoins);
 
     }
@@ -609,6 +611,7 @@ public class mapActivity extends AppCompatActivity implements
 
         //Use "" as default value (this might be the first time the app is run)
         downloadDate = settings.getString("lastDownloadDate", "");
+        fireStoreDate = settings.getString("lastFireStoreDate", "");
         Log.d(TAG, "[onStart] Recalled lastDownloadDate is '" + downloadDate + "'");
 
         user = new User();
@@ -621,14 +624,27 @@ public class mapActivity extends AppCompatActivity implements
                     if (document.exists()) {
 
                         user.dayCoins = document.getLong("Day Coins").intValue();
+                        Log.d(TAG, "Day Coins: " + document.getLong("Day Coins"));
                         user.dayWalked = document.getLong("Day Walked");
                         user.bankGold = document.getLong("Bank GOLD");
                         user.totalCoins = document.getLong("Total Coins").intValue();
+                        Log.d(TAG, "Total Coins: " + document.getLong("Total Coins"));
                         user.totalWalked = document.getLong("Total Walked");
 
                         totalCoins.setText("Coins Collected: " + user.dayCoins);
                         Log.d(TAG, "Coins collected = " + user.dayCoins);
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+
+                        Log.d(TAG, "Current date: " + currentDate.toString());
+                        Log.d(TAG, "Last Download: " + currentDate.toString());
+                        if (!currentDate.equals(fireStoreDate)){
+                            user.dayCoins = 0;
+                            user.dayWalked = 0;
+                            updateFireBaseUser();
+                        }
+
+                        fireStoreDate = currentDate;
+
                     } else {
                         Log.d(TAG, "No such document");
                     }
@@ -638,10 +654,38 @@ public class mapActivity extends AppCompatActivity implements
             }
         });
 
-        if (!currentDate.equals(downloadDate)){
-            user.dayCoins = 0;
-            user.dayWalked = 0;
-        }
+    }
+
+    public void updateFireBaseUser(){
+        //Save data in FireStore
+        Map<String, Object> userStore = new HashMap<>();
+        userStore.put("Day Coins" , user.dayCoins);
+        userStore.put("Day Walked", user.dayWalked);
+        userStore.put("Total Coins", user.totalCoins);
+        userStore.put("Total Walked", user.totalWalked);
+        userStore.put("Bank GOLD", user.bankGold);
+
+        Log.d(TAG, "Storing day coins as: " + user.dayCoins);
+        Log.d(TAG, "Storing total coins as: " + user.totalCoins);
+
+        Log.d(TAG, "User ID is: " + mAuth.getUid());
+
+        db.collection("users").document(mAuth.getUid())
+                .set(userStore)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "Document Snapshot successfully written!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "Error writing document", e);
+                    }
+                });
+
+
     }
 
     @Override
@@ -677,6 +721,7 @@ public class mapActivity extends AppCompatActivity implements
         //We need an Editor object to make preference changes
         SharedPreferences.Editor editor = settings.edit();
         editor.putString("lastDownloadDate", downloadDate);
+        editor.putString("lastFireStoreDate", fireStoreDate);
         //editor.putString("JSON", data);
         editor.putString("JSON", jsonData.toJson());
 
@@ -688,30 +733,7 @@ public class mapActivity extends AppCompatActivity implements
 
 
         //Save data in FireStore
-        Map<String, Object> userStore = new HashMap<>();
-        userStore.put("Day Coins" , user.dayCoins);
-        userStore.put("Day Walked", user.dayWalked);
-        userStore.put("Total Coins", user.totalCoins);
-        userStore.put("Total Walked", user.totalWalked);
-        userStore.put("Bank GOLD", user.bankGold);
-
-
-        Log.d(TAG, "User ID is: " + mAuth.getUid());
-
-        db.collection("users").document(mAuth.getUid())
-                .set(userStore)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "Document Snapshot successfully written!");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d(TAG, "Error writing document", e);
-                    }
-                });
+        updateFireBaseUser();
 
     }
 
