@@ -648,6 +648,12 @@ public class mapActivity extends AppCompatActivity implements
                         user.totalCoins = document.getLong("Total Coins").intValue();
                         Log.d(TAG, "Total Coins: " + document.getLong("Total Coins"));
                         user.totalWalked = document.getLong("Total Walked");
+                        user.dolr = document.getLong("DOLR Collected");
+                        user.shil = document.getLong("SHIL Collected");
+                        user.quid = document.getLong("QUID Collected");
+                        user.peny = document.getLong("PENY Collected");
+
+
 
                         totalCoins.setText("Coins Collected: " + user.dayCoins);
                         Log.d(TAG, "Coins collected = " + user.dayCoins);
@@ -669,6 +675,7 @@ public class mapActivity extends AppCompatActivity implements
 
                     } else {
                         Log.d(TAG, "No such document");
+                        updateFireBaseUser();
                     }
                 } else {
                     Log.d(TAG, "get failed with ", task.getException());
@@ -686,10 +693,10 @@ public class mapActivity extends AppCompatActivity implements
         userStore.put("Total Coins", user.totalCoins);
         userStore.put("Total Walked", user.totalWalked);
         userStore.put("Bank GOLD", user.bankGold);
-        userStore.put("SHIL collected", user.shil);
-        userStore.put("QUID collected", user.quid);
-        userStore.put("PENY collected", user.peny);
-        userStore.put("DOLR collected", user.dolr);
+        userStore.put("SHIL Collected", user.shil);
+        userStore.put("QUID Collected", user.quid);
+        userStore.put("PENY Collected", user.peny);
+        userStore.put("DOLR Collected", user.dolr);
 
 
         Log.d(TAG, "Storing day coins as: " + user.dayCoins);

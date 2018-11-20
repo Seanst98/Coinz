@@ -7,18 +7,6 @@
     tools:context=".BankActivity">
 
     <TextView
-        android:id="@+id/giftamounttxt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="8dp"
-        android:text="Enter The Amount You Would Like To Gift"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/giftnametxt" />
-
-    <TextView
         android:id="@+id/coinsCollectedtxt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -38,30 +26,55 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/coinsCollectedtxt" />
 
-    <TextView
+
+    <EditText
         android:id="@+id/depositCoinstxt"
-        android:layout_width="wrap_content"
+        android:layout_width="289dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="60dp"
         android:layout_marginEnd="8dp"
-        android:text="Enter How Many Coins You Would Like To Deposit"
+        android:autofillHints="Number Of Coins To Deposit"
+        android:textAlignment="center"
+        android:ems="10"
+        android:hint="@string/depostitxt"
+        android:inputType="number"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.494"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/coinsInBanktxt" />
 
-    <TextView
+    <EditText
         android:id="@+id/giftnametxt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="60dp"
         android:layout_marginEnd="8dp"
-        android:text="Enter The Name Of The User You Would Like To Gift To"
+        android:autofillHints="Name Of User To Gift To"
+        android:textAlignment="center"
+        android:ems="10"
+        android:hint="@string/giftnametxt"
+        android:inputType="text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cardDeposit" />
+
+    <EditText
+        android:id="@+id/giftamounttxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="8dp"
+        android:autofillHints="Amount To Gift"
+        android:textAlignment="center"
+        android:ems="10"
+        android:hint="@string/giftamounttxt"
+        android:inputType="number"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/giftnametxt"/>
+
 
     <android.support.v7.widget.CardView
         android:id="@+id/cardDeposit"
@@ -71,6 +84,9 @@
         android:layout_marginTop="32dp"
         android:layout_marginEnd="8dp"
         app:cardBackgroundColor="@color/colorAccent"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:focusable="true"
+        android:clickable="true"
         app:cardCornerRadius="25dp"
         app:cardElevation="10dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -79,7 +95,9 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:background="?android:selectableItemBackground">
 
             <TextView
                 android:id="@+id/textDeposit"
@@ -102,6 +120,9 @@
         android:layout_marginTop="32dp"
         android:layout_marginEnd="8dp"
         app:cardBackgroundColor="@color/colorAccent"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:focusable="true"
+        android:clickable="true"
         app:cardCornerRadius="25dp"
         app:cardElevation="10dp"
         app:layout_constraintEnd_toEndOf="parent"

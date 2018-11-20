@@ -20,5 +20,8 @@
     <string name="bankcoinstxt2">Coins Today</string>
     <string name="bankgoldtxt">You Have </string>
     <string name="bankgoldtxt2">GOLD Stored In The Bank</string>
+    <string name="depostitxt">Enter How Many Coins To Deposit</string>
+    <string name="giftnametxt">Name Of User To Gift To</string>
+    <string name="giftamounttxt">Amount To Gift</string>
 
 </resources>
