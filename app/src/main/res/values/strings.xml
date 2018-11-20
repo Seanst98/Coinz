@@ -23,5 +23,9 @@
     <string name="depostitxt">Enter How Many Coins To Deposit</string>
     <string name="giftnametxt">Name Of User To Gift To</string>
     <string name="giftamounttxt">Amount To Gift</string>
+    <string name="dolr">DOLR</string>
+    <string name="shil">SHIL</string>
+    <string name="quid">QUID</string>
+    <string name="peny">PENY</string>
 
 </resources>

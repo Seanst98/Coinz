@@ -48,7 +48,7 @@ public class BankActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bank);
 
-        depositInput = (EditText) findViewById(R.id.depositCoinstxt);
+        depositInput = (EditText) findViewById(R.id.depositSHIL);
         //passwordInput = (EditText) findViewById(R.id.enterPassword);
 
 

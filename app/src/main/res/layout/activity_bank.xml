@@ -6,6 +6,65 @@
     android:layout_height="match_parent"
     tools:context=".BankActivity">
 
+    <EditText
+        android:id="@+id/depositSHIL"
+        android:layout_width="76dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:autofillHints=""
+        android:ems="10"
+        android:hint="@string/shil"
+        android:inputType="text"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/depositCoinstxt" />
+
+    <EditText
+        android:id="@+id/depositDOLR"
+        android:layout_width="76dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:autofillHints="Name Of User To Gift To"
+        android:ems="10"
+        android:hint="@string/dolr"
+        android:inputType="text"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toStartOf="@+id/depositSHIL"
+        app:layout_constraintTop_toBottomOf="@+id/depositCoinstxt" />
+
+    <EditText
+        android:id="@+id/depositQUID"
+        android:layout_width="76dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:autofillHints="Name Of User To Gift To"
+        android:ems="10"
+        android:hint="@string/quid"
+        android:inputType="text"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toStartOf="@+id/depositDOLR"
+        app:layout_constraintHorizontal_bias="0.253"
+        app:layout_constraintStart_toEndOf="@+id/depositPENY"
+        app:layout_constraintTop_toBottomOf="@+id/depositCoinstxt" />
+
+    <EditText
+        android:id="@+id/depositPENY"
+        android:layout_width="76dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:autofillHints="Name Of User To Gift To"
+        android:ems="10"
+        android:hint="@string/peny"
+        android:inputType="text"
+        android:textAlignment="center"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/depositCoinstxt" />
+
     <TextView
         android:id="@+id/coinsCollectedtxt"
         android:layout_width="wrap_content"
@@ -27,18 +86,17 @@
         app:layout_constraintTop_toBottomOf="@+id/coinsCollectedtxt" />
 
 
-    <EditText
+    <TextView
         android:id="@+id/depositCoinstxt"
         android:layout_width="289dp"
-        android:layout_height="wrap_content"
+        android:layout_height="30dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="60dp"
         android:layout_marginEnd="8dp"
-        android:autofillHints="Number Of Coins To Deposit"
-        android:textAlignment="center"
         android:ems="10"
         android:hint="@string/depostitxt"
-        android:inputType="number"
+        android:textAlignment="center"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/coinsInBanktxt" />
@@ -51,11 +109,12 @@
         android:layout_marginTop="60dp"
         android:layout_marginEnd="8dp"
         android:autofillHints="Name Of User To Gift To"
-        android:textAlignment="center"
         android:ems="10"
         android:hint="@string/giftnametxt"
         android:inputType="text"
+        android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cardDeposit" />
 
@@ -64,16 +123,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="8dp"
         android:autofillHints="Amount To Gift"
-        android:textAlignment="center"
         android:ems="10"
         android:hint="@string/giftamounttxt"
         android:inputType="number"
+        android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/giftnametxt"/>
+        app:layout_constraintTop_toBottomOf="@+id/giftnametxt" />
 
 
     <android.support.v7.widget.CardView
@@ -81,29 +141,31 @@
         android:layout_width="300dp"
         android:layout_height="50dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="72dp"
         android:layout_marginEnd="8dp"
-        app:cardBackgroundColor="@color/colorAccent"
-        android:foreground="?android:attr/selectableItemBackground"
-        android:focusable="true"
         android:clickable="true"
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        app:cardBackgroundColor="@color/colorAccent"
         app:cardCornerRadius="25dp"
         app:cardElevation="10dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.505"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/depositCoinstxt">
 
         <RelativeLayout
-            android:layout_width="match_parent"
+            android:layout_width="298dp"
             android:layout_height="match_parent"
-            android:clickable="true"
-            android:background="?android:selectableItemBackground">
+            android:background="?android:selectableItemBackground"
+            android:clickable="true">
 
             <TextView
                 android:id="@+id/textDeposit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
                 android:text="@string/deposit"
                 android:textColor="#fff"
                 android:textSize="18sp" />
