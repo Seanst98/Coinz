@@ -11,4 +11,9 @@ public class User {
     public double peny;
     public double quid;
     public double dolr;
+
+    public int shilCoins;
+    public int penyCoins;
+    public int quidCoins;
+    public int dolrCoins;
 }

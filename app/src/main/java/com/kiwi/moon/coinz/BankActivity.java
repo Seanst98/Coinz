@@ -61,14 +61,10 @@ public class BankActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 //Call function to deposit money
-                //depositVal();
-
-                //cardDeposit.setCardElevation(2);
+                depositVal();
             }
         });
 
-
-        //cardDeposit.setO
     }
 
     public void depositVal() {
@@ -94,6 +90,8 @@ public class BankActivity extends AppCompatActivity {
     }
 
     public void deposit() {
+
+        double gold = user.shil / Double.parseDouble(shil);
 
 
     }

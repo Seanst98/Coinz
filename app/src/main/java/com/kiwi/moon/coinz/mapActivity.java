@@ -85,6 +85,7 @@ public class mapActivity extends AppCompatActivity implements
     TextView totalCoins;
     private String downloadDate = "";   //Format:YYYY/MM/DD
     private String fireStoreDate = "";
+    private String currentUser = "";
     private final String preferencesFile = "MyPrefsFile";   //For storing preferences
     Date now = new Date();
     String currentDate = new SimpleDateFormat("yyyy/MM/dd").format(now);
@@ -424,6 +425,15 @@ public class mapActivity extends AppCompatActivity implements
                 downloadDate = currentDate;
                 Log.d(TAG, "[OnMapReady] Downloading map since it is a new day");
             }
+            else if (!currentUser.equals(mAuth.getUid())){
+                currentUser = mAuth.getUid();
+                DownLoadFileTask downLoadFileTask = new DownLoadFileTask();
+                downLoadFileTask.delegate = this;
+                Log.d(TAG, "Downloading file from " + "http://homepages.inf.ed.ac.uk/stg/coinz/" + currentDate + "/coinzmap.geojson");
+                downLoadFileTask.execute("http://homepages.inf.ed.ac.uk/stg/coinz/" + currentDate + "/coinzmap.geojson");
+                downloadDate = currentDate;
+                Log.d(TAG, "[OnMapReady] Downloading map since it is a new day");
+            }
             else {
 
                 //Restore preferences
@@ -630,6 +640,7 @@ public class mapActivity extends AppCompatActivity implements
         //Use "" as default value (this might be the first time the app is run)
         downloadDate = settings.getString("lastDownloadDate", "");
         fireStoreDate = settings.getString("lastFireStoreDate", "");
+        currentUser = settings.getString("currentUser", "");
         Log.d(TAG, "[onStart] Recalled lastDownloadDate is '" + downloadDate + "'");
 
         user = new User();
@@ -652,6 +663,10 @@ public class mapActivity extends AppCompatActivity implements
                         user.shil = document.getLong("SHIL Collected");
                         user.quid = document.getLong("QUID Collected");
                         user.peny = document.getLong("PENY Collected");
+                        user.dolrCoins = document.getLong("DOLR Coins").intValue();
+                        user.shilCoins = document.getLong("SHIL Coins").intValue();
+                        user.quidCoins = document.getLong("QUID Coins").intValue();
+                        user.penyCoins = document.getLong("PENY Coins").intValue();
 
 
 
@@ -668,6 +683,12 @@ public class mapActivity extends AppCompatActivity implements
                             user.peny = 0;
                             user.quid = 0;
                             user.dolr = 0;
+
+                            user.shilCoins = 0;
+                            user.penyCoins = 0;
+                            user.quidCoins = 0;
+                            user.dolrCoins = 0;
+
                             updateFireBaseUser();
                         }
 
@@ -697,6 +718,12 @@ public class mapActivity extends AppCompatActivity implements
         userStore.put("QUID Collected", user.quid);
         userStore.put("PENY Collected", user.peny);
         userStore.put("DOLR Collected", user.dolr);
+        userStore.put("DOLR Coins", user.dolrCoins);
+        userStore.put("SHIL Coins", user.shilCoins);
+        userStore.put("PENY Coins", user.penyCoins);
+        userStore.put("QUID Coins", user.quidCoins);
+
+
 
 
         Log.d(TAG, "Storing day coins as: " + user.dayCoins);
@@ -758,6 +785,7 @@ public class mapActivity extends AppCompatActivity implements
         editor.putString("lastFireStoreDate", fireStoreDate);
         //editor.putString("JSON", data);
         editor.putString("JSON", jsonData.toJson());
+        editor.putString("currentUser", mAuth.getUid());
 
 
         Log.d(TAG, "[onStop] JSON CONVERSION " + jsonData.toJson());
