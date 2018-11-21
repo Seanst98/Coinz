@@ -19,5 +19,5 @@ public class User {
     public int quidCoins;
     public int dolrCoins;
 
-    public List<mapActivity.Coin> coins;
+    public List<Coin> coins;
 }

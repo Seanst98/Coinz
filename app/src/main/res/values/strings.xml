@@ -27,5 +27,6 @@
     <string name="shil">SHIL</string>
     <string name="quid">QUID</string>
     <string name="peny">PENY</string>
+    <string name="coins">Coins</string>
 
 </resources>

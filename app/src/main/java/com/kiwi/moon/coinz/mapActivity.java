@@ -218,8 +218,6 @@ public class mapActivity extends AppCompatActivity implements
     @Override
     public void downloadComplete(String result) {
         data = result;
-
-        Log.d(TAG, "Download was " + data);
         displayMarkers();
 
     }
@@ -315,30 +313,17 @@ public class mapActivity extends AppCompatActivity implements
 
         }
 
-        Log.d(TAG, "number of coins: " + coins.size());
         jsonData = new JsonData(fc.type(), dg, tg, app, rates, coins);
-        Log.d(TAG, "number of features: " + jsonData.features.size());
-
-
-        Log.d(TAG, "success ");
 
         if (coinsCollectedData == null){
-            Log.d(TAG, "Coins Collected is null ");
 
             coinsCollectedData = new JsonData(fc.type(), dg, tg, app, rates, coins2);
-            Log.d(TAG, "Number of coins in new data: " + coinsCollectedData.features.size());
-
-            Log.d(TAG, "Size of fs: " + fs.size());
 
             while (!coinsCollectedData.features.isEmpty()){
 
-                Log.d(TAG, "size: " + coinsCollectedData.features.size());
                 coinsCollectedData.features.remove(0);
             }
 
-            Log.d(TAG, "Coins Collected is now: " + coinsCollectedData.toJson());
-
-            Log.d(TAG, "JSONDATA is now: " + jsonData.toJson());
         }
     }
 
@@ -349,7 +334,6 @@ public class mapActivity extends AppCompatActivity implements
 
         }
         else {
-            Log.d(TAG, "mapbox is not null");
             map = mapboxMap;
             //Set user interface options
             map.getUiSettings().setCompassEnabled(true);
@@ -569,6 +553,8 @@ public class mapActivity extends AppCompatActivity implements
         super.onStart();
         mapView.onStart();
 
+        Log.d(TAG, "[OnStart] is called");
+
         if (locationLayerPlugin != null) {
             locationLayerPlugin.onStart();
         }
@@ -586,28 +572,24 @@ public class mapActivity extends AppCompatActivity implements
         currentUser = settings.getString("currentUser", "");
         coinsCollected = settings.getString("coinsCollected", "");
 
-        Log.d(TAG, "[onStart] Recalled lastDownloadDate is '" + downloadDate + "'");
+        //Log.d(TAG, "[onStart] Recalled lastDownloadDate is '" + downloadDate + "'");
 
         user = new User();
 
-        Log.d(TAG, "THE STORED COINS ARE: " + coinsCollected);
+        //Log.d(TAG, "THE STORED COINS ARE: " + coinsCollected);
 
-        if (coinsCollected == null){
-            Log.d(TAG, "null olol");
-        }
 
         if (coinsCollected.equals("[]")){
-            Log.d(TAG, "IF LOL");
+            Log.d(TAG, "coins collected is []");
         }
         else if (coinsCollected == null){
 
-            Log.d(TAG, "ELSE IF LOL");
+            Log.d(TAG, "coins collected is null");
         }
         else if (coinsCollected.equals("")){
-            Log.d(TAG, "ELSE IF 2 LOL");
+            Log.d(TAG, "coins collected is '' ");
         }
         else {
-            Log.d(TAG, "ELSE LOL");
 
             String dg = "";
             String tg = "";
@@ -678,6 +660,7 @@ public class mapActivity extends AppCompatActivity implements
         }
 
 
+        db = FirebaseFirestore.getInstance();
         DocumentReference docRef = db.collection("users").document(mAuth.getUid());
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -687,11 +670,13 @@ public class mapActivity extends AppCompatActivity implements
                     if (document.exists()) {
 
                         user.dayCoins = document.getLong("Day Coins").intValue();
-                        Log.d(TAG, "Day Coins: " + document.getLong("Day Coins"));
                         user.dayWalked = document.getLong("Day Walked");
-                        user.bankGold = document.getLong("Bank GOLD");
+
+                        user.bankGold = (Double) document.getData().get("Bank GOLD");
+                        Log.d(TAG, "BANK GOLD READ AS: " + user.bankGold);
+                        //Log.d(TAG, "[OnStart] BANK GOLD RETRIEVED MAP AS: " + document.getData().get("Bank GOLD"));
+                        //Log.d(TAG, "[OnStart] BANK GOLD RETRIEVED MAP ACTIVITY: " + user.bankGold);
                         user.totalCoins = document.getLong("Total Coins").intValue();
-                        Log.d(TAG, "Total Coins: " + document.getLong("Total Coins"));
                         user.totalWalked = document.getLong("Total Walked");
                         user.dolr = document.getLong("DOLR Collected");
                         user.shil = document.getLong("SHIL Collected");
@@ -705,11 +690,8 @@ public class mapActivity extends AppCompatActivity implements
 
 
                         totalCoins.setText("Coins Collected: " + user.dayCoins);
-                        Log.d(TAG, "Coins collected = " + user.dayCoins);
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
 
-                        Log.d(TAG, "Current date: " + currentDate.toString());
-                        Log.d(TAG, "Last Download: " + currentDate.toString());
                         if (!currentDate.equals(fireStoreDate)){
                             user.dayCoins = 0;
                             user.dayWalked = 0;
@@ -757,14 +739,6 @@ public class mapActivity extends AppCompatActivity implements
         userStore.put("PENY Coins", user.penyCoins);
         userStore.put("QUID Coins", user.quidCoins);
 
-
-
-
-        Log.d(TAG, "Storing day coins as: " + user.dayCoins);
-        Log.d(TAG, "Storing total coins as: " + user.totalCoins);
-
-        Log.d(TAG, "User ID is: " + mAuth.getUid());
-
         db.collection("users").document(mAuth.getUid())
                 .set(userStore)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -808,8 +782,6 @@ public class mapActivity extends AppCompatActivity implements
             stopLocationListener();
         }
 
-        Log.d(TAG, "[onStop] Storing lastDownloadDate of " + downloadDate);
-        Log.d(TAG, "[onStop] Storing JSON " + data);
         //All objects are from android.context.Context
         SharedPreferences settings = getSharedPreferences(preferencesFile, Context.MODE_PRIVATE);
 
@@ -820,9 +792,6 @@ public class mapActivity extends AppCompatActivity implements
         editor.putString("JSON", jsonData.toJson());
         editor.putString("currentUser", mAuth.getUid());
         editor.putString("coinsCollected", coinsCollectedData.toJson());
-
-
-        Log.d(TAG, "[onStop] JSON CONVERSION " + jsonData.toJson());
 
         //Apply the edits
         editor.apply();

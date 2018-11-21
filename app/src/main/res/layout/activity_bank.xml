@@ -7,6 +7,23 @@
     tools:context=".BankActivity">
 
     <EditText
+        android:id="@+id/depositCoins"
+        android:layout_width="76dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="52dp"
+        android:layout_marginEnd="8dp"
+        android:autofillHints="Name Of User To Gift To"
+        android:ems="10"
+        android:hint="@string/coins"
+        android:inputType="number"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/coinsInBanktxt" />
+
+    <EditText
         android:id="@+id/depositSHIL"
         android:layout_width="76dp"
         android:layout_height="wrap_content"
@@ -18,7 +35,7 @@
         android:inputType="number"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/depositCoinstxt" />
+        app:layout_constraintTop_toBottomOf="@+id/depositCoins" />
 
     <EditText
         android:id="@+id/depositDOLR"
@@ -32,7 +49,7 @@
         android:inputType="number"
         android:textAlignment="center"
         app:layout_constraintEnd_toStartOf="@+id/depositSHIL"
-        app:layout_constraintTop_toBottomOf="@+id/depositCoinstxt" />
+        app:layout_constraintTop_toBottomOf="@+id/depositCoins" />
 
     <EditText
         android:id="@+id/depositQUID"
@@ -49,7 +66,7 @@
         app:layout_constraintEnd_toStartOf="@+id/depositDOLR"
         app:layout_constraintHorizontal_bias="0.253"
         app:layout_constraintStart_toEndOf="@+id/depositPENY"
-        app:layout_constraintTop_toBottomOf="@+id/depositCoinstxt" />
+        app:layout_constraintTop_toBottomOf="@+id/depositCoins" />
 
     <EditText
         android:id="@+id/depositPENY"
@@ -63,7 +80,7 @@
         android:inputType="number"
         android:textAlignment="center"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/depositCoinstxt" />
+        app:layout_constraintTop_toBottomOf="@+id/depositCoins" />
 
     <TextView
         android:id="@+id/coinsCollectedtxt"
@@ -91,7 +108,7 @@
         android:layout_width="289dp"
         android:layout_height="30dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:ems="10"
         android:hint="@string/depostitxt"
@@ -152,13 +169,12 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.505"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/depositCoinstxt">
+        app:layout_constraintTop_toBottomOf="@+id/depositCoins">
 
         <RelativeLayout
             android:layout_width="298dp"
             android:layout_height="match_parent"
-            android:background="?android:selectableItemBackground"
-            android:clickable="true">
+            >
 
             <TextView
                 android:id="@+id/textDeposit"

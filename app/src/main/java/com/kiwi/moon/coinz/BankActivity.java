@@ -1,5 +1,7 @@
 package com.kiwi.moon.coinz;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -23,10 +25,6 @@ import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.Geometry;
 import com.mapbox.geojson.Point;
-import com.mapbox.mapboxsdk.annotations.Icon;
-import com.mapbox.mapboxsdk.annotations.IconFactory;
-import com.mapbox.mapboxsdk.annotations.Marker;
-import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import org.json.JSONException;
@@ -60,8 +58,11 @@ public class BankActivity extends AppCompatActivity {
     private EditText dolrInput;
     private EditText quidInput;
     private EditText penyInput;
+    private EditText coinsInput;
 
     //private EditText passwordInput;
+
+    private final String preferencesFile = "MyPrefsFile";   //For storing preferences
 
 
 
@@ -74,11 +75,7 @@ public class BankActivity extends AppCompatActivity {
         dolrInput = (EditText) findViewById(R.id.depositDOLR);
         quidInput = (EditText) findViewById(R.id.depositQUID);
         penyInput = (EditText) findViewById(R.id.depositPENY);
-
-        //passwordInput = (EditText) findViewById(R.id.enterPassword);
-
-
-        user = getUser();
+        coinsInput = (EditText) findViewById(R.id.depositCoins);
 
         //If deposit card is pressed
         final CardView cardDeposit = findViewById(R.id.cardDeposit);
@@ -86,6 +83,7 @@ public class BankActivity extends AppCompatActivity {
 
             public void onClick(View v) {
 
+                Log.d(TAG, "CLICKED");
                 //Call function to deposit money
                 depositVal();
             }
@@ -95,7 +93,7 @@ public class BankActivity extends AppCompatActivity {
 
     public void depositVal() {
 
-        int totalCoins = Integer.parseInt(shilInput.toString()) + Integer.parseInt(dolrInput.toString()) + Integer.parseInt(quidInput.toString()) + Integer.parseInt(penyInput.toString());
+        /*int totalCoins = Integer.parseInt(shilInput.toString()) + Integer.parseInt(dolrInput.toString()) + Integer.parseInt(quidInput.toString()) + Integer.parseInt(penyInput.toString());
 
         if (totalCoins < 1){
             Toast.makeText(getApplicationContext(), "Please Enter A Number Greater Than 0",
@@ -114,14 +112,86 @@ public class BankActivity extends AppCompatActivity {
             else {
                 deposit();
             }
+        }*/
+
+        Log.d(TAG, coinsInput.toString());
+
+        if (coinsInput.getText() == null){
+            Toast.makeText(getApplicationContext(), "Please Enter A Value" , Toast.LENGTH_SHORT).show();
+        }
+        else if (coinsInput.getText().toString().equals("")){
+            Toast.makeText(getApplicationContext(), "Please Enter A Value", Toast.LENGTH_SHORT).show();
+        }
+        else if (Integer.parseInt(coinsInput.getText().toString()) < 1){
+            Toast.makeText(getApplicationContext(), "Please Enter A Number Greater Than 0",
+                    Toast.LENGTH_LONG).show();
+        }
+        else if (Integer.parseInt(coinsInput.getText().toString()) > 25){
+            Toast.makeText(getApplicationContext(), "Please Enter A Number Less Than 26",
+                    Toast.LENGTH_LONG).show();
+        }
+        else {
+            if (user == null){
+                Toast.makeText(getApplicationContext(), "User is Null",
+                        Toast.LENGTH_LONG).show();
+
+            }
+            else {
+                Log.d(TAG, "DEPOSITING");
+                deposit();
+            }
         }
     }
 
     public void deposit() {
 
-        double gold = user.shil  / Double.parseDouble(shil);
+        double gold = 0;
+
+        if (coinsCollectedData.features.size() == 0){
+            Log.d(TAG, "NO COINS COLLECTED TO DEPOSIT");
+            Toast.makeText(getApplicationContext(), "You Don't Have Any Coins To Deposit! Go Collect Some", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            for (int i = 0; i < Integer.parseInt(coinsInput.getText().toString()); i++){
+
+                Log.d(TAG, "Value: " + coinsCollectedData.features.get(i).properties.value);
+                Log.d(TAG, "Rate: " + coinsCollectedData.rates.DOLR);
+
+                switch (coinsCollectedData.features.get(i).properties.currency) {
+
+                    case "DOLR":
+                        gold = gold + exchangeConversion(Double.parseDouble(coinsCollectedData.features.get(i).properties.value), Double.parseDouble(coinsCollectedData.rates.DOLR));
+                        break;
+
+                    case "SHIL":
+                        gold = gold + exchangeConversion(Double.parseDouble(coinsCollectedData.features.get(i).properties.value), Double.parseDouble(coinsCollectedData.rates.SHIL));
+                        break;
+
+                    case "PENY":
+                        gold = gold + exchangeConversion(Double.parseDouble(coinsCollectedData.features.get(i).properties.value), Double.parseDouble(coinsCollectedData.rates.PENY));
+                        break;
+
+                    case "QUID":
+                        gold = gold + exchangeConversion(Double.parseDouble(coinsCollectedData.features.get(i).properties.value), Double.parseDouble(coinsCollectedData.rates.QUID));
+                        break;
+                }
+
+                coinsCollectedData.features.remove(i);
 
 
+            }
+        }
+
+        Log.d(TAG, "Gold Value of coins: " + gold);
+        user.bankGold = user.bankGold + gold;
+        updateFireBaseUser();
+
+
+    }
+
+    public double exchangeConversion(double amount, double rate){
+
+        return amount/rate;
     }
 
     public void updateFireBaseUser(){
@@ -136,6 +206,12 @@ public class BankActivity extends AppCompatActivity {
         userStore.put("QUID Collected", user.quid);
         userStore.put("PENY Collected", user.peny);
         userStore.put("DOLR Collected", user.dolr);
+        userStore.put("DOLR Coins", user.dolrCoins);
+        userStore.put("SHIL Coins", user.shilCoins);
+        userStore.put("PENY Coins", user.penyCoins);
+        userStore.put("QUID Coins", user.quidCoins);
+
+        Log.d(TAG, "BANK GOLD STORING AS: " + user.bankGold);
 
         db.collection("users").document(mAuth.getUid())
                 .set(userStore)
@@ -158,6 +234,7 @@ public class BankActivity extends AppCompatActivity {
     public User getUser(){
 
         User usr = new User();
+        db = FirebaseFirestore.getInstance();
         DocumentReference docRef = db.collection("users").document(mAuth.getUid());
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -169,7 +246,8 @@ public class BankActivity extends AppCompatActivity {
                         usr.dayCoins = document.getLong("Day Coins").intValue();
                         Log.d(TAG, "Day Coins: " + document.getLong("Day Coins"));
                         usr.dayWalked = document.getLong("Day Walked");
-                        usr.bankGold = document.getLong("Bank GOLD");
+                        usr.bankGold = (Double) document.getData().get("Bank GOLD");
+                        Log.d(TAG, "BANK GOLD RETREIVAL: " + usr.bankGold);
                         usr.totalCoins = document.getLong("Total Coins").intValue();
                         Log.d(TAG, "Total Coins: " + document.getLong("Total Coins"));
                         usr.totalWalked = document.getLong("Total Walked");
@@ -177,6 +255,10 @@ public class BankActivity extends AppCompatActivity {
                         usr.shil = document.getLong("SHIL Collected");
                         usr.quid = document.getLong("QUID Collected");
                         usr.peny = document.getLong("PENY Collected");
+                        user.dolrCoins = document.getLong("DOLR Coins").intValue();
+                        user.shilCoins = document.getLong("SHIL Coins").intValue();
+                        user.quidCoins = document.getLong("QUID Coins").intValue();
+                        user.penyCoins = document.getLong("PENY Coins").intValue();
 
                     } else {
                         Log.d(TAG, "No such document");
@@ -226,7 +308,7 @@ public class BankActivity extends AppCompatActivity {
             quid = ratesl.getString("QUID");
             peny = ratesl.getString("PENY");
 
-            //rates = Rates(shil, dolr, quid, peny);
+            rates = new Rates(shil, dolr, quid, peny);
 
 
         } catch (JSONException e) {
@@ -266,5 +348,26 @@ public class BankActivity extends AppCompatActivity {
 
         coinsCollectedData = new JsonData(fc.type(), dg, tg, app, rates, coins);
 
+        user = getUser();
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        SharedPreferences settings = getSharedPreferences(preferencesFile, Context.MODE_PRIVATE);
+
+        //We need an Editor object to make preference changes
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("coinsCollected", coinsCollectedData.toJson());
+
+        //Apply the edits
+        editor.apply();
+
+        //Save data in FireStore
+        updateFireBaseUser();
+
     }
 }
+
