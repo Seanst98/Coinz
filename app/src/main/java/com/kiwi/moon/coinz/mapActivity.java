@@ -89,6 +89,7 @@ public class mapActivity extends AppCompatActivity implements
     String data;
     TextView totalCoins;
     private String downloadDate = "";   //Format:YYYY/MM/DD
+    private String coinsDownloadDate = "";
     private String fireStoreDate = "";
     private String currentUser = "";
     private String coinsCollected = "";
@@ -315,7 +316,7 @@ public class mapActivity extends AppCompatActivity implements
 
         jsonData = new JsonData(fc.type(), dg, tg, app, rates, coins);
 
-        if (coinsCollectedData == null){
+        if (coinsCollectedData == null || !currentDate.equals(coinsDownloadDate)){
 
             coinsCollectedData = new JsonData(fc.type(), dg, tg, app, rates, coins2);
 
@@ -482,6 +483,8 @@ public class mapActivity extends AppCompatActivity implements
         map.removeMarker(marker);
         marker.remove();
 
+        updateFireBaseUser();
+
     }
 
     @Override
@@ -501,7 +504,7 @@ public class mapActivity extends AppCompatActivity implements
                 user.dayWalked = user.dayWalked + dist;
                 user.totalWalked = user.totalWalked + dist;
 
-                Toast.makeText(getApplicationContext(), "DISTANCE WALKED: " + user.dayWalked, Toast.LENGTH_SHORT).show();
+                updateFireBaseUser();
             }
 
             originLocation = location;
@@ -571,6 +574,7 @@ public class mapActivity extends AppCompatActivity implements
         fireStoreDate = settings.getString("lastFireStoreDate", "");
         currentUser = settings.getString("currentUser", "");
         coinsCollected = settings.getString("coinsCollected", "");
+        coinsDownloadDate = settings.getString("coinsLastDownloadDate", "");
 
         //Log.d(TAG, "[onStart] Recalled lastDownloadDate is '" + downloadDate + "'");
 
@@ -691,15 +695,6 @@ public class mapActivity extends AppCompatActivity implements
                         if (!currentDate.equals(fireStoreDate)){
                             user.dayCoins = 0;
                             user.dayWalked = 0;
-                            user.shil = 0;
-                            user.peny = 0;
-                            user.quid = 0;
-                            user.dolr = 0;
-
-                            user.shilCoins = 0;
-                            user.penyCoins = 0;
-                            user.quidCoins = 0;
-                            user.dolrCoins = 0;
 
                             updateFireBaseUser();
                         }
@@ -788,6 +783,7 @@ public class mapActivity extends AppCompatActivity implements
         editor.putString("JSON", jsonData.toJson());
         editor.putString("currentUser", mAuth.getUid());
         editor.putString("coinsCollected", coinsCollectedData.toJson());
+        editor.putString("coinsLastDownloadDate", coinsDownloadDate);
 
         //Apply the edits
         editor.apply();
