@@ -38,7 +38,11 @@ public class BankActivity extends AppCompatActivity {
 
     User user;
 
-    private EditText depositInput;
+    private EditText shilInput;
+    private EditText dolrInput;
+    private EditText quidInput;
+    private EditText penyInput;
+
     //private EditText passwordInput;
 
 
@@ -48,7 +52,11 @@ public class BankActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bank);
 
-        depositInput = (EditText) findViewById(R.id.depositSHIL);
+        shilInput = (EditText) findViewById(R.id.depositSHIL);
+        dolrInput = (EditText) findViewById(R.id.depositDOLR);
+        quidInput = (EditText) findViewById(R.id.depositQUID);
+        penyInput = (EditText) findViewById(R.id.depositPENY);
+
         //passwordInput = (EditText) findViewById(R.id.enterPassword);
 
 
@@ -69,11 +77,13 @@ public class BankActivity extends AppCompatActivity {
 
     public void depositVal() {
 
-        if (Integer.parseInt(depositInput.getText().toString())< 0){
+        int totalCoins = Integer.parseInt(shilInput.toString()) + Integer.parseInt(dolrInput.toString()) + Integer.parseInt(quidInput.toString()) + Integer.parseInt(penyInput.toString());
+
+        if (totalCoins < 1){
             Toast.makeText(getApplicationContext(), "Please Enter A Number Greater Than 0",
                     Toast.LENGTH_LONG).show();
         }
-        else if (Integer.parseInt(depositInput.getText().toString())>25){
+        else if (totalCoins > 25){
             Toast.makeText(getApplicationContext(), "Please Enter A Number Less Than 26",
                     Toast.LENGTH_LONG).show();
         }
@@ -91,7 +101,7 @@ public class BankActivity extends AppCompatActivity {
 
     public void deposit() {
 
-        double gold = user.shil / Double.parseDouble(shil);
+        double gold = user.shil  / Double.parseDouble(shil);
 
 
     }
@@ -173,8 +183,6 @@ public class BankActivity extends AppCompatActivity {
             peny = extras.getString("PENY");
             shil = extras.getString("SHIL");
             quid = extras.getString("QUID");
-
-            Toast.makeText(getApplicationContext(), dolr, Toast.LENGTH_LONG).show();
 
         }
 

@@ -27,15 +27,18 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import com.google.gson.reflect.TypeToken;
 import com.mapbox.android.core.location.LocationEngine;
 import com.mapbox.android.core.location.LocationEngineListener;
 import com.mapbox.android.core.location.LocationEnginePriority;
 import com.mapbox.android.core.location.LocationEngineProvider;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
+import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.Geometry;
@@ -54,9 +57,11 @@ import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerPlugin;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -86,6 +91,7 @@ public class mapActivity extends AppCompatActivity implements
     private String downloadDate = "";   //Format:YYYY/MM/DD
     private String fireStoreDate = "";
     private String currentUser = "";
+    private String coinsCollected = "";
     private final String preferencesFile = "MyPrefsFile";   //For storing preferences
     Date now = new Date();
     String currentDate = new SimpleDateFormat("yyyy/MM/dd").format(now);
@@ -184,6 +190,7 @@ public class mapActivity extends AppCompatActivity implements
     }
 
     private JsonData jsonData;
+    private JsonData coinsCollectedData;
 
 
     @Override
@@ -231,6 +238,7 @@ public class mapActivity extends AppCompatActivity implements
                                     intent.putExtra("PENY", jsonData.rates.PENY);
                                     intent.putExtra("QUID", jsonData.rates.QUID);
                                     intent.putExtra("SHIL", jsonData.rates.SHIL);
+                                    intent.putExtra("coinsCollected", coinsCollectedData.toJson());
                                     startActivity(intent);
                                 }
 
@@ -350,6 +358,7 @@ public class mapActivity extends AppCompatActivity implements
         List<Feature> fs = fc.features();
 
         List<Coin> coins = new ArrayList<>();
+        List<Coin> coins2 = new ArrayList<>();
 
         for (int i = 0; i < fs.size(); i++) {
             Geometry g = fs.get(i).geometry();
@@ -389,15 +398,38 @@ public class mapActivity extends AppCompatActivity implements
             Properties props = new Properties(id, value, currency, marker_symbol, marker_color);
             Coin coin = new Coin("Feature", g, props);
             coins.add(coin);
+            coins2.add(coin);
 
             Marker marker = map.addMarker(new MarkerOptions().title(value).snippet(currency).icon(icon).position(latLng));
-
-            jsonData = new JsonData(fc.type(), dg, tg, app, rates, coins);
 
 
         }
 
+        Log.d(TAG, "number of coins: " + coins.size());
+        jsonData = new JsonData(fc.type(), dg, tg, app, rates, coins);
+        Log.d(TAG, "number of features: " + jsonData.features.size());
+
+
         Log.d(TAG, "success ");
+
+        if (coinsCollectedData == null){
+            Log.d(TAG, "Coins Collected is null ");
+
+            coinsCollectedData = new JsonData(fc.type(), dg, tg, app, rates, coins2);
+            Log.d(TAG, "Number of coins in new data: " + coinsCollectedData.features.size());
+
+            Log.d(TAG, "Size of fs: " + fs.size());
+
+            while (!coinsCollectedData.features.isEmpty()){
+
+                Log.d(TAG, "size: " + coinsCollectedData.features.size());
+                coinsCollectedData.features.remove(0);
+            }
+
+            Log.d(TAG, "Coins Collected is now: " + coinsCollectedData.toJson());
+
+            Log.d(TAG, "JSONDATA is now: " + jsonData.toJson());
+        }
     }
 
     @Override
@@ -551,6 +583,7 @@ public class mapActivity extends AppCompatActivity implements
         updateFireBaseUser();
         totalCoins.setText("Coins Collected: " + user.dayCoins);
 
+        coinsCollectedData.features.add(jsonData.features.get(i));
         jsonData.features.remove(i);
         map.removeMarker(marker);
         marker.remove();
@@ -641,9 +674,100 @@ public class mapActivity extends AppCompatActivity implements
         downloadDate = settings.getString("lastDownloadDate", "");
         fireStoreDate = settings.getString("lastFireStoreDate", "");
         currentUser = settings.getString("currentUser", "");
+        coinsCollected = settings.getString("coinsCollected", "");
+
         Log.d(TAG, "[onStart] Recalled lastDownloadDate is '" + downloadDate + "'");
 
         user = new User();
+
+        Log.d(TAG, "THE STORED COINS ARE: " + coinsCollected);
+
+        if (coinsCollected == null){
+            Log.d(TAG, "null olol");
+        }
+
+        if (coinsCollected.equals("[]")){
+            Log.d(TAG, "IF LOL");
+        }
+        else if (coinsCollected == null){
+
+            Log.d(TAG, "ELSE IF LOL");
+        }
+        else if (coinsCollected.equals("")){
+            Log.d(TAG, "ELSE IF 2 LOL");
+        }
+        else {
+            Log.d(TAG, "ELSE LOL");
+
+            String dg = "";
+            String tg = "";
+            String app = "";
+
+            Rates rates = null;
+
+            String shil = "";
+            String dolr = "";
+            String quid = "";
+            String peny = "";
+
+            try {
+
+                JSONObject collection = new JSONObject(coinsCollected);
+                dg = collection.getString("date-generated");
+                tg = collection.getString("time-generated");
+                app = collection.getString("approximate-time-remaining");
+
+                JSONObject ratesl = collection.getJSONObject("rates");
+                shil = ratesl.getString("SHIL");
+                dolr = ratesl.getString("DOLR");
+                quid = ratesl.getString("QUID");
+                peny = ratesl.getString("PENY");
+
+                rates = new Rates(shil, dolr, quid, peny);
+
+
+            } catch (JSONException e) {
+                Log.d(TAG, "JSONException " + e.toString());
+            }
+
+            FeatureCollection fc = FeatureCollection.fromJson(coinsCollected);
+            List<Feature> fs = fc.features();
+
+            List<Coin> coins = new ArrayList<>();
+
+            for (int i = 0; i < fs.size(); i++) {
+                Geometry g = fs.get(i).geometry();
+                String gt = g.toJson();
+                Point p = Point.fromJson(gt);
+
+                LatLng latLng = new LatLng(p.latitude(), p.longitude());
+
+                JsonObject obj = fs.get(i).properties();
+                JsonElement currencyt = obj.get("currency");
+                JsonElement idt = obj.get("id");
+                JsonElement valuet = obj.get("value");
+                JsonElement marker_symbolt = obj.get("marker-symbol");
+                JsonElement marker_colort = obj.get("marker-color");
+
+                String currency = currencyt.getAsString();
+                String id = idt.getAsString();
+                String value = valuet.getAsString();
+                String marker_symbol = marker_symbolt.getAsString();
+                String marker_color = marker_colort.getAsString();
+
+                Properties props = new Properties(id, value, currency, marker_symbol, marker_color);
+                Coin coin = new Coin("Feature", g, props);
+                coins.add(coin);
+
+
+
+            }
+
+            coinsCollectedData = new JsonData(fc.type(), dg, tg, app, rates, coins);
+
+        }
+
+
         DocumentReference docRef = db.collection("users").document(mAuth.getUid());
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -783,9 +907,9 @@ public class mapActivity extends AppCompatActivity implements
         SharedPreferences.Editor editor = settings.edit();
         editor.putString("lastDownloadDate", downloadDate);
         editor.putString("lastFireStoreDate", fireStoreDate);
-        //editor.putString("JSON", data);
         editor.putString("JSON", jsonData.toJson());
         editor.putString("currentUser", mAuth.getUid());
+        editor.putString("coinsCollected", coinsCollectedData.toJson());
 
 
         Log.d(TAG, "[onStop] JSON CONVERSION " + jsonData.toJson());

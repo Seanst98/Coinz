@@ -1,5 +1,7 @@
 package com.kiwi.moon.coinz;
 
+import java.util.List;
+
 public class User {
     public int dayCoins;
     public int totalCoins;
@@ -16,4 +18,6 @@ public class User {
     public int penyCoins;
     public int quidCoins;
     public int dolrCoins;
+
+    public List<mapActivity.Coin> coins;
 }

@@ -15,7 +15,7 @@
         android:autofillHints=""
         android:ems="10"
         android:hint="@string/shil"
-        android:inputType="text"
+        android:inputType="number"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/depositCoinstxt" />
@@ -29,7 +29,7 @@
         android:autofillHints="Name Of User To Gift To"
         android:ems="10"
         android:hint="@string/dolr"
-        android:inputType="text"
+        android:inputType="number"
         android:textAlignment="center"
         app:layout_constraintEnd_toStartOf="@+id/depositSHIL"
         app:layout_constraintTop_toBottomOf="@+id/depositCoinstxt" />
@@ -44,7 +44,7 @@
         android:autofillHints="Name Of User To Gift To"
         android:ems="10"
         android:hint="@string/quid"
-        android:inputType="text"
+        android:inputType="number"
         android:textAlignment="center"
         app:layout_constraintEnd_toStartOf="@+id/depositDOLR"
         app:layout_constraintHorizontal_bias="0.253"
@@ -60,7 +60,7 @@
         android:autofillHints="Name Of User To Gift To"
         android:ems="10"
         android:hint="@string/peny"
-        android:inputType="text"
+        android:inputType="number"
         android:textAlignment="center"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/depositCoinstxt" />
