@@ -670,18 +670,14 @@ public class mapActivity extends AppCompatActivity implements
                     if (document.exists()) {
 
                         user.dayCoins = document.getLong("Day Coins").intValue();
-                        user.dayWalked = document.getLong("Day Walked");
-
+                        user.dayWalked = (Double) document.getData().get("Day Walked");
                         user.bankGold = (Double) document.getData().get("Bank GOLD");
-                        Log.d(TAG, "BANK GOLD READ AS: " + user.bankGold);
-                        //Log.d(TAG, "[OnStart] BANK GOLD RETRIEVED MAP AS: " + document.getData().get("Bank GOLD"));
-                        //Log.d(TAG, "[OnStart] BANK GOLD RETRIEVED MAP ACTIVITY: " + user.bankGold);
                         user.totalCoins = document.getLong("Total Coins").intValue();
-                        user.totalWalked = document.getLong("Total Walked");
-                        user.dolr = document.getLong("DOLR Collected");
-                        user.shil = document.getLong("SHIL Collected");
-                        user.quid = document.getLong("QUID Collected");
-                        user.peny = document.getLong("PENY Collected");
+                        user.totalWalked = (Double) document.getData().get("Total Walked");
+                        user.dolr = (Double) document.getData().get("DOLR Collected");
+                        user.shil = (Double) document.getData().get("SHIL Collected");
+                        user.quid = (Double) document.getData().get("QUID Collected");
+                        user.peny = (Double) document.getData().get("PENY Collected");
                         user.dolrCoins = document.getLong("DOLR Coins").intValue();
                         user.shilCoins = document.getLong("SHIL Coins").intValue();
                         user.quidCoins = document.getLong("QUID Coins").intValue();

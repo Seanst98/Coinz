@@ -246,17 +246,14 @@ public class BankActivity extends AppCompatActivity {
                     if (document.exists()) {
 
                         usr.dayCoins = document.getLong("Day Coins").intValue();
-                        Log.d(TAG, "Day Coins: " + document.getLong("Day Coins"));
-                        usr.dayWalked = document.getLong("Day Walked");
+                        usr.dayWalked = (Double) document.getData().get("Day Walked");
                         usr.bankGold = (Double) document.getData().get("Bank GOLD");
-                        Log.d(TAG, "BANK GOLD RETREIVAL: " + usr.bankGold);
                         usr.totalCoins = document.getLong("Total Coins").intValue();
-                        Log.d(TAG, "Total Coins: " + document.getLong("Total Coins"));
-                        usr.totalWalked = document.getLong("Total Walked");
-                        usr.dolr = document.getLong("DOLR Collected");
-                        usr.shil = document.getLong("SHIL Collected");
-                        usr.quid = document.getLong("QUID Collected");
-                        usr.peny = document.getLong("PENY Collected");
+                        usr.totalWalked = (Double) document.getData().get("Total Walked");
+                        usr.dolr = (Double) document.getData().get("DOLR Collected");
+                        usr.shil = (Double) document.getData().get("SHIL Collected");
+                        usr.quid = (Double) document.getData().get("QUID Collected");
+                        usr.peny = (Double) document.getData().get("PENY Collected");
                         user.dolrCoins = document.getLong("DOLR Coins").intValue();
                         user.shilCoins = document.getLong("SHIL Coins").intValue();
                         user.quidCoins = document.getLong("QUID Coins").intValue();
@@ -378,20 +375,6 @@ public class BankActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-
-        /*SharedPreferences settings = getSharedPreferences(preferencesFile, Context.MODE_PRIVATE);
-
-        //We need an Editor object to make preference changes
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putString("coinsCollected", coinsCollectedData.toJson());
-
-        Log.d(TAG, "STORING COINS AS: " + coinsCollectedData.toJson());
-
-        //Apply the edits
-        editor.apply();
-
-        //Save data in FireStore
-        updateFireBaseUser();*/
 
     }
 }
