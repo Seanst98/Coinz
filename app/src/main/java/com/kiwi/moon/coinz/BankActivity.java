@@ -45,14 +45,14 @@ public class BankActivity extends AppCompatActivity {
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     private String TAG = "mapActivity";
-    private mapActivity.Rates rates;
+    private Rates rates;
 
     String dolr;
     String peny;
     String shil;
     String quid;
 
-    mapActivity.JsonData coinsCollected;
+    JsonData coinsCollectedData;
 
     User user;
 
@@ -198,10 +198,6 @@ public class BankActivity extends AppCompatActivity {
         String json = "";
 
         if(extras != null) {
-            dolr = extras.getString("DOLR");
-            peny = extras.getString("PENY");
-            shil = extras.getString("SHIL");
-            quid = extras.getString("QUID");
 
             json = extras.getString("coinsCollected");
         }
@@ -210,7 +206,7 @@ public class BankActivity extends AppCompatActivity {
         String tg = "";
         String app = "";
 
-        mapActivity.Rates rates = null;
+        Rates rates = null;
 
         String shil = "";
         String dolr = "";
@@ -237,18 +233,10 @@ public class BankActivity extends AppCompatActivity {
             Log.d(TAG, "JSONException " + e.toString());
         }
 
-        IconFactory iconFactory = IconFactory.getInstance(mapActivity.this);
-
-        Icon iconRed = iconFactory.fromResource(R.drawable.marker_red);
-        Icon iconBlue = iconFactory.fromResource(R.drawable.marker_blue);
-        Icon iconGreen = iconFactory.fromResource(R.drawable.marker_green);
-        Icon iconYellow = iconFactory.fromResource(R.drawable.marker_yellow);
-
-        FeatureCollection fc = FeatureCollection.fromJson(data);
+        FeatureCollection fc = FeatureCollection.fromJson(json);
         List<Feature> fs = fc.features();
 
-        List<mapActivity.Coin> coins = new ArrayList<>();
-        List<mapActivity.Coin> coins2 = new ArrayList<>();
+        List<Coin> coins = new ArrayList<>();
 
         for (int i = 0; i < fs.size(); i++) {
             Geometry g = fs.get(i).geometry();
@@ -270,34 +258,13 @@ public class BankActivity extends AppCompatActivity {
             String marker_symbol = marker_symbolt.getAsString();
             String marker_color = marker_colort.getAsString();
 
-            Icon icon;
-
-            if (marker_color.equals("#ffdf00")) {
-                icon = iconYellow;
-            }
-            else if (marker_color.equals("#0000ff")) {
-                icon = iconBlue;
-            }
-            else if (marker_color.equals("#ff0000")){
-                icon = iconRed;
-            }
-            else {
-                icon = iconGreen;
-            }
-
-            mapActivity.Properties props = new mapActivity.Properties(id, value, currency, marker_symbol, marker_color);
-            mapActivity.Coin coin = new mapActivity.Coin("Feature", g, props);
+            Properties props = new Properties(id, value, currency, marker_symbol, marker_color);
+            Coin coin = new Coin("Feature", g, props);
             coins.add(coin);
-            coins2.add(coin);
-
-            Marker marker = map.addMarker(new MarkerOptions().title(value).snippet(currency).icon(icon).position(latLng));
-
 
         }
 
-        Log.d(TAG, "number of coins: " + coins.size());
-        jsonData = new mapActivity.JsonData(fc.type(), dg, tg, app, rates, coins);
-        Log.d(TAG, "number of features: " + jsonData.features.size());
+        coinsCollectedData = new JsonData(fc.type(), dg, tg, app, rates, coins);
 
     }
 }

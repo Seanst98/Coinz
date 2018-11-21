@@ -148,10 +148,6 @@ public class mapActivity extends AppCompatActivity implements
                                 }
                                 else {
                                     Intent intent = new Intent(mapActivity.this, BankActivity.class);
-                                    intent.putExtra("DOLR", jsonData.rates.DOLR);
-                                    intent.putExtra("PENY", jsonData.rates.PENY);
-                                    intent.putExtra("QUID", jsonData.rates.QUID);
-                                    intent.putExtra("SHIL", jsonData.rates.SHIL);
                                     intent.putExtra("coinsCollected", coinsCollectedData.toJson());
                                     startActivity(intent);
                                 }
