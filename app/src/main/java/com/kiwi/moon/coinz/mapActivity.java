@@ -576,7 +576,7 @@ public class mapActivity extends AppCompatActivity implements
 
         user = new User();
 
-        //Log.d(TAG, "THE STORED COINS ARE: " + coinsCollected);
+        Log.d(TAG, "THE STORED COINS ARE: " + coinsCollected);
 
 
         if (coinsCollected.equals("[]")){

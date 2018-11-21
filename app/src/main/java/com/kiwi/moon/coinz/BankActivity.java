@@ -178,6 +178,8 @@ public class BankActivity extends AppCompatActivity {
 
                 coinsCollectedData.features.remove(i);
 
+                Log.d(TAG, "Coins Collected Data is now: " + coinsCollectedData.toJson());
+
 
             }
         }
@@ -353,8 +355,10 @@ public class BankActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onPause() {
+        super.onPause();
+
+        //We do this in onPause as we want this effect to happen before reaching map activity to read it
 
         SharedPreferences settings = getSharedPreferences(preferencesFile, Context.MODE_PRIVATE);
 
@@ -362,11 +366,32 @@ public class BankActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = settings.edit();
         editor.putString("coinsCollected", coinsCollectedData.toJson());
 
+        Log.d(TAG, "STORING COINS AS: " + coinsCollectedData.toJson());
+
         //Apply the edits
         editor.apply();
 
         //Save data in FireStore
         updateFireBaseUser();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        /*SharedPreferences settings = getSharedPreferences(preferencesFile, Context.MODE_PRIVATE);
+
+        //We need an Editor object to make preference changes
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("coinsCollected", coinsCollectedData.toJson());
+
+        Log.d(TAG, "STORING COINS AS: " + coinsCollectedData.toJson());
+
+        //Apply the edits
+        editor.apply();
+
+        //Save data in FireStore
+        updateFireBaseUser();*/
 
     }
 }
