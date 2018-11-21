@@ -17,8 +17,24 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.mapbox.geojson.Feature;
+import com.mapbox.geojson.FeatureCollection;
+import com.mapbox.geojson.Geometry;
+import com.mapbox.geojson.Point;
+import com.mapbox.mapboxsdk.annotations.Icon;
+import com.mapbox.mapboxsdk.annotations.IconFactory;
+import com.mapbox.mapboxsdk.annotations.Marker;
+import com.mapbox.mapboxsdk.annotations.MarkerOptions;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -35,6 +51,8 @@ public class BankActivity extends AppCompatActivity {
     String peny;
     String shil;
     String quid;
+
+    mapActivity.JsonData coinsCollected;
 
     User user;
 
@@ -177,6 +195,7 @@ public class BankActivity extends AppCompatActivity {
         super.onStart();
 
         Bundle extras = getIntent().getExtras();
+        String json = "";
 
         if(extras != null) {
             dolr = extras.getString("DOLR");
@@ -184,7 +203,101 @@ public class BankActivity extends AppCompatActivity {
             shil = extras.getString("SHIL");
             quid = extras.getString("QUID");
 
+            json = extras.getString("coinsCollected");
         }
+
+        String dg = "";
+        String tg = "";
+        String app = "";
+
+        mapActivity.Rates rates = null;
+
+        String shil = "";
+        String dolr = "";
+        String quid = "";
+        String peny = "";
+
+        try {
+
+            JSONObject collection = new JSONObject(json);
+            dg = collection.getString("date-generated");
+            tg = collection.getString("time-generated");
+            app = collection.getString("approximate-time-remaining");
+
+            JSONObject ratesl = collection.getJSONObject("rates");
+            shil = ratesl.getString("SHIL");
+            dolr = ratesl.getString("DOLR");
+            quid = ratesl.getString("QUID");
+            peny = ratesl.getString("PENY");
+
+            //rates = Rates(shil, dolr, quid, peny);
+
+
+        } catch (JSONException e) {
+            Log.d(TAG, "JSONException " + e.toString());
+        }
+
+        IconFactory iconFactory = IconFactory.getInstance(mapActivity.this);
+
+        Icon iconRed = iconFactory.fromResource(R.drawable.marker_red);
+        Icon iconBlue = iconFactory.fromResource(R.drawable.marker_blue);
+        Icon iconGreen = iconFactory.fromResource(R.drawable.marker_green);
+        Icon iconYellow = iconFactory.fromResource(R.drawable.marker_yellow);
+
+        FeatureCollection fc = FeatureCollection.fromJson(data);
+        List<Feature> fs = fc.features();
+
+        List<mapActivity.Coin> coins = new ArrayList<>();
+        List<mapActivity.Coin> coins2 = new ArrayList<>();
+
+        for (int i = 0; i < fs.size(); i++) {
+            Geometry g = fs.get(i).geometry();
+            String gt = g.toJson();
+            Point p = Point.fromJson(gt);
+
+            LatLng latLng = new LatLng(p.latitude(), p.longitude());
+
+            JsonObject obj = fs.get(i).properties();
+            JsonElement currencyt = obj.get("currency");
+            JsonElement idt = obj.get("id");
+            JsonElement valuet = obj.get("value");
+            JsonElement marker_symbolt = obj.get("marker-symbol");
+            JsonElement marker_colort = obj.get("marker-color");
+
+            String currency = currencyt.getAsString();
+            String id = idt.getAsString();
+            String value = valuet.getAsString();
+            String marker_symbol = marker_symbolt.getAsString();
+            String marker_color = marker_colort.getAsString();
+
+            Icon icon;
+
+            if (marker_color.equals("#ffdf00")) {
+                icon = iconYellow;
+            }
+            else if (marker_color.equals("#0000ff")) {
+                icon = iconBlue;
+            }
+            else if (marker_color.equals("#ff0000")){
+                icon = iconRed;
+            }
+            else {
+                icon = iconGreen;
+            }
+
+            mapActivity.Properties props = new mapActivity.Properties(id, value, currency, marker_symbol, marker_color);
+            mapActivity.Coin coin = new mapActivity.Coin("Feature", g, props);
+            coins.add(coin);
+            coins2.add(coin);
+
+            Marker marker = map.addMarker(new MarkerOptions().title(value).snippet(currency).icon(icon).position(latLng));
+
+
+        }
+
+        Log.d(TAG, "number of coins: " + coins.size());
+        jsonData = new mapActivity.JsonData(fc.type(), dg, tg, app, rates, coins);
+        Log.d(TAG, "number of features: " + jsonData.features.size());
 
     }
 }

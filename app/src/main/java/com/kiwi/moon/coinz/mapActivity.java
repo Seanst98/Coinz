@@ -102,93 +102,6 @@ public class mapActivity extends AppCompatActivity implements
 
     User user;
 
-    //*******************************************
-    //Properties, Coin, JSONData and Rates class
-    //*******************************************
-    public class Properties {
-
-        public Properties(String i, String v, String c, String ms, String mc) {
-            id = i;
-            value = v;
-            currency = c;
-            marker_symbol = ms;
-            marker_color = mc;
-        }
-
-        public String id;
-        public String value;
-        public String currency;
-
-        @SerializedName("marker-symbol")
-        public String marker_symbol;
-
-        @SerializedName("marker-color")
-        public String marker_color;
-    }
-
-    public class Coin {
-
-        public String type;
-        public Properties properties;
-        public Geometry geometry;
-
-        public Coin(String t, Geometry g, Properties p) {
-            type = t;
-            properties = p;
-            geometry = g;
-        }
-
-    }
-
-    public class JsonData {
-
-        public String type;
-
-        @SerializedName("date-generated")
-        public String date_generated;
-
-        @SerializedName("time-generated")
-        public String time_generated;
-
-        @SerializedName("approximate-time-remaining")
-        public String approximate_time_remaining;
-
-        public Rates rates;
-
-        public List<Coin> features;
-
-        public JsonData(String t, String d, String tg, String app, Rates r, List<Coin> f) {
-            type = t;
-            date_generated = d;
-            time_generated = tg;
-            approximate_time_remaining = app;
-            rates = r;
-            features = f;
-        }
-
-
-        public String toJson() {
-            GsonBuilder builder = new GsonBuilder();
-            Gson gson = builder.create();
-            return gson.toJson(this);
-        }
-    }
-
-    public class Rates {
-
-        public String SHIL;
-        public String DOLR;
-        public String QUID;
-        public String PENY;
-
-        public Rates(String s, String d, String q, String p) {
-            SHIL = s;
-            DOLR = d;
-            QUID = q;
-            PENY = p;
-        }
-    }
-
     private JsonData jsonData;
     private JsonData coinsCollectedData;
 
@@ -227,6 +140,7 @@ public class mapActivity extends AppCompatActivity implements
 
                             case R.id.drawer_bank:
                                 Toast.makeText(getApplicationContext(), "bank selected", Toast.LENGTH_SHORT).show();
+
 
                                 if (jsonData.rates.DOLR.equals("")){
                                     Toast.makeText(getApplicationContext(), "Please wait until the map data has finished downloading", Toast.LENGTH_LONG).show();
