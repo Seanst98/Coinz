@@ -54,10 +54,6 @@ public class BankActivity extends AppCompatActivity {
 
     User user;
 
-    private EditText shilInput;
-    private EditText dolrInput;
-    private EditText quidInput;
-    private EditText penyInput;
     private EditText coinsInput;
 
     //private EditText passwordInput;
@@ -71,10 +67,6 @@ public class BankActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bank);
 
-        shilInput = (EditText) findViewById(R.id.depositSHIL);
-        dolrInput = (EditText) findViewById(R.id.depositDOLR);
-        quidInput = (EditText) findViewById(R.id.depositQUID);
-        penyInput = (EditText) findViewById(R.id.depositPENY);
         coinsInput = (EditText) findViewById(R.id.depositCoins);
 
         //If deposit card is pressed
