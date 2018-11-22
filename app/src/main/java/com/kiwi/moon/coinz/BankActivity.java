@@ -75,6 +75,9 @@ public class BankActivity extends AppCompatActivity {
         coinsCollectedTxt = (TextView) findViewById(R.id.coinsCollectedtxt);
         goldInBankTxt = (TextView) findViewById(R.id.goldInBanktxt);
 
+        giftNameInput = (EditText) findViewById(R.id.giftnametxt);
+        giftAmountInput = (EditText) findViewById(R.id.giftamounttxt);
+
         //If deposit card is pressed
         final CardView cardDeposit = findViewById(R.id.cardDeposit);
         cardDeposit.setOnClickListener(new View.OnClickListener() {
@@ -93,8 +96,7 @@ public class BankActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 //Call function to validate gift inputs
-                //giftVal();
-                gift();
+                giftVal();
             }
         });
 
@@ -102,10 +104,10 @@ public class BankActivity extends AppCompatActivity {
 
     public void giftVal(){
 
-        if (giftAmountInput.getText() == null) {
+        if (giftAmountInput == null) {
             Toast.makeText(getApplicationContext(), "Please Enter An Amount To Gift" , Toast.LENGTH_SHORT).show();
         }
-        else if (giftNameInput.getText() == null) {
+        else if (giftNameInput == null) {
             Toast.makeText(getApplicationContext(), "Please Enter A Name To Gift To" , Toast.LENGTH_SHORT).show();
         }
         else if (giftAmountInput.getText().toString().equals("")) {
@@ -148,10 +150,12 @@ public class BankActivity extends AppCompatActivity {
         //Save data in FireStore
         Map<String, Object> userStore = new HashMap<>();
         userStore.put("Coins" , coinsCollectedData.toJson());
+        userStore.put("ForUID", giftNameInput.getText().toString());
+        userStore.put("FromUID", mAuth.getUid());
 
         Log.d(TAG, "BANK GOLD STORING AS: " + user.bankGold);
 
-        db.collection("users").document(mAuth.getUid()).collection("availableCoins").document(mAuth.getUid())
+        db.collection("availableCoins").document()
                 .set(userStore)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -425,7 +429,7 @@ public class BankActivity extends AppCompatActivity {
 
         user = getUser();
 
-        updateAvailableCoins();
+        //updateAvailableCoins();
     }
 
     @Override
