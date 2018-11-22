@@ -44,12 +44,6 @@ public class BankActivity extends AppCompatActivity {
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     private String TAG = "mapActivity";
-    private Rates rates;
-
-    String dolr;
-    String peny;
-    String shil;
-    String quid;
 
     JsonData coinsCollectedData;
 
@@ -63,6 +57,8 @@ public class BankActivity extends AppCompatActivity {
     private EditText giftAmountInput;
 
     private final String preferencesFile = "MyPrefsFile";   //For storing preferences
+
+    JsonData coinsReceived;
 
 
 
@@ -97,6 +93,47 @@ public class BankActivity extends AppCompatActivity {
 
                 //Call function to validate gift inputs
                 giftVal();
+            }
+        });
+
+        //If check for coins card is pressed
+        final CardView cardRetrieve = findViewById(R.id.cardRetrieve);
+        cardRetrieve.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                //Call function to check for coins and retrieve them if there are coins
+                checkForCoins();
+            }
+        }
+        );
+
+    }
+
+    public void checkForCoins() {
+
+        coinsReceived = null;
+
+        DocumentReference docRef = db.collection("availableCoins").document(mAuth.getUid());
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+
+                        String json = (String) document.getData().get("Coins");
+
+                        coinsReceived = new JsonData(json);
+                        coinsCollectedData.features.addAll(coinsReceived.features);
+
+                    } else {
+                        Log.d(TAG, "No such document");
+                        Toast.makeText(getApplicationContext(), "No One Has Sent You Any Coins", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
             }
         });
 
@@ -140,6 +177,7 @@ public class BankActivity extends AppCompatActivity {
     public void gift(){
 
         updateAvailableCoins();
+        coinsCollectedData.features.remove(Integer.parseInt(giftAmountInput.getText().toString()));
         updateFireBaseUser();
         getUser();
 
@@ -155,7 +193,7 @@ public class BankActivity extends AppCompatActivity {
 
         Log.d(TAG, "BANK GOLD STORING AS: " + user.bankGold);
 
-        db.collection("availableCoins").document()
+        db.collection("availableCoins").document(giftNameInput.getText().toString())
                 .set(userStore)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override

@@ -28,5 +28,6 @@
     <string name="quid">QUID</string>
     <string name="peny">PENY</string>
     <string name="coins">Coins</string>
+    <string name="retrieve">Check For Coins</string>
 
 </resources>
