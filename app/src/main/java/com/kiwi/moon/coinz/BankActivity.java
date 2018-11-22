@@ -237,6 +237,7 @@ public class BankActivity extends AppCompatActivity {
                         usr.dayCoins = document.getLong("Day Coins").intValue();
                         usr.dayWalked = (Double) document.getData().get("Day Walked");
                         usr.bankGold = (Double) document.getData().get("Bank GOLD");
+                        Log.d(TAG, "BANK GOLD IS: " + usr.bankGold);
                         usr.totalCoins = document.getLong("Total Coins").intValue();
                         usr.totalWalked = (Double) document.getData().get("Total Walked");
                         usr.dolr = (Double) document.getData().get("DOLR Collected");
@@ -248,6 +249,9 @@ public class BankActivity extends AppCompatActivity {
                         usr.quidCoins = document.getLong("QUID Coins").intValue();
                         usr.penyCoins = document.getLong("PENY Coins").intValue();
                         usr.coinsDepositedDay = document.getLong("Day Coins Deposited").intValue();
+
+                        coinsCollectedTxt.setText("You Have " + user.dayCoins + " Coins To Deposit");
+                        goldInBankTxt.setText("You Have " + user.bankGold + " GOLD In The Bank");
 
                     } else {
                         Log.d(TAG, "No such document");
@@ -338,13 +342,6 @@ public class BankActivity extends AppCompatActivity {
         coinsCollectedData = new JsonData(fc.type(), dg, tg, app, rates, coins);
 
         user = getUser();
-
-        Log.d(TAG, "GOLD IS: " + user.bankGold);
-
-        coinsCollectedTxt.setText("You Have " + user.dayCoins + " Coins To Deposit");
-        goldInBankTxt.setText("You Have " + user.bankGold + " GOLD In The Bank");
-        //coinsCollectedTxt.setText(R.string.coins + user.dayCoins + " To Deposit");
-        //goldInBankTxt.setText(R.string.bankgoldtxt + user.bankGold + R.string.bankgoldtxt2);
     }
 
     @Override
