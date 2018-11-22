@@ -93,7 +93,8 @@ public class BankActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 //Call function to validate gift inputs
-                giftVal();
+                //giftVal();
+                gift();
             }
         });
 
@@ -101,10 +102,7 @@ public class BankActivity extends AppCompatActivity {
 
     public void giftVal(){
 
-        if (user.dayCoins < 1) {
-            Toast.makeText(getApplicationContext(), "You Don't Have Any Coins To Gift" , Toast.LENGTH_SHORT).show();
-        }
-        else if (giftAmountInput.getText() == null) {
+        if (giftAmountInput.getText() == null) {
             Toast.makeText(getApplicationContext(), "Please Enter An Amount To Gift" , Toast.LENGTH_SHORT).show();
         }
         else if (giftNameInput.getText() == null) {
@@ -138,51 +136,35 @@ public class BankActivity extends AppCompatActivity {
     }
 
     public void gift(){
-        double gold = 0;
 
-        if (coinsCollectedData.features.size() == 0){
-            Log.d(TAG, "NO COINS COLLECTED TO DEPOSIT");
-            Toast.makeText(getApplicationContext(), "You Don't Have Any Coins To Deposit! Go Collect Some", Toast.LENGTH_SHORT).show();
-        }
-        else {
-            for (int i = 0; i < Integer.parseInt(coinsInput.getText().toString()); i++){
-
-                Log.d(TAG, "Value: " + coinsCollectedData.features.get(i).properties.value);
-                Log.d(TAG, "Rate: " + coinsCollectedData.rates.DOLR);
-
-                switch (coinsCollectedData.features.get(i).properties.currency) {
-
-                    case "DOLR":
-                        gold = gold + exchangeConversion(Double.parseDouble(coinsCollectedData.features.get(i).properties.value), Double.parseDouble(coinsCollectedData.rates.DOLR));
-                        break;
-
-                    case "SHIL":
-                        gold = gold + exchangeConversion(Double.parseDouble(coinsCollectedData.features.get(i).properties.value), Double.parseDouble(coinsCollectedData.rates.SHIL));
-                        break;
-
-                    case "PENY":
-                        gold = gold + exchangeConversion(Double.parseDouble(coinsCollectedData.features.get(i).properties.value), Double.parseDouble(coinsCollectedData.rates.PENY));
-                        break;
-
-                    case "QUID":
-                        gold = gold + exchangeConversion(Double.parseDouble(coinsCollectedData.features.get(i).properties.value), Double.parseDouble(coinsCollectedData.rates.QUID));
-                        break;
-                }
-
-                coinsCollectedData.features.remove(i);
-
-                Log.d(TAG, "Coins Collected Data is now: " + coinsCollectedData.toJson());
-
-
-            }
-        }
-
-        Log.d(TAG, "Gold Value of coins: " + gold);
-        user.bankGold = user.bankGold + gold;
-        user.coinsDepositedDay = user.coinsDepositedDay + Integer.parseInt(coinsInput.getText().toString());
+        updateAvailableCoins();
         updateFireBaseUser();
         getUser();
 
+    }
+
+    public void updateAvailableCoins(){
+
+        //Save data in FireStore
+        Map<String, Object> userStore = new HashMap<>();
+        userStore.put("Coins" , coinsCollectedData.toJson());
+
+        Log.d(TAG, "BANK GOLD STORING AS: " + user.bankGold);
+
+        db.collection("users").document(mAuth.getUid()).collection("availableCoins").document(mAuth.getUid())
+                .set(userStore)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "Document Snapshot successfully written!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "Error writing document", e);
+                    }
+                });
 
     }
 
@@ -276,7 +258,6 @@ public class BankActivity extends AppCompatActivity {
         user.coinsDepositedDay = user.coinsDepositedDay + Integer.parseInt(coinsInput.getText().toString());
         updateFireBaseUser();
         getUser();
-
 
     }
 
@@ -443,6 +424,8 @@ public class BankActivity extends AppCompatActivity {
         coinsCollectedData = new JsonData(fc.type(), dg, tg, app, rates, coins);
 
         user = getUser();
+
+        updateAvailableCoins();
     }
 
     @Override
