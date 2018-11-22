@@ -59,6 +59,9 @@ public class BankActivity extends AppCompatActivity {
     private TextView coinsCollectedTxt;
     private TextView goldInBankTxt;
 
+    private EditText giftNameInput;
+    private EditText giftAmountInput;
+
     private final String preferencesFile = "MyPrefsFile";   //For storing preferences
 
 
@@ -78,11 +81,108 @@ public class BankActivity extends AppCompatActivity {
 
             public void onClick(View v) {
 
-                Log.d(TAG, "CLICKED");
-                //Call function to deposit money
+                //Call function to validate deposit inputs
                 depositVal();
             }
         });
+
+        //If gift card is pressed
+        final CardView cardGift = findViewById(R.id.cardGift);
+        cardGift.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                //Call function to validate gift inputs
+                giftVal();
+            }
+        });
+
+    }
+
+    public void giftVal(){
+
+        if (user.dayCoins < 1) {
+            Toast.makeText(getApplicationContext(), "You Don't Have Any Coins To Gift" , Toast.LENGTH_SHORT).show();
+        }
+        else if (giftAmountInput.getText() == null) {
+            Toast.makeText(getApplicationContext(), "Please Enter An Amount To Gift" , Toast.LENGTH_SHORT).show();
+        }
+        else if (giftNameInput.getText() == null) {
+            Toast.makeText(getApplicationContext(), "Please Enter A Name To Gift To" , Toast.LENGTH_SHORT).show();
+        }
+        else if (giftAmountInput.getText().toString().equals("")) {
+            Toast.makeText(getApplicationContext(), "Please Enter An Amount To Gift" , Toast.LENGTH_SHORT).show();
+        }
+        else if (giftNameInput.getText().toString().equals("")) {
+            Toast.makeText(getApplicationContext(), "Please Enter A Name To Gift To" , Toast.LENGTH_SHORT).show();
+        }
+        else if (Integer.parseInt(giftAmountInput.getText().toString()) < 1){
+            Toast.makeText(getApplicationContext(), "Please Enter An Amount To Gift Greater Than 0" , Toast.LENGTH_SHORT).show();
+        }
+        else if (Integer.parseInt(giftAmountInput.getText().toString()) > 25){
+            Toast.makeText(getApplicationContext(), "Please Enter An Amount To Gift Less than 26" , Toast.LENGTH_SHORT).show();
+        }
+        //NAME VALIDATION
+        else if (coinsCollectedData.features.size() < Integer.parseInt(giftAmountInput.getText().toString())){
+            Toast.makeText(getApplicationContext(), "You Can't Gift More Coins Than You Own", Toast.LENGTH_SHORT).show();
+        }
+        else if ((user.coinsDepositedDay + Integer.parseInt(giftAmountInput.getText().toString())) > 25){
+            Toast.makeText(getApplicationContext(), "You Can't Gift More Than 25 Coins Per Day", Toast.LENGTH_SHORT).show();
+        }
+        else if (coinsCollectedData.features.size() == 0){
+            Toast.makeText(getApplicationContext(), "You Don't Have Any Coins To Gift! Go Collect Some", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            gift();
+        }
+    }
+
+    public void gift(){
+        double gold = 0;
+
+        if (coinsCollectedData.features.size() == 0){
+            Log.d(TAG, "NO COINS COLLECTED TO DEPOSIT");
+            Toast.makeText(getApplicationContext(), "You Don't Have Any Coins To Deposit! Go Collect Some", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            for (int i = 0; i < Integer.parseInt(coinsInput.getText().toString()); i++){
+
+                Log.d(TAG, "Value: " + coinsCollectedData.features.get(i).properties.value);
+                Log.d(TAG, "Rate: " + coinsCollectedData.rates.DOLR);
+
+                switch (coinsCollectedData.features.get(i).properties.currency) {
+
+                    case "DOLR":
+                        gold = gold + exchangeConversion(Double.parseDouble(coinsCollectedData.features.get(i).properties.value), Double.parseDouble(coinsCollectedData.rates.DOLR));
+                        break;
+
+                    case "SHIL":
+                        gold = gold + exchangeConversion(Double.parseDouble(coinsCollectedData.features.get(i).properties.value), Double.parseDouble(coinsCollectedData.rates.SHIL));
+                        break;
+
+                    case "PENY":
+                        gold = gold + exchangeConversion(Double.parseDouble(coinsCollectedData.features.get(i).properties.value), Double.parseDouble(coinsCollectedData.rates.PENY));
+                        break;
+
+                    case "QUID":
+                        gold = gold + exchangeConversion(Double.parseDouble(coinsCollectedData.features.get(i).properties.value), Double.parseDouble(coinsCollectedData.rates.QUID));
+                        break;
+                }
+
+                coinsCollectedData.features.remove(i);
+
+                Log.d(TAG, "Coins Collected Data is now: " + coinsCollectedData.toJson());
+
+
+            }
+        }
+
+        Log.d(TAG, "Gold Value of coins: " + gold);
+        user.bankGold = user.bankGold + gold;
+        user.coinsDepositedDay = user.coinsDepositedDay + Integer.parseInt(coinsInput.getText().toString());
+        updateFireBaseUser();
+        getUser();
+
 
     }
 
@@ -175,6 +275,7 @@ public class BankActivity extends AppCompatActivity {
         user.bankGold = user.bankGold + gold;
         user.coinsDepositedDay = user.coinsDepositedDay + Integer.parseInt(coinsInput.getText().toString());
         updateFireBaseUser();
+        getUser();
 
 
     }
