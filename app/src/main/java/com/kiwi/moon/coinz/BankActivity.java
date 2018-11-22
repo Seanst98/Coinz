@@ -9,6 +9,7 @@ import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -55,8 +56,8 @@ public class BankActivity extends AppCompatActivity {
     User user;
 
     private EditText coinsInput;
-
-    //private EditText passwordInput;
+    private TextView coinsCollectedTxt;
+    private TextView goldInBankTxt;
 
     private final String preferencesFile = "MyPrefsFile";   //For storing preferences
 
@@ -68,6 +69,8 @@ public class BankActivity extends AppCompatActivity {
         setContentView(R.layout.activity_bank);
 
         coinsInput = (EditText) findViewById(R.id.depositCoins);
+        coinsCollectedTxt = (TextView) findViewById(R.id.coinsCollectedtxt);
+        goldInBankTxt = (TextView) findViewById(R.id.goldInBanktxt);
 
         //If deposit card is pressed
         final CardView cardDeposit = findViewById(R.id.cardDeposit);
@@ -87,40 +90,37 @@ public class BankActivity extends AppCompatActivity {
 
         if (user.coinsDepositedDay < 25){
 
-            if ((user.coinsDepositedDay + Integer.parseInt(coinsInput.getText().toString())) < 25){
 
-
-                if (coinsInput.getText() == null){
-                    Toast.makeText(getApplicationContext(), "Please Enter A Value" , Toast.LENGTH_SHORT).show();
-                }
-                else if (coinsInput.getText().toString().equals("")){
-                    Toast.makeText(getApplicationContext(), "Please Enter A Value", Toast.LENGTH_SHORT).show();
-                }
-                else if (Integer.parseInt(coinsInput.getText().toString()) < 1){
-                    Toast.makeText(getApplicationContext(), "Please Enter A Number Greater Than 0",
-                            Toast.LENGTH_LONG).show();
-                }
-                else if (Integer.parseInt(coinsInput.getText().toString()) > 25){
-                    Toast.makeText(getApplicationContext(), "Please Enter A Number Less Than 26",
-                            Toast.LENGTH_LONG).show();
-                }
-                else if (coinsCollectedData.features.size() < Integer.parseInt(coinsInput.getText().toString())){
-                    Toast.makeText(getApplicationContext(), "You Can't Deposit More Coins Than You Own", Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    if (user == null){
-                        Toast.makeText(getApplicationContext(), "User is Null",
-                                Toast.LENGTH_LONG).show();
-
-                    }
-                    else {
-                        Log.d(TAG, "DEPOSITING");
-                        deposit();
-                    }
-                }
+            if (coinsInput.getText() == null){
+                Toast.makeText(getApplicationContext(), "Please Enter A Value" , Toast.LENGTH_SHORT).show();
+            }
+            else if (coinsInput.getText().toString().equals("")){
+                Toast.makeText(getApplicationContext(), "Please Enter A Value", Toast.LENGTH_SHORT).show();
+            }
+            else if (Integer.parseInt(coinsInput.getText().toString()) < 1){
+                Toast.makeText(getApplicationContext(), "Please Enter A Number Greater Than 0",
+                        Toast.LENGTH_LONG).show();
+            }
+            else if (Integer.parseInt(coinsInput.getText().toString()) > 25){
+                Toast.makeText(getApplicationContext(), "Please Enter A Number Less Than 26",
+                        Toast.LENGTH_LONG).show();
+            }
+            else if (coinsCollectedData.features.size() < Integer.parseInt(coinsInput.getText().toString())){
+                Toast.makeText(getApplicationContext(), "You Can't Deposit More Coins Than You Own", Toast.LENGTH_SHORT).show();
+            }
+            else if ((user.coinsDepositedDay + Integer.parseInt(coinsInput.getText().toString())) > 25){
+                Toast.makeText(getApplicationContext(), "You Can't Deposit More Than 25 Coins Per Day", Toast.LENGTH_SHORT).show();
             }
             else {
-                Toast.makeText(getApplicationContext(), "You Can't Deposit More Than 25 Coins Per Day", Toast.LENGTH_SHORT).show();
+                if (user == null){
+                    Toast.makeText(getApplicationContext(), "User is Null",
+                            Toast.LENGTH_LONG).show();
+
+                }
+                else {
+                    Log.d(TAG, "DEPOSITING");
+                    deposit();
+                }
             }
 
         }
@@ -339,6 +339,12 @@ public class BankActivity extends AppCompatActivity {
 
         user = getUser();
 
+        Log.d(TAG, "GOLD IS: " + user.bankGold);
+
+        coinsCollectedTxt.setText("You Have " + user.dayCoins + " Coins To Deposit");
+        goldInBankTxt.setText("You Have " + user.bankGold + " GOLD In The Bank");
+        //coinsCollectedTxt.setText(R.string.coins + user.dayCoins + " To Deposit");
+        //goldInBankTxt.setText(R.string.bankgoldtxt + user.bankGold + R.string.bankgoldtxt2);
     }
 
     @Override
