@@ -686,15 +686,16 @@ public class mapActivity extends AppCompatActivity implements
                         user.shilCoins = document.getLong("SHIL Coins").intValue();
                         user.quidCoins = document.getLong("QUID Coins").intValue();
                         user.penyCoins = document.getLong("PENY Coins").intValue();
+                        user.coinsDepositedDay = document.getLong("Day Coins Deposited").intValue();
 
-
-
-                        totalCoins.setText("Coins Collected: " + user.dayCoins);
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
 
                         if (!currentDate.equals(fireStoreDate)){
                             user.dayCoins = 0;
                             user.dayWalked = 0;
+                            user.coinsDepositedDay = 0;
+
+                            totalCoins.setText("Coins Collected: " + user.dayCoins);
 
                             updateFireBaseUser();
                         }
@@ -729,6 +730,7 @@ public class mapActivity extends AppCompatActivity implements
         userStore.put("SHIL Coins", user.shilCoins);
         userStore.put("PENY Coins", user.penyCoins);
         userStore.put("QUID Coins", user.quidCoins);
+        userStore.put("Day Coins Deposited", user.coinsDepositedDay);
 
         db.collection("users").document(mAuth.getUid())
                 .set(userStore)

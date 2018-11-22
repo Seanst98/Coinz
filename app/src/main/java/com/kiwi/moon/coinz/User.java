@@ -19,5 +19,7 @@ public class User {
     public int quidCoins;
     public int dolrCoins;
 
+    public int coinsDepositedDay;
+
     public List<Coin> coins;
 }

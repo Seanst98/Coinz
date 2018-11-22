@@ -85,54 +85,49 @@ public class BankActivity extends AppCompatActivity {
 
     public void depositVal() {
 
-        /*int totalCoins = Integer.parseInt(shilInput.toString()) + Integer.parseInt(dolrInput.toString()) + Integer.parseInt(quidInput.toString()) + Integer.parseInt(penyInput.toString());
+        if (user.coinsDepositedDay < 25){
 
-        if (totalCoins < 1){
-            Toast.makeText(getApplicationContext(), "Please Enter A Number Greater Than 0",
-                    Toast.LENGTH_LONG).show();
-        }
-        else if (totalCoins > 25){
-            Toast.makeText(getApplicationContext(), "Please Enter A Number Less Than 26",
-                    Toast.LENGTH_LONG).show();
-        }
-        else {
-            if (user == null){
-                Toast.makeText(getApplicationContext(), "User is Null",
-                        Toast.LENGTH_LONG).show();
+            if ((user.coinsDepositedDay + Integer.parseInt(coinsInput.getText().toString())) < 25){
 
+
+                if (coinsInput.getText() == null){
+                    Toast.makeText(getApplicationContext(), "Please Enter A Value" , Toast.LENGTH_SHORT).show();
+                }
+                else if (coinsInput.getText().toString().equals("")){
+                    Toast.makeText(getApplicationContext(), "Please Enter A Value", Toast.LENGTH_SHORT).show();
+                }
+                else if (Integer.parseInt(coinsInput.getText().toString()) < 1){
+                    Toast.makeText(getApplicationContext(), "Please Enter A Number Greater Than 0",
+                            Toast.LENGTH_LONG).show();
+                }
+                else if (Integer.parseInt(coinsInput.getText().toString()) > 25){
+                    Toast.makeText(getApplicationContext(), "Please Enter A Number Less Than 26",
+                            Toast.LENGTH_LONG).show();
+                }
+                else if (coinsCollectedData.features.size() < Integer.parseInt(coinsInput.getText().toString())){
+                    Toast.makeText(getApplicationContext(), "You Can't Deposit More Coins Than You Own", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    if (user == null){
+                        Toast.makeText(getApplicationContext(), "User is Null",
+                                Toast.LENGTH_LONG).show();
+
+                    }
+                    else {
+                        Log.d(TAG, "DEPOSITING");
+                        deposit();
+                    }
+                }
             }
             else {
-                deposit();
+                Toast.makeText(getApplicationContext(), "You Can't Deposit More Than 25 Coins Per Day", Toast.LENGTH_SHORT).show();
             }
-        }*/
 
-        Log.d(TAG, coinsInput.toString());
-
-        if (coinsInput.getText() == null){
-            Toast.makeText(getApplicationContext(), "Please Enter A Value" , Toast.LENGTH_SHORT).show();
-        }
-        else if (coinsInput.getText().toString().equals("")){
-            Toast.makeText(getApplicationContext(), "Please Enter A Value", Toast.LENGTH_SHORT).show();
-        }
-        else if (Integer.parseInt(coinsInput.getText().toString()) < 1){
-            Toast.makeText(getApplicationContext(), "Please Enter A Number Greater Than 0",
-                    Toast.LENGTH_LONG).show();
-        }
-        else if (Integer.parseInt(coinsInput.getText().toString()) > 25){
-            Toast.makeText(getApplicationContext(), "Please Enter A Number Less Than 26",
-                    Toast.LENGTH_LONG).show();
         }
         else {
-            if (user == null){
-                Toast.makeText(getApplicationContext(), "User is Null",
-                        Toast.LENGTH_LONG).show();
-
-            }
-            else {
-                Log.d(TAG, "DEPOSITING");
-                deposit();
-            }
+            Toast.makeText(getApplicationContext(), "You Have Already Deposited 25 Coins Today", Toast.LENGTH_SHORT).show();
         }
+
     }
 
     public void deposit() {
@@ -178,6 +173,7 @@ public class BankActivity extends AppCompatActivity {
 
         Log.d(TAG, "Gold Value of coins: " + gold);
         user.bankGold = user.bankGold + gold;
+        user.coinsDepositedDay = user.coinsDepositedDay + Integer.parseInt(coinsInput.getText().toString());
         updateFireBaseUser();
 
 
@@ -204,6 +200,7 @@ public class BankActivity extends AppCompatActivity {
         userStore.put("SHIL Coins", user.shilCoins);
         userStore.put("PENY Coins", user.penyCoins);
         userStore.put("QUID Coins", user.quidCoins);
+        userStore.put("Day Coins Deposited", user.coinsDepositedDay);
 
         Log.d(TAG, "BANK GOLD STORING AS: " + user.bankGold);
 
@@ -246,10 +243,11 @@ public class BankActivity extends AppCompatActivity {
                         usr.shil = (Double) document.getData().get("SHIL Collected");
                         usr.quid = (Double) document.getData().get("QUID Collected");
                         usr.peny = (Double) document.getData().get("PENY Collected");
-                        user.dolrCoins = document.getLong("DOLR Coins").intValue();
-                        user.shilCoins = document.getLong("SHIL Coins").intValue();
-                        user.quidCoins = document.getLong("QUID Coins").intValue();
-                        user.penyCoins = document.getLong("PENY Coins").intValue();
+                        usr.dolrCoins = document.getLong("DOLR Coins").intValue();
+                        usr.shilCoins = document.getLong("SHIL Coins").intValue();
+                        usr.quidCoins = document.getLong("QUID Coins").intValue();
+                        usr.penyCoins = document.getLong("PENY Coins").intValue();
+                        usr.coinsDepositedDay = document.getLong("Day Coins Deposited").intValue();
 
                     } else {
                         Log.d(TAG, "No such document");
