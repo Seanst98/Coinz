@@ -115,7 +115,7 @@ public class BankActivity extends AppCompatActivity {
 
         coinsReceived = null;
 
-        DocumentReference docRef = db.collection("availableCoins").document(mAuth.getUid());
+        DocumentReference docRef = db.collection("availableCoins").document("u1rVleiik2I7HZIHbQhO");
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -127,7 +127,7 @@ public class BankActivity extends AppCompatActivity {
 
                         coinsReceived = new JsonData(json);
                         coinsCollectedData.features.addAll(coinsReceived.features);
-                        Toast.makeText(getApplicationContext(),"You Have Collected" + coinsReceived.features.size() +" Coins", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(),"You Have Collected " + coinsReceived.features.size() +" Coins", Toast.LENGTH_SHORT).show();
 
                         coinsCollectedTxt.setText("You Have " + coinsCollectedData.features.size() + " Coins To Deposit Or Gift");
 
@@ -217,6 +217,7 @@ public class BankActivity extends AppCompatActivity {
         for (int i = 0; i < Integer.parseInt(giftAmountInput.getText().toString()); i++){
 
             coinsCollectedData.features.remove(0);
+            Log.d(TAG, "COINS COLLECTED IS NOW: " + coinsCollectedData.toJson());
 
         }
 
