@@ -437,12 +437,15 @@ public class mapActivity extends AppCompatActivity implements
 
         List<Marker> markers = map.getMarkers();
 
+        Log.d(TAG, "MARKER SIZE: " +markers.size());
+
         for (int i = 0; i < markers.size(); i++) {
 
             Double dist = olatLng.distanceTo(markers.get(i).getPosition());
 
             if (dist <= 25) {
 
+                Log.d(TAG, "WITHIN 25m");
                 removeMarker(markers.get(i), i);
 
             }
@@ -454,36 +457,46 @@ public class mapActivity extends AppCompatActivity implements
         Toast.makeText(getApplicationContext(), "Coin collected!",
                 Toast.LENGTH_SHORT).show();
 
+        user.setCustomObjectListener(new User.myCustomObjectListener() {
+            @Override
+            public void onDataLoaded() {
 
-        user.dayCoins++;
-        user.totalCoins++;
-        switch (marker.getSnippet()) {
+                Log.d(TAG, "LISTENER WORKS BABY!");
+                Log.d(TAG, "Day Coins " + user.dayCoins);
+                user.dayCoins++;
+                user.totalCoins++;
+                switch (marker.getSnippet()) {
 
-            case "SHIL":
-                user.shil = user.shil + Double.parseDouble(marker.getTitle());
-                break;
+                    case "SHIL":
+                        user.shil = user.shil + Double.parseDouble(marker.getTitle());
+                        break;
 
-            case "DOLR":
-                user.dolr = user.dolr + Double.parseDouble(marker.getTitle());
-                break;
+                    case "DOLR":
+                        user.dolr = user.dolr + Double.parseDouble(marker.getTitle());
+                        break;
 
-            case "PENY":
-                user.peny = user.peny + Double.parseDouble(marker.getTitle());
-                break;
+                    case "PENY":
+                        user.peny = user.peny + Double.parseDouble(marker.getTitle());
+                        break;
 
-            case "QUID":
-                user.quid = user.quid + Double.parseDouble(marker.getTitle());
-                break;
-        }
-        updateFireBaseUser();
-        totalCoins.setText("Coins Collected: " + user.dayCoins);
+                    case "QUID":
+                        user.quid = user.quid + Double.parseDouble(marker.getTitle());
+                        break;
+                }
 
-        coinsCollectedData.features.add(jsonData.features.get(i));
-        jsonData.features.remove(i);
-        map.removeMarker(marker);
-        marker.remove();
+                totalCoins.setText("Coins Collected: " + user.dayCoins);
 
-        updateFireBaseUser();
+                Log.d(TAG, "FEATURES SIZE: " + jsonData.features.size());
+
+                coinsCollectedData.features.add(jsonData.features.get(i));
+                jsonData.features.removeAll(coinsCollectedData.features);
+                map.removeMarker(marker);
+
+                user.updateUser();
+
+            }
+        });
+
 
     }
 
@@ -504,7 +517,7 @@ public class mapActivity extends AppCompatActivity implements
                 user.dayWalked = user.dayWalked + dist;
                 user.totalWalked = user.totalWalked + dist;
 
-                updateFireBaseUser();
+                user.updateUser();
             }
 
             originLocation = location;
@@ -576,10 +589,6 @@ public class mapActivity extends AppCompatActivity implements
         coinsCollected = settings.getString("coinsCollected", "");
         coinsDownloadDate = settings.getString("coinsLastDownloadDate", "");
 
-        //Log.d(TAG, "[onStart] Recalled lastDownloadDate is '" + downloadDate + "'");
-
-        user = new User();
-
         Log.d(TAG, "THE STORED COINS ARE: " + coinsCollected);
 
 
@@ -595,157 +604,29 @@ public class mapActivity extends AppCompatActivity implements
         }
         else {
 
-            String dg = "";
-            String tg = "";
-            String app = "";
-
-            Rates rates = null;
-
-            String shil = "";
-            String dolr = "";
-            String quid = "";
-            String peny = "";
-
-            try {
-
-                JSONObject collection = new JSONObject(coinsCollected);
-                dg = collection.getString("date-generated");
-                tg = collection.getString("time-generated");
-                app = collection.getString("approximate-time-remaining");
-
-                JSONObject ratesl = collection.getJSONObject("rates");
-                shil = ratesl.getString("SHIL");
-                dolr = ratesl.getString("DOLR");
-                quid = ratesl.getString("QUID");
-                peny = ratesl.getString("PENY");
-
-                rates = new Rates(shil, dolr, quid, peny);
-
-
-            } catch (JSONException e) {
-                Log.d(TAG, "JSONException " + e.toString());
-            }
-
-            FeatureCollection fc = FeatureCollection.fromJson(coinsCollected);
-            List<Feature> fs = fc.features();
-
-            List<Coin> coins = new ArrayList<>();
-
-            for (int i = 0; i < fs.size(); i++) {
-                Geometry g = fs.get(i).geometry();
-                String gt = g.toJson();
-                Point p = Point.fromJson(gt);
-
-                LatLng latLng = new LatLng(p.latitude(), p.longitude());
-
-                JsonObject obj = fs.get(i).properties();
-                JsonElement currencyt = obj.get("currency");
-                JsonElement idt = obj.get("id");
-                JsonElement valuet = obj.get("value");
-                JsonElement marker_symbolt = obj.get("marker-symbol");
-                JsonElement marker_colort = obj.get("marker-color");
-
-                String currency = currencyt.getAsString();
-                String id = idt.getAsString();
-                String value = valuet.getAsString();
-                String marker_symbol = marker_symbolt.getAsString();
-                String marker_color = marker_colort.getAsString();
-
-                Properties props = new Properties(id, value, currency, marker_symbol, marker_color);
-                Coin coin = new Coin("Feature", g, props);
-                coins.add(coin);
-
-
-
-            }
-
-            coinsCollectedData = new JsonData(fc.type(), dg, tg, app, rates, coins);
+            coinsCollectedData = new JsonData(coinsCollected);
 
         }
 
 
-        db = FirebaseFirestore.getInstance();
-        DocumentReference docRef = db.collection("users").document(mAuth.getUid());
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        user = new User();
+
+        user.setCustomObjectListener(new User.myCustomObjectListener() {
             @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
+            public void onDataLoaded() {
 
-                        user.dayCoins = document.getLong("Day Coins").intValue();
-                        user.dayWalked = (Double) document.getData().get("Day Walked");
-                        user.bankGold = (Double) document.getData().get("Bank GOLD");
-                        user.totalCoins = document.getLong("Total Coins").intValue();
-                        user.totalWalked = (Double) document.getData().get("Total Walked");
-                        user.dolr = (Double) document.getData().get("DOLR Collected");
-                        user.shil = (Double) document.getData().get("SHIL Collected");
-                        user.quid = (Double) document.getData().get("QUID Collected");
-                        user.peny = (Double) document.getData().get("PENY Collected");
-                        user.dolrCoins = document.getLong("DOLR Coins").intValue();
-                        user.shilCoins = document.getLong("SHIL Coins").intValue();
-                        user.quidCoins = document.getLong("QUID Coins").intValue();
-                        user.penyCoins = document.getLong("PENY Coins").intValue();
-                        user.coinsDepositedDay = document.getLong("Day Coins Deposited").intValue();
+                if (!currentDate.equals(fireStoreDate)){
+                    user.dayCoins = 0;
+                    user.dayWalked = 0;
+                    user.coinsDepositedDay = 0;
 
-                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-
-                        if (!currentDate.equals(fireStoreDate)){
-                            user.dayCoins = 0;
-                            user.dayWalked = 0;
-                            user.coinsDepositedDay = 0;
-
-                            totalCoins.setText("Coins Collected: " + user.dayCoins);
-
-                            updateFireBaseUser();
-                        }
-
-                        fireStoreDate = currentDate;
-
-                    } else {
-                        Log.d(TAG, "No such document");
-                        updateFireBaseUser();
-                    }
-                } else {
-                    Log.d(TAG, "get failed with ", task.getException());
+                    user.updateUser();
                 }
+                fireStoreDate = currentDate;
+                totalCoins.setText("Coins Collected: " + user.dayCoins);
+
             }
         });
-
-    }
-
-    public void updateFireBaseUser(){
-        //Save data in FireStore
-        Map<String, Object> userStore = new HashMap<>();
-        userStore.put("Day Coins" , user.dayCoins);
-        userStore.put("Day Walked", user.dayWalked);
-        userStore.put("Total Coins", user.totalCoins);
-        userStore.put("Total Walked", user.totalWalked);
-        userStore.put("Bank GOLD", user.bankGold);
-        userStore.put("SHIL Collected", user.shil);
-        userStore.put("QUID Collected", user.quid);
-        userStore.put("PENY Collected", user.peny);
-        userStore.put("DOLR Collected", user.dolr);
-        userStore.put("DOLR Coins", user.dolrCoins);
-        userStore.put("SHIL Coins", user.shilCoins);
-        userStore.put("PENY Coins", user.penyCoins);
-        userStore.put("QUID Coins", user.quidCoins);
-        userStore.put("Day Coins Deposited", user.coinsDepositedDay);
-
-        db.collection("users").document(mAuth.getUid())
-                .set(userStore)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "Document Snapshot successfully written!");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d(TAG, "Error writing document", e);
-                    }
-                });
 
 
     }
@@ -792,7 +673,7 @@ public class mapActivity extends AppCompatActivity implements
 
 
         //Save data in FireStore
-        updateFireBaseUser();
+        user.updateUser();
 
     }
 

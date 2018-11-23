@@ -126,6 +126,9 @@ public class BankActivity extends AppCompatActivity {
 
                         coinsReceived = new JsonData(json);
                         coinsCollectedData.features.addAll(coinsReceived.features);
+                        Toast.makeText(getApplicationContext(),"You Have Collected" + coinsReceived.features.size() +" Coins", Toast.LENGTH_SHORT).show();
+
+                        coinsCollectedTxt.setText("You Have " + coinsCollectedData.features.size() + " Coins To Deposit");
 
                     } else {
                         Log.d(TAG, "No such document");
@@ -176,15 +179,6 @@ public class BankActivity extends AppCompatActivity {
 
     public void gift(){
 
-        updateAvailableCoins();
-        coinsCollectedData.features.remove(Integer.parseInt(giftAmountInput.getText().toString()));
-        updateFireBaseUser();
-        getUser();
-
-    }
-
-    public void updateAvailableCoins(){
-
         //Save data in FireStore
         Map<String, Object> userStore = new HashMap<>();
         userStore.put("Coins" , coinsCollectedData.toJson());
@@ -198,6 +192,7 @@ public class BankActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
+                        Toast.makeText(getApplicationContext(), "Successfully Gifted", Toast.LENGTH_SHORT).show();
                         Log.d(TAG, "Document Snapshot successfully written!");
                     }
                 })
@@ -207,6 +202,10 @@ public class BankActivity extends AppCompatActivity {
                         Log.d(TAG, "Error writing document", e);
                     }
                 });
+
+        coinsCollectedData.features.remove(Integer.parseInt(giftAmountInput.getText().toString())-1);
+        user.updateUser();
+        user.getUser();
 
     }
 
@@ -265,8 +264,6 @@ public class BankActivity extends AppCompatActivity {
         else {
             for (int i = 0; i < Integer.parseInt(coinsInput.getText().toString()); i++){
 
-                Log.d(TAG, "Value: " + coinsCollectedData.features.get(i).properties.value);
-                Log.d(TAG, "Rate: " + coinsCollectedData.rates.DOLR);
 
                 switch (coinsCollectedData.features.get(i).properties.currency) {
 
@@ -291,6 +288,11 @@ public class BankActivity extends AppCompatActivity {
 
                 Log.d(TAG, "Coins Collected Data is now: " + coinsCollectedData.toJson());
 
+                Toast.makeText(getApplicationContext(), "Deposited!", Toast.LENGTH_SHORT).show();
+
+                coinsCollectedTxt.setText("You Have " + coinsCollectedData.features.size() + "Coins To Deposit");
+
+
 
             }
         }
@@ -298,95 +300,14 @@ public class BankActivity extends AppCompatActivity {
         Log.d(TAG, "Gold Value of coins: " + gold);
         user.bankGold = user.bankGold + gold;
         user.coinsDepositedDay = user.coinsDepositedDay + Integer.parseInt(coinsInput.getText().toString());
-        updateFireBaseUser();
-        getUser();
+        user.updateUser();
+        user.getUser();
 
     }
 
     public double exchangeConversion(double amount, double rate){
 
         return amount/rate;
-    }
-
-    public void updateFireBaseUser(){
-        //Save data in FireStore
-        Map<String, Object> userStore = new HashMap<>();
-        userStore.put("Day Coins" , user.dayCoins);
-        userStore.put("Day Walked", user.dayWalked);
-        userStore.put("Total Coins", user.totalCoins);
-        userStore.put("Total Walked", user.totalWalked);
-        userStore.put("Bank GOLD", user.bankGold);
-        userStore.put("SHIL Collected", user.shil);
-        userStore.put("QUID Collected", user.quid);
-        userStore.put("PENY Collected", user.peny);
-        userStore.put("DOLR Collected", user.dolr);
-        userStore.put("DOLR Coins", user.dolrCoins);
-        userStore.put("SHIL Coins", user.shilCoins);
-        userStore.put("PENY Coins", user.penyCoins);
-        userStore.put("QUID Coins", user.quidCoins);
-        userStore.put("Day Coins Deposited", user.coinsDepositedDay);
-
-        Log.d(TAG, "BANK GOLD STORING AS: " + user.bankGold);
-
-        db.collection("users").document(mAuth.getUid())
-                .set(userStore)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "Document Snapshot successfully written!");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d(TAG, "Error writing document", e);
-                    }
-                });
-
-
-    }
-
-    public User getUser(){
-
-        User usr = new User();
-        db = FirebaseFirestore.getInstance();
-        DocumentReference docRef = db.collection("users").document(mAuth.getUid());
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-
-                        usr.dayCoins = document.getLong("Day Coins").intValue();
-                        usr.dayWalked = (Double) document.getData().get("Day Walked");
-                        usr.bankGold = (Double) document.getData().get("Bank GOLD");
-                        Log.d(TAG, "BANK GOLD IS: " + usr.bankGold);
-                        usr.totalCoins = document.getLong("Total Coins").intValue();
-                        usr.totalWalked = (Double) document.getData().get("Total Walked");
-                        usr.dolr = (Double) document.getData().get("DOLR Collected");
-                        usr.shil = (Double) document.getData().get("SHIL Collected");
-                        usr.quid = (Double) document.getData().get("QUID Collected");
-                        usr.peny = (Double) document.getData().get("PENY Collected");
-                        usr.dolrCoins = document.getLong("DOLR Coins").intValue();
-                        usr.shilCoins = document.getLong("SHIL Coins").intValue();
-                        usr.quidCoins = document.getLong("QUID Coins").intValue();
-                        usr.penyCoins = document.getLong("PENY Coins").intValue();
-                        usr.coinsDepositedDay = document.getLong("Day Coins Deposited").intValue();
-
-                        coinsCollectedTxt.setText("You Have " + user.dayCoins + " Coins To Deposit");
-                        goldInBankTxt.setText("You Have " + user.bankGold + " GOLD In The Bank");
-
-                    } else {
-                        Log.d(TAG, "No such document");
-                    }
-                } else {
-                    Log.d(TAG, "get failed with ", task.getException());
-                }
-            }
-        });
-
-        return usr;
     }
 
     @Override
@@ -401,73 +322,32 @@ public class BankActivity extends AppCompatActivity {
             json = extras.getString("coinsCollected");
         }
 
-        String dg = "";
-        String tg = "";
-        String app = "";
+        coinsCollectedData = new JsonData(json);
+        user = new User();
+        user.getUser();
 
-        Rates rates = null;
+        //This could be quite hacky, there will undoubtedly be a better way to do this
+        db = FirebaseFirestore.getInstance();
+        DocumentReference docRef = db.collection("users").document(mAuth.getUid());
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
 
-        String shil = "";
-        String dolr = "";
-        String quid = "";
-        String peny = "";
+                        coinsCollectedTxt.setText("You Have " + coinsCollectedData.features.size() + " Coins To Deposit");
+                        goldInBankTxt.setText("You Have " + user.bankGold + " GOLD In The Bank");
 
-        try {
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
 
-            JSONObject collection = new JSONObject(json);
-            dg = collection.getString("date-generated");
-            tg = collection.getString("time-generated");
-            app = collection.getString("approximate-time-remaining");
-
-            JSONObject ratesl = collection.getJSONObject("rates");
-            shil = ratesl.getString("SHIL");
-            dolr = ratesl.getString("DOLR");
-            quid = ratesl.getString("QUID");
-            peny = ratesl.getString("PENY");
-
-            rates = new Rates(shil, dolr, quid, peny);
-
-
-        } catch (JSONException e) {
-            Log.d(TAG, "JSONException " + e.toString());
-        }
-
-        FeatureCollection fc = FeatureCollection.fromJson(json);
-        List<Feature> fs = fc.features();
-
-        List<Coin> coins = new ArrayList<>();
-
-        for (int i = 0; i < fs.size(); i++) {
-            Geometry g = fs.get(i).geometry();
-            String gt = g.toJson();
-            Point p = Point.fromJson(gt);
-
-            LatLng latLng = new LatLng(p.latitude(), p.longitude());
-
-            JsonObject obj = fs.get(i).properties();
-            JsonElement currencyt = obj.get("currency");
-            JsonElement idt = obj.get("id");
-            JsonElement valuet = obj.get("value");
-            JsonElement marker_symbolt = obj.get("marker-symbol");
-            JsonElement marker_colort = obj.get("marker-color");
-
-            String currency = currencyt.getAsString();
-            String id = idt.getAsString();
-            String value = valuet.getAsString();
-            String marker_symbol = marker_symbolt.getAsString();
-            String marker_color = marker_colort.getAsString();
-
-            Properties props = new Properties(id, value, currency, marker_symbol, marker_color);
-            Coin coin = new Coin("Feature", g, props);
-            coins.add(coin);
-
-        }
-
-        coinsCollectedData = new JsonData(fc.type(), dg, tg, app, rates, coins);
-
-        user = getUser();
-
-        //updateAvailableCoins();
     }
 
     @Override
@@ -488,7 +368,7 @@ public class BankActivity extends AppCompatActivity {
         editor.apply();
 
         //Save data in FireStore
-        updateFireBaseUser();
+        user.updateUser();
     }
 
     @Override
