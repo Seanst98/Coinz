@@ -67,6 +67,8 @@ public class User {
                         penyCoins = document.getLong("PENY Coins").intValue();
                         coinsDepositedDay = document.getLong("Day Coins Deposited").intValue();
 
+                        Log.d(TAG, "ONSTARTBANK is " + bankGold);
+
                     } else {
                         Log.d(TAG, "No such document");
                     }

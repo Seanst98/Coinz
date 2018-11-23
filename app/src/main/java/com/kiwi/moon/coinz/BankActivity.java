@@ -205,7 +205,6 @@ public class BankActivity extends AppCompatActivity {
 
         coinsCollectedData.features.remove(Integer.parseInt(giftAmountInput.getText().toString())-1);
         user.updateUser();
-        user.getUser();
 
     }
 
@@ -290,7 +289,8 @@ public class BankActivity extends AppCompatActivity {
 
                 Toast.makeText(getApplicationContext(), "Deposited!", Toast.LENGTH_SHORT).show();
 
-                coinsCollectedTxt.setText("You Have " + coinsCollectedData.features.size() + "Coins To Deposit");
+                coinsCollectedTxt.setText("You Have " + coinsCollectedData.features.size() + " Coins To Deposit");
+                goldInBankTxt.setText("You Have " + user.bankGold + " GOLD In The Bank");
 
 
 
@@ -301,7 +301,6 @@ public class BankActivity extends AppCompatActivity {
         user.bankGold = user.bankGold + gold;
         user.coinsDepositedDay = user.coinsDepositedDay + Integer.parseInt(coinsInput.getText().toString());
         user.updateUser();
-        user.getUser();
 
     }
 
@@ -320,33 +319,20 @@ public class BankActivity extends AppCompatActivity {
         if(extras != null) {
 
             json = extras.getString("coinsCollected");
+
+            Log.d(TAG, "BANK RECEIVES COINS " + json);
         }
 
         coinsCollectedData = new JsonData(json);
+        coinsCollectedTxt.setText("You Have " + coinsCollectedData.features.size() + " Coins To Deposit");
         user = new User();
-        user.getUser();
-
-        //This could be quite hacky, there will undoubtedly be a better way to do this
-        db = FirebaseFirestore.getInstance();
-        DocumentReference docRef = db.collection("users").document(mAuth.getUid());
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        user.setCustomObjectListener(new User.myCustomObjectListener() {
             @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-
-                        coinsCollectedTxt.setText("You Have " + coinsCollectedData.features.size() + " Coins To Deposit");
-                        goldInBankTxt.setText("You Have " + user.bankGold + " GOLD In The Bank");
-
-                    } else {
-                        Log.d(TAG, "No such document");
-                    }
-                } else {
-                    Log.d(TAG, "get failed with ", task.getException());
-                }
+            public void onDataLoaded() {
+                goldInBankTxt.setText("You Have " + user.bankGold + " GOLD In The Bank");
             }
         });
+
 
     }
 

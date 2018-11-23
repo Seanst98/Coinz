@@ -150,6 +150,7 @@ public class mapActivity extends AppCompatActivity implements
                                 else {
                                     Intent intent = new Intent(mapActivity.this, BankActivity.class);
                                     intent.putExtra("coinsCollected", coinsCollectedData.toJson());
+                                    Log.d(TAG, "MAP TO BANK STORED COINS ARE: " + coinsCollectedData.toJson());
                                     startActivity(intent);
                                 }
 
@@ -437,8 +438,6 @@ public class mapActivity extends AppCompatActivity implements
 
         List<Marker> markers = map.getMarkers();
 
-        Log.d(TAG, "MARKER SIZE: " +markers.size());
-
         for (int i = 0; i < markers.size(); i++) {
 
             Double dist = olatLng.distanceTo(markers.get(i).getPosition());
@@ -454,48 +453,44 @@ public class mapActivity extends AppCompatActivity implements
 
     public void removeMarker(Marker marker, int i) {
 
+        Log.d(TAG, "START OF FUNC");
+
+
+        user.dayCoins++;
+        user.totalCoins++;
+        switch (marker.getSnippet()) {
+
+            case "SHIL":
+                user.shil = user.shil + Double.parseDouble(marker.getTitle());
+                break;
+
+            case "DOLR":
+                user.dolr = user.dolr + Double.parseDouble(marker.getTitle());
+                break;
+
+            case "PENY":
+                user.peny = user.peny + Double.parseDouble(marker.getTitle());
+                break;
+
+            case "QUID":
+                user.quid = user.quid + Double.parseDouble(marker.getTitle());
+                break;
+        }
+
+        totalCoins.setText("Coins Collected: " + user.dayCoins);
+
+        Log.d(TAG, "Removing Marker At: " + jsonData.features.get(i).geometry);
+        coinsCollectedData.features.add(jsonData.features.get(i));
+        Log.d(TAG, "COINSCOLLECTED ADD: " + coinsCollectedData.toJson());
+        jsonData.features.removeAll(coinsCollectedData.features);
+        Log.d(TAG, "COINSCOLLECTED REMOVE " + coinsCollectedData.toJson());
+        map.removeMarker(marker);
+        marker.remove();
+
+        user.updateUser();
+
         Toast.makeText(getApplicationContext(), "Coin collected!",
                 Toast.LENGTH_SHORT).show();
-
-        user.setCustomObjectListener(new User.myCustomObjectListener() {
-            @Override
-            public void onDataLoaded() {
-
-                Log.d(TAG, "LISTENER WORKS BABY!");
-                Log.d(TAG, "Day Coins " + user.dayCoins);
-                user.dayCoins++;
-                user.totalCoins++;
-                switch (marker.getSnippet()) {
-
-                    case "SHIL":
-                        user.shil = user.shil + Double.parseDouble(marker.getTitle());
-                        break;
-
-                    case "DOLR":
-                        user.dolr = user.dolr + Double.parseDouble(marker.getTitle());
-                        break;
-
-                    case "PENY":
-                        user.peny = user.peny + Double.parseDouble(marker.getTitle());
-                        break;
-
-                    case "QUID":
-                        user.quid = user.quid + Double.parseDouble(marker.getTitle());
-                        break;
-                }
-
-                totalCoins.setText("Coins Collected: " + user.dayCoins);
-
-                Log.d(TAG, "FEATURES SIZE: " + jsonData.features.size());
-
-                coinsCollectedData.features.add(jsonData.features.get(i));
-                jsonData.features.removeAll(coinsCollectedData.features);
-                map.removeMarker(marker);
-
-                user.updateUser();
-
-            }
-        });
 
 
     }
@@ -567,7 +562,6 @@ public class mapActivity extends AppCompatActivity implements
     @SuppressWarnings({"MissingPermission"})
     protected void onStart() {
         super.onStart();
-        mapView.onStart();
 
         Log.d(TAG, "[OnStart] is called");
 
@@ -625,6 +619,8 @@ public class mapActivity extends AppCompatActivity implements
                 fireStoreDate = currentDate;
                 totalCoins.setText("Coins Collected: " + user.dayCoins);
 
+                mapView.onStart();
+
             }
         });
 
@@ -641,6 +637,8 @@ public class mapActivity extends AppCompatActivity implements
     public void onPause() {
         super.onPause();
         mapView.onPause();
+
+        user.updateUser();
     }
 
     @Override
