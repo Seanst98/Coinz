@@ -32,6 +32,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -179,13 +180,26 @@ public class BankActivity extends AppCompatActivity {
 
     public void gift(){
 
+
+        JsonData storable = new JsonData(coinsCollectedData.toJson());
+
+        Log.d(TAG, "STORABLE BEFORE REMOVAL " + storable.toJson());
+        storable.features.removeAll(coinsCollectedData.features);
+        Log.d(TAG, "STORABLE AFTER REMOVAL " + storable.toJson());
+
+        for (int i = 0; i < Integer.parseInt(giftAmountInput.getText().toString()); i++){
+
+            Log.d(TAG, "ADDING TO STORABLE");
+            storable.features.add(coinsCollectedData.features.get(i));
+            Log.d(TAG, "STORABLE IS NOW: " + storable.toJson());
+
+        }
+
         //Save data in FireStore
         Map<String, Object> userStore = new HashMap<>();
-        userStore.put("Coins" , coinsCollectedData.toJson());
+        userStore.put("Coins" , storable.toJson());
         userStore.put("ForUID", giftNameInput.getText().toString());
         userStore.put("FromUID", mAuth.getUid());
-
-        Log.d(TAG, "BANK GOLD STORING AS: " + user.bankGold);
 
         db.collection("availableCoins").document(giftNameInput.getText().toString())
                 .set(userStore)
@@ -203,8 +217,11 @@ public class BankActivity extends AppCompatActivity {
                     }
                 });
 
-        coinsCollectedData.features.remove(Integer.parseInt(giftAmountInput.getText().toString())-1);
-        user.updateUser();
+        for (int i = 0; i < Integer.parseInt(giftAmountInput.getText().toString()); i++){
+
+            coinsCollectedData.features.remove(0);
+
+        }
 
     }
 
@@ -264,26 +281,26 @@ public class BankActivity extends AppCompatActivity {
             for (int i = 0; i < Integer.parseInt(coinsInput.getText().toString()); i++){
 
 
-                switch (coinsCollectedData.features.get(i).properties.currency) {
+                switch (coinsCollectedData.features.get(0).properties.currency) {
 
                     case "DOLR":
-                        gold = gold + exchangeConversion(Double.parseDouble(coinsCollectedData.features.get(i).properties.value), Double.parseDouble(coinsCollectedData.rates.DOLR));
+                        gold = gold + exchangeConversion(Double.parseDouble(coinsCollectedData.features.get(0).properties.value), Double.parseDouble(coinsCollectedData.rates.DOLR));
                         break;
 
                     case "SHIL":
-                        gold = gold + exchangeConversion(Double.parseDouble(coinsCollectedData.features.get(i).properties.value), Double.parseDouble(coinsCollectedData.rates.SHIL));
+                        gold = gold + exchangeConversion(Double.parseDouble(coinsCollectedData.features.get(0).properties.value), Double.parseDouble(coinsCollectedData.rates.SHIL));
                         break;
 
                     case "PENY":
-                        gold = gold + exchangeConversion(Double.parseDouble(coinsCollectedData.features.get(i).properties.value), Double.parseDouble(coinsCollectedData.rates.PENY));
+                        gold = gold + exchangeConversion(Double.parseDouble(coinsCollectedData.features.get(0).properties.value), Double.parseDouble(coinsCollectedData.rates.PENY));
                         break;
 
                     case "QUID":
-                        gold = gold + exchangeConversion(Double.parseDouble(coinsCollectedData.features.get(i).properties.value), Double.parseDouble(coinsCollectedData.rates.QUID));
+                        gold = gold + exchangeConversion(Double.parseDouble(coinsCollectedData.features.get(0).properties.value), Double.parseDouble(coinsCollectedData.rates.QUID));
                         break;
                 }
 
-                coinsCollectedData.features.remove(i);
+                coinsCollectedData.features.remove(0);
 
                 Log.d(TAG, "Coins Collected Data is now: " + coinsCollectedData.toJson());
 
@@ -295,12 +312,13 @@ public class BankActivity extends AppCompatActivity {
 
 
             }
+
+            Log.d(TAG, "Gold Value of coins: " + gold);
+            user.bankGold = user.bankGold + gold;
+            user.coinsDepositedDay = user.coinsDepositedDay + Integer.parseInt(coinsInput.getText().toString());
+            user.updateUser();
         }
 
-        Log.d(TAG, "Gold Value of coins: " + gold);
-        user.bankGold = user.bankGold + gold;
-        user.coinsDepositedDay = user.coinsDepositedDay + Integer.parseInt(coinsInput.getText().toString());
-        user.updateUser();
 
     }
 
