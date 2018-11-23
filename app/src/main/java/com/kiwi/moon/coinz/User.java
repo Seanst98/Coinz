@@ -67,8 +67,6 @@ public class User {
                         penyCoins = document.getLong("PENY Coins").intValue();
                         coinsDepositedDay = document.getLong("Day Coins Deposited").intValue();
 
-                        Log.d(TAG, "ONSTARTBANK is " + bankGold);
-
                     } else {
                         Log.d(TAG, "No such document");
                     }
@@ -111,6 +109,7 @@ public class User {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "Document Snapshot successfully written!");
+                        Log.d(TAG, "Updating user with: " + bankGold);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {

@@ -317,7 +317,12 @@ public class mapActivity extends AppCompatActivity implements
 
         jsonData = new JsonData(fc.type(), dg, tg, app, rates, coins);
 
+
         if (coinsCollectedData == null || !currentDate.equals(coinsDownloadDate)){
+
+            Log.d(TAG, "CLEARING COINS SINCE NULL OR NEW DAY");
+            Log.d(TAG, "current: " + currentDate.toString());
+            Log.d(TAG, "last coins: " + coinsDownloadDate.toString());
 
             coinsCollectedData = new JsonData(fc.type(), dg, tg, app, rates, coins2);
 
@@ -325,6 +330,8 @@ public class mapActivity extends AppCompatActivity implements
 
                 coinsCollectedData.features.remove(0);
             }
+
+            coinsDownloadDate = currentDate;
 
         }
     }

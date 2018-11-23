@@ -129,7 +129,7 @@ public class BankActivity extends AppCompatActivity {
                         coinsCollectedData.features.addAll(coinsReceived.features);
                         Toast.makeText(getApplicationContext(),"You Have Collected" + coinsReceived.features.size() +" Coins", Toast.LENGTH_SHORT).show();
 
-                        coinsCollectedTxt.setText("You Have " + coinsCollectedData.features.size() + " Coins To Deposit");
+                        coinsCollectedTxt.setText("You Have " + coinsCollectedData.features.size() + " Coins To Deposit Or Gift");
 
                     } else {
                         Log.d(TAG, "No such document");
@@ -181,11 +181,8 @@ public class BankActivity extends AppCompatActivity {
     public void gift(){
 
 
-        JsonData storable = new JsonData(coinsCollectedData.toJson());
-
-        Log.d(TAG, "STORABLE BEFORE REMOVAL " + storable.toJson());
-        storable.features.removeAll(coinsCollectedData.features);
-        Log.d(TAG, "STORABLE AFTER REMOVAL " + storable.toJson());
+        List<Coin> coins = new ArrayList<>();
+        JsonData storable = new JsonData(coinsCollectedData.type, coinsCollectedData.date_generated, coinsCollectedData.time_generated, coinsCollectedData.approximate_time_remaining, coinsCollectedData.rates, coins);
 
         for (int i = 0; i < Integer.parseInt(giftAmountInput.getText().toString()); i++){
 
@@ -222,6 +219,8 @@ public class BankActivity extends AppCompatActivity {
             coinsCollectedData.features.remove(0);
 
         }
+
+        coinsCollectedTxt.setText("You Have " + coinsCollectedData.features.size() + " Coins To Deposit Or Gift");
 
     }
 
@@ -306,9 +305,6 @@ public class BankActivity extends AppCompatActivity {
 
                 Toast.makeText(getApplicationContext(), "Deposited!", Toast.LENGTH_SHORT).show();
 
-                coinsCollectedTxt.setText("You Have " + coinsCollectedData.features.size() + " Coins To Deposit");
-                goldInBankTxt.setText("You Have " + user.bankGold + " GOLD In The Bank");
-
 
 
             }
@@ -317,6 +313,9 @@ public class BankActivity extends AppCompatActivity {
             user.bankGold = user.bankGold + gold;
             user.coinsDepositedDay = user.coinsDepositedDay + Integer.parseInt(coinsInput.getText().toString());
             user.updateUser();
+
+            coinsCollectedTxt.setText("You Have " + coinsCollectedData.features.size() + " Coins To Deposit Or Gift");
+            goldInBankTxt.setText("You Have " + user.bankGold + " GOLD In The Bank");
         }
 
 
@@ -342,7 +341,7 @@ public class BankActivity extends AppCompatActivity {
         }
 
         coinsCollectedData = new JsonData(json);
-        coinsCollectedTxt.setText("You Have " + coinsCollectedData.features.size() + " Coins To Deposit");
+        coinsCollectedTxt.setText("You Have " + coinsCollectedData.features.size() + " Coins To Deposit Or Gift");
         user = new User();
         user.setCustomObjectListener(new User.myCustomObjectListener() {
             @Override
