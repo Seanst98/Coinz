@@ -200,6 +200,9 @@ public class BankActivity extends AppCompatActivity {
         /*else if ((user.coinsGiftedDay + Integer.parseInt(giftAmountInput.getText().toString())) > 25){
             Toast.makeText(getApplicationContext(), "You Can't Gift More Than 25 Coins Per Day", Toast.LENGTH_SHORT).show();
         }*/
+        else if (giftNameInput.getText().toString().equals(mAuth.getUid())) {
+            Toast.makeText(getApplicationContext(), "You Can't Send Coins To Yourself", Toast.LENGTH_SHORT).show();
+        }
         else if (coinsCollectedData.features.size() == 0){
             Toast.makeText(getApplicationContext(), "You Don't Have Any Coins To Gift! Go Collect Some", Toast.LENGTH_SHORT).show();
         }
