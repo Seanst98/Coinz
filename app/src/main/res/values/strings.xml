@@ -21,7 +21,7 @@
     <string name="bankgoldtxt">You Have </string>
     <string name="bankgoldtxt2">GOLD Stored In The Bank</string>
     <string name="depostitxt">Enter How Many Coins To Deposit</string>
-    <string name="giftnametxt">Name Of User To Gift To</string>
+    <string name="giftnametxt">UID Of User To Gift To</string>
     <string name="giftamounttxt">Amount To Gift</string>
     <string name="dolr">DOLR</string>
     <string name="shil">SHIL</string>
@@ -29,5 +29,11 @@
     <string name="peny">PENY</string>
     <string name="coins">Coins</string>
     <string name="retrieve">Check For Coins</string>
+    <string name="deleteAcc">Delete Your Account</string>
+    <string name="updateEmail">Update Your Email</string>
+    <string name="updatePassword">Change Your Password</string>
+    <string name="logOut">Log Out</string>
+    <string name="updateEmailTxt">Enter Your New Email</string>
+    <string name="updatePasswordTxt">Enter Your New Password</string>
 
 </resources>

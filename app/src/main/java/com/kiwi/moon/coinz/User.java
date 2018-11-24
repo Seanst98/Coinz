@@ -109,7 +109,6 @@ public class User {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "Document Snapshot successfully written!");
-                        Log.d(TAG, "Updating user with: " + bankGold);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
