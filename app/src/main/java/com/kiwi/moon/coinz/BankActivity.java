@@ -119,10 +119,6 @@ public class BankActivity extends AppCompatActivity {
 
         coinsReceived = null;
 
-        /*CollectionReference availableCoinsRef = db.collection("availableCoins");
-        Query query = availableCoinsRef.whereEqualTo("ForUID", mAuth.getUid());*/
-
-        Log.d(TAG, "1");
 
         db.collection("availableCoins").whereEqualTo("ForUID", mAuth.getUid())
                 .get()
@@ -130,11 +126,15 @@ public class BankActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
-                            Log.d(TAG, "2");
+
+
+                            if (task.getResult().size() == 0) {
+
+                                Toast.makeText(getApplicationContext(),"No One Has Sent You Any Coins", Toast.LENGTH_SHORT).show();
+                                Log.d(TAG, "No Documents To Receive");
+                            }
 
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                Log.d(TAG, "3");
-
 
                                 String json = (String) document.getData().get("Coins");
 
@@ -144,47 +144,32 @@ public class BankActivity extends AppCompatActivity {
 
                                 coinsCollectedTxt.setText("You Have " + coinsCollectedData.features.size() + " Coins To Deposit Or Gift");
                                 Log.d(TAG, document.getId() + " => " + document.getData());
+
+                                db.collection("availableCoins").document(document.getId())
+                                        .delete()
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                                            }
+                                        })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+
+                                                Log.d(TAG, "Error deleting document", e);
+                                            }
+                                        });
                             }
-                            Log.d(TAG, "6");
+
                         }
                         else {
-                            Log.d(TAG, "4");
-
-                            Toast.makeText(getApplicationContext(),"No One Has Sent You Any Coins", Toast.LENGTH_SHORT).show();
 
                             Log.d(TAG, "Error getting documents: " + task.getException());
                         }
                     }
                 });
 
-        Log.d(TAG, "5");
-
-
-        /*DocumentReference docRef = db.collection("availableCoins").document("1");
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-
-                        String json = (String) document.getData().get("Coins");
-
-                        coinsReceived = new JsonData(json);
-                        coinsCollectedData.features.addAll(coinsReceived.features);
-                        Toast.makeText(getApplicationContext(),"You Have Collected " + coinsReceived.features.size() +" Coins", Toast.LENGTH_SHORT).show();
-
-                        coinsCollectedTxt.setText("You Have " + coinsCollectedData.features.size() + " Coins To Deposit Or Gift");
-
-                    } else {
-                        Log.d(TAG, "No such document");
-                        Toast.makeText(getApplicationContext(), "No One Has Sent You Any Coins", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    Log.d(TAG, "get failed with ", task.getException());
-                }
-            }
-        });*/
 
     }
 
