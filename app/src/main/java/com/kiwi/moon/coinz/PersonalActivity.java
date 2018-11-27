@@ -1,9 +1,11 @@
 package com.kiwi.moon.coinz;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
@@ -46,8 +48,8 @@ public class PersonalActivity extends AppCompatActivity {
 
             public void onClick(View v) {
 
-                //Call function to validate deposit inputs
-                emailVal();
+                //Call function to validate email inputs
+                updateEmail();
             }
         });
 
@@ -56,8 +58,8 @@ public class PersonalActivity extends AppCompatActivity {
 
             public void onClick(View v) {
 
-                //Call function to validate deposit inputs
-                passwordVal();
+                //Call function to validate password inputs
+                updatePassword();
             }
         });
 
@@ -66,7 +68,7 @@ public class PersonalActivity extends AppCompatActivity {
 
             public void onClick(View v) {
 
-                //Call function to validate deposit inputs
+                //Log the user out
                 logOut();
             }
         });
@@ -76,18 +78,43 @@ public class PersonalActivity extends AppCompatActivity {
 
             public void onClick(View v) {
 
-                //Call function to validate deposit inputs
-                deleteAcc();
+                //Check user meant to delete their account
+                deleteAccDialog();
             }
         });
     }
 
-    public void emailVal(){
+    public void updateEmail(){
+
+        //SharedPreferences.Editor editor = settings.edit();
 
     }
 
-    public void passwordVal(){
+    public void updatePassword(){
 
+    }
+
+    public void deleteAccDialog() {
+
+        //Open a dialog with the user to confirm their account deletion
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                switch (i){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        deleteAcc();
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        break;
+                }
+            }
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Are You Sure You Want To Delete Your Account?")
+                .setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show();
     }
 
     public void deleteAcc(){
@@ -115,6 +142,8 @@ public class PersonalActivity extends AppCompatActivity {
     }
 
     public void clearSharedPrefs(){
+
+        //Find the shared preferences file and clear it
 
         String preferencesFile = "MyPrefsFile";
 
