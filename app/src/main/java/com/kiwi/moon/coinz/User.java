@@ -17,6 +17,18 @@ import java.util.List;
 import java.util.Map;
 
 public class User {
+
+    private static User user = new User();
+
+    private User(){
+        this.listener = null;
+        getUser();
+    };
+
+    public static User getinstance(){
+        return user;
+    }
+
     public int dayCoins;
     public int totalCoins;
     public double dayWalked; //in metres
@@ -69,6 +81,8 @@ public class User {
 
                     } else {
                         Log.d(TAG, "No such document");
+                        Log.d(TAG, "Creating the user on firebase");
+                        updateUser();
                     }
 
                     if (listener!=null){
@@ -123,11 +137,6 @@ public class User {
     public interface myCustomObjectListener {
 
         public void onDataLoaded();
-    }
-
-    public User() {
-        this.listener = null;
-        getUser();
     }
 
     private myCustomObjectListener listener = null;

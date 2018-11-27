@@ -52,7 +52,7 @@ public class BankActivity extends AppCompatActivity {
 
     JsonData coinsCollectedData;
 
-    User user;
+    User user = User.getinstance();
 
     private EditText coinsInput;
     private TextView coinsCollectedTxt;
@@ -376,7 +376,6 @@ public class BankActivity extends AppCompatActivity {
 
         coinsCollectedData = new JsonData(json);
         coinsCollectedTxt.setText("You Have " + coinsCollectedData.features.size() + " Coins To Deposit Or Gift");
-        user = new User();
         user.setCustomObjectListener(new User.myCustomObjectListener() {
             @Override
             public void onDataLoaded() {

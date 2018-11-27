@@ -25,7 +25,6 @@ public class PersonalActivity extends AppCompatActivity {
 
 
     //Access a cloud firestore instance from the bank activity
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     private String TAG = "mapActivity";

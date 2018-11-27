@@ -101,7 +101,7 @@ public class mapActivity extends AppCompatActivity implements
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseAuth mAuth =  FirebaseAuth.getInstance();
 
-    User user;
+    User user = User.getinstance();
 
     private JsonData jsonData;
     private JsonData coinsCollectedData;
@@ -608,9 +608,6 @@ public class mapActivity extends AppCompatActivity implements
             coinsCollectedData = new JsonData(coinsCollected);
 
         }
-
-
-        user = new User();
 
         user.setCustomObjectListener(new User.myCustomObjectListener() {
             @Override
