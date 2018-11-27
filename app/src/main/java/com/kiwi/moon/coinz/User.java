@@ -65,14 +65,16 @@ public class User {
                     if (document.exists()) {
 
                         dayCoins = document.getLong("Day Coins").intValue();
-                        dayWalked = (Double) document.getData().get("Day Walked");
-                        bankGold = (Double) document.getData().get("Bank GOLD");
+                        Log.d(TAG, "DAY COINS: " + dayCoins);
+                        dayWalked = document.getLong("Day Walked").doubleValue();
+                        Log.d(TAG, "DAY WALKED: " + dayWalked);
+                        bankGold = document.getLong("Bank GOLD").doubleValue();
                         totalCoins = document.getLong("Total Coins").intValue();
-                        totalWalked = (Double) document.getData().get("Total Walked");
-                        dolr = (Double) document.getData().get("DOLR Collected");
-                        shil = (Double) document.getData().get("SHIL Collected");
-                        quid = (Double) document.getData().get("QUID Collected");
-                        peny = (Double) document.getData().get("PENY Collected");
+                        totalWalked = document.getLong("Total Walked").doubleValue();
+                        dolr = document.getLong("DOLR Collected").doubleValue();
+                        shil = document.getLong("SHIL Collected").doubleValue();
+                        quid = document.getLong("QUID Collected").doubleValue();
+                        peny = document.getLong("PENY Collected").doubleValue();
                         dolrCoins = document.getLong("DOLR Coins").intValue();
                         shilCoins = document.getLong("SHIL Coins").intValue();
                         quidCoins = document.getLong("QUID Coins").intValue();

@@ -51,10 +51,10 @@ public class StatisticsActivity extends AppCompatActivity {
         bankGold.setText("You Have " + user.bankGold + " GOLD In The Bank");
         distanceWalked.setText("In Total, You Have Walked " + user.totalWalked + " Metres");
         coinsCollected.setText("In Total, You Have Collected " + user.totalCoins + " Coins");
-        dolr.setText("In Total, You Have Collected " + user.dolr + " of DOLR");
-        shil.setText("In Total, You Have Collected " + user.shil + " of SHIL");
-        peny.setText("In Total, You Have Collected " + user.peny + " of PENY");
-        quid.setText("In Total, You Have Collected " + user.quid + " of QUID");
+        dolr.setText("In Total, You Have Collected " + user.dolrCoins + " DOLR Coins Which Equals " + user.dolr + " of DOLR");
+        shil.setText("In Total, You Have Collected " + user.shilCoins + " SHIL Coins Which Equals " + user.shil + " of SHIL");
+        peny.setText("In Total, You Have Collected " + user.penyCoins + " PENY Coins Which Equals " + user.peny + " of PENY");
+        quid.setText("In Total, You Have Collected " + user.quidCoins + " QUID Coins Which Equals " + user.quid + " of QUID");
 
     }
 }
