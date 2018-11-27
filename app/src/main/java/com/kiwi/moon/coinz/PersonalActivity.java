@@ -1,6 +1,8 @@
 package com.kiwi.moon.coinz;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -90,6 +92,9 @@ public class PersonalActivity extends AppCompatActivity {
 
     public void deleteAcc(){
 
+        //Deletes the user's firebase account and deletes shared preferenes
+        //And takes the user to the main menu
+
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         user.delete()
@@ -97,6 +102,9 @@ public class PersonalActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
+
+                            //Once the firebase user is deleted, delete shared preferences
+                            clearSharedPrefs();
                             Log.d(TAG, "User account deleted.");
                             Intent intent = new Intent(PersonalActivity.this, MainActivity.class);
                             startActivity(intent);
@@ -106,8 +114,19 @@ public class PersonalActivity extends AppCompatActivity {
 
     }
 
+    public void clearSharedPrefs(){
+
+        String preferencesFile = "MyPrefsFile";
+
+        SharedPreferences settings = getSharedPreferences(preferencesFile, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.clear();
+        editor.apply();
+    }
+
     public void logOut(){
 
+        //Logs the user out and takes them to the main menu
         mAuth.signOut();
         Intent intent = new Intent(PersonalActivity.this, MainActivity.class);
         startActivity(intent);
