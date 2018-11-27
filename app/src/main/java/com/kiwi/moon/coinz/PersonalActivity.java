@@ -33,6 +33,8 @@ public class PersonalActivity extends AppCompatActivity {
     private EditText emailInput;
     private EditText passwordInput;
 
+    private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,13 +89,23 @@ public class PersonalActivity extends AppCompatActivity {
 
     public void updateEmail(){
 
-        //SharedPreferences.Editor editor = settings.edit();
+        String newEmail = emailInput.getText().toString();
+
+        user.updateEmail(newEmail)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(getApplicationContext(), "Successfully Changed Email", Toast.LENGTH_SHORT).show();
+                            Log.d(TAG, "User email address updated.");
+                        }
+                    }
+                });
 
     }
 
     public void updatePassword(){
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String newPassword = passwordInput.getText().toString();
 
         user.updatePassword(newPassword)
@@ -137,8 +149,6 @@ public class PersonalActivity extends AppCompatActivity {
         //Deletes the user's firebase account and deletes shared preferenes
         //And takes the user to the main menu
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
         user.delete()
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
@@ -148,6 +158,7 @@ public class PersonalActivity extends AppCompatActivity {
                             //Once the firebase user is deleted, delete shared preferences
                             clearSharedPrefs();
                             Log.d(TAG, "User account deleted.");
+                            Toast.makeText(getApplicationContext(), "Successfully Deleted Account", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(PersonalActivity.this, MainActivity.class);
                             startActivity(intent);
                         }
@@ -172,6 +183,7 @@ public class PersonalActivity extends AppCompatActivity {
 
         //Logs the user out and takes them to the main menu
         mAuth.signOut();
+        Toast.makeText(getApplicationContext(), "Successfully Logged Out", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(PersonalActivity.this, MainActivity.class);
         startActivity(intent);
     }
