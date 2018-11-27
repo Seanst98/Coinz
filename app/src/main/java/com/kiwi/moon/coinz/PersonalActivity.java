@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -91,6 +92,20 @@ public class PersonalActivity extends AppCompatActivity {
     }
 
     public void updatePassword(){
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String newPassword = passwordInput.getText().toString();
+
+        user.updatePassword(newPassword)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(getApplicationContext(), "Successfully Changed Password", Toast.LENGTH_SHORT).show();
+                            Log.d(TAG, "User password updated.");
+                        }
+                    }
+                });
 
     }
 
