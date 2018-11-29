@@ -376,12 +376,7 @@ public class BankActivity extends AppCompatActivity {
 
         coinsCollectedData = new JsonData(json);
         coinsCollectedTxt.setText("You Have " + coinsCollectedData.features.size() + " Coins To Deposit Or Gift");
-        user.setCustomObjectListener(new User.myCustomObjectListener() {
-            @Override
-            public void onDataLoaded() {
-                goldInBankTxt.setText("You Have " + user.bankGold + " GOLD In The Bank");
-            }
-        });
+        goldInBankTxt.setText("You Have " + user.bankGold + " GOLD In The Bank");
 
 
     }

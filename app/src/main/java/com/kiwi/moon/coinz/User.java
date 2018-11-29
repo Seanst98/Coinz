@@ -25,6 +25,11 @@ public class User {
         getUser();
     };
 
+    public User(int a) {
+        this.listener = null;
+        getUser();
+    }
+
     public static User getinstance(){
         return user;
     }
@@ -46,6 +51,8 @@ public class User {
     public int dolrCoins;
 
     public int coinsDepositedDay;
+
+    public boolean loaded = false;
 
     public List<Coin> coins;
 
@@ -83,6 +90,7 @@ public class User {
                         quidCoins = document.getLong("QUID Coins").intValue();
                         penyCoins = document.getLong("PENY Coins").intValue();
                         coinsDepositedDay = document.getLong("Day Coins Deposited").intValue();
+                        loaded = true;
 
                     } else {
                         Log.d(TAG, "No such document");

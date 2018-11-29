@@ -609,24 +609,52 @@ public class mapActivity extends AppCompatActivity implements
 
         }
 
-        user.setCustomObjectListener(new User.myCustomObjectListener() {
-            @Override
-            public void onDataLoaded() {
 
-                if (!currentDate.equals(fireStoreDate)){
-                    user.dayCoins = 0;
-                    user.dayWalked = 0;
-                    user.coinsDepositedDay = 0;
+        //OK Here's an explanation of why I do this
+        //So I needed the User class to be a singleton and for that I need a private constructor
+        //I also need a listener for when the user data is loaded so that I can begin displaying
+        //the map etc...
+        //So I have this listener here to only slow down the map from displaying
+        //This way the user's data is loaded before the map displays and prevents any errors
 
-                    user.updateUser();
+        if (!user.loaded){
+            User usr = new User(1);
+            usr.setCustomObjectListener(new User.myCustomObjectListener() {
+                @Override
+                public void onDataLoaded() {
+
+                    Log.d(TAG, "MAPVIEW START CALLED");
+
+                    if (!currentDate.equals(fireStoreDate)){
+                        user.dayCoins = 0;
+                        user.dayWalked = 0;
+                        user.coinsDepositedDay = 0;
+
+                        user.updateUser();
+                    }
+                    fireStoreDate = currentDate;
+                    totalCoins.setText("Coins Collected: " + user.dayCoins);
+
+                    mapView.onStart();
+
                 }
-                fireStoreDate = currentDate;
-                totalCoins.setText("Coins Collected: " + user.dayCoins);
+            });
+        }
+        else {
+            Log.d(TAG, "MAPVIEW START CALLED");
 
-                mapView.onStart();
+            if (!currentDate.equals(fireStoreDate)) {
+                user.dayCoins = 0;
+                user.dayWalked = 0;
+                user.coinsDepositedDay = 0;
 
+                user.updateUser();
             }
-        });
+            fireStoreDate = currentDate;
+            totalCoins.setText("Coins Collected: " + user.dayCoins);
+
+            mapView.onStart();
+        }
 
 
     }
