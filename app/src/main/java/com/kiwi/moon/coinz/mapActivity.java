@@ -716,6 +716,17 @@ public class mapActivity extends AppCompatActivity implements
             }
         }
 
+        if (!user.timeTrialMode){
+            if (timeTrialTimer!=null){
+                timeTrialTimer.cancel();
+            }
+        }
+        if (!user.ghostMode){
+            if (ghostTimer!=null){
+                ghostTimer.cancel();
+            }
+        }
+
     }
 
     public void timeTrialFail() {

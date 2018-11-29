@@ -25,6 +25,13 @@ public class OptionalFeaturesActivity extends AppCompatActivity {
         ghostText = (TextView) findViewById(R.id.textGhost);
         timeTrialText = (TextView) findViewById(R.id.textTimeTrial);
 
+        if (user.ghostMode){
+            ghostText.setText("De-Activate Ghost Mode");
+        }
+        if (user.timeTrialMode){
+            timeTrialText.setText("De-Activate Time Trial Mode");
+        }
+
         //If Ghost card is pressed
         final CardView cardGhost = findViewById(R.id.cardGhost);
         cardGhost.setOnClickListener(new View.OnClickListener() {
