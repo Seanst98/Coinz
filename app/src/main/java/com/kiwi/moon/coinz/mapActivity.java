@@ -511,6 +511,9 @@ public class mapActivity extends AppCompatActivity implements
         Toast.makeText(getApplicationContext(), "Coin collected!",
                 Toast.LENGTH_SHORT).show();
 
+        timeTrialTimer.cancel();
+        createTimeTrialTimer();
+
         if (user.dayCoins == 50) {
             if (user.ghostMode){
                 ghostWin();
@@ -700,20 +703,7 @@ public class mapActivity extends AppCompatActivity implements
         }
 
         if (user.timeTrialMode) {
-            ghostTimeTrialTime.setAlpha(1.0f);
-            if (timeTrialTimer == null){
-                timeTrialTimer = new CountDownTimer(120000, 1000) {
-                    @Override
-                    public void onTick(long millisUntilFinished) {
-                        ghostTimeTrialTime.setText("Time Left: " + millisUntilFinished/1000);
-                    }
-
-                    @Override
-                    public void onFinish() {
-                        timeTrialFail();
-                    }
-                }.start();
-            }
+            createTimeTrialTimer();
         }
 
         if (!user.timeTrialMode){
@@ -725,6 +715,25 @@ public class mapActivity extends AppCompatActivity implements
             if (ghostTimer!=null){
                 ghostTimer.cancel();
             }
+        }
+
+    }
+
+    public void createTimeTrialTimer(){
+
+        ghostTimeTrialTime.setAlpha(1.0f);
+        if (timeTrialTimer == null){
+            timeTrialTimer = new CountDownTimer(120000, 1000) {
+                @Override
+                public void onTick(long millisUntilFinished) {
+                    ghostTimeTrialTime.setText("Time Left: " + millisUntilFinished/1000);
+                }
+
+                @Override
+                public void onFinish() {
+                    timeTrialFail();
+                }
+            }.start();
         }
 
     }
@@ -796,6 +805,12 @@ public class mapActivity extends AppCompatActivity implements
 
         //Save data in FireStore
         user.updateUser();
+
+
+        timeTrialTimer.cancel();
+        ghostTimer.cancel();
+        user.timeTrialMode=false;
+        user.ghostMode=false;
 
     }
 
