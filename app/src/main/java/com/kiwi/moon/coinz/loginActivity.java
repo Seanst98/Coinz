@@ -88,7 +88,7 @@ public class loginActivity extends AppCompatActivity {
                         else {
                             //If sign in fails, display error
                             Log.w(TAG, "sign in failure", task.getException());
-                            Toast.makeText(getApplicationContext(), "Authentication failed.",
+                            Toast.makeText(getApplicationContext(), "Sign In Failed",
                                     Toast.LENGTH_SHORT).show();
                             //Update UI
                         }

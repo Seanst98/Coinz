@@ -767,6 +767,7 @@ public class mapActivity extends AppCompatActivity implements
         if (timeCount<user.ghostTime){
             Toast.makeText(getApplicationContext(), "You Beat Your Previous Time!", Toast.LENGTH_SHORT).show();
             user.ghostTime = timeCount;
+            user.updateUser();
         }
         else{
             Toast.makeText(getApplicationContext(), "You Collected All The Coins But Did Not Beat Your Previous Time", Toast.LENGTH_SHORT).show();
@@ -820,6 +821,23 @@ public class mapActivity extends AppCompatActivity implements
         //Save data in FireStore
         user.updateUser();
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        user.ghostMode=false;
+        user.timeTrialMode=false;
+
+        if (ghostTimer!=null){
+            ghostTimer.cancel();
+        }
+        if (timeTrialTimer!=null){
+            timeTrialTimer.cancel();
+        }
+
+        mAuth.signOut();
     }
 
     @Override

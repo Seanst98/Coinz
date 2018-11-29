@@ -80,9 +80,9 @@ public class createAccActivity extends AppCompatActivity {
                                 Intent myIntent = new Intent(createAccActivity.this, mapActivity.class);
                                 startActivity(myIntent);
                             } else {
-                                // If sign in fails, display a message to the user.
+
                                 Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                                Toast.makeText(getApplicationContext(), "Authentication failed.",
+                                Toast.makeText(getApplicationContext(), "Creation Failed. Try A Different Email/Password",
                                         Toast.LENGTH_SHORT).show();
                                 //updateUI(null);
                             }
