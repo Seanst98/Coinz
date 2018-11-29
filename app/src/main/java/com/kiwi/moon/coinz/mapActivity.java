@@ -92,7 +92,7 @@ public class mapActivity extends AppCompatActivity implements
     String data;
     TextView totalCoins;
     TextView ghostTimeTrialTime;
-    float timeCount = 0;
+    int timeCount = 0;
 
     Timer ghostTimer;
     CountDownTimer timeTrialTimer;
@@ -749,7 +749,7 @@ public class mapActivity extends AppCompatActivity implements
         }
         else {
             Toast.makeText(getApplicationContext(), "You Lost A Coin!", Toast.LENGTH_SHORT).show();
-            coinsCollectedData.features.remove(0);
+            coinsCollectedData.features.remove(coinsCollectedData.features.size()-1);
         }
 
     }
@@ -764,8 +764,13 @@ public class mapActivity extends AppCompatActivity implements
     public void ghostWin(){
 
         ghostTimeTrialTime.setAlpha(0.0f);
-        Toast.makeText(getApplicationContext(), "You Collected All The Coins!", Toast.LENGTH_SHORT).show();
-
+        if (timeCount<user.ghostTime){
+            Toast.makeText(getApplicationContext(), "You Beat Your Previous Time!", Toast.LENGTH_SHORT).show();
+            user.ghostTime = timeCount;
+        }
+        else{
+            Toast.makeText(getApplicationContext(), "You Collected All The Coins But Did Not Beat Your Previous Time", Toast.LENGTH_SHORT).show();
+        }
     }
 
 
@@ -814,12 +819,6 @@ public class mapActivity extends AppCompatActivity implements
 
         //Save data in FireStore
         user.updateUser();
-
-
-        timeTrialTimer.cancel();
-        ghostTimer.cancel();
-        user.timeTrialMode=false;
-        user.ghostMode=false;
 
     }
 

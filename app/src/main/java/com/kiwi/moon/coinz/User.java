@@ -52,6 +52,8 @@ public class User {
 
     public int coinsDepositedDay;
 
+    public int ghostTime;
+
     public boolean loaded = false;
 
     public List<Coin> coins;
@@ -90,6 +92,7 @@ public class User {
                         quidCoins = document.getLong("QUID Coins").intValue();
                         penyCoins = document.getLong("PENY Coins").intValue();
                         coinsDepositedDay = document.getLong("Day Coins Deposited").intValue();
+                        ghostTime = document.getLong("Ghost Time").intValue();
                         loaded = true;
 
                     } else {
@@ -129,6 +132,7 @@ public class User {
         userStore.put("PENY Coins", penyCoins);
         userStore.put("QUID Coins", quidCoins);
         userStore.put("Day Coins Deposited", coinsDepositedDay);
+        userStore.put("Ghost Time", ghostTime);
 
         db.collection("users").document(mAuth.getUid())
                 .set(userStore)
