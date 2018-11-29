@@ -511,8 +511,11 @@ public class mapActivity extends AppCompatActivity implements
         Toast.makeText(getApplicationContext(), "Coin collected!",
                 Toast.LENGTH_SHORT).show();
 
-        timeTrialTimer.cancel();
-        createTimeTrialTimer();
+
+        if (user.timeTrialMode){
+            timeTrialTimer.cancel();
+            createTimeTrialTimer();
+        }
 
         if (user.dayCoins == 50) {
             if (user.ghostMode){
@@ -741,7 +744,13 @@ public class mapActivity extends AppCompatActivity implements
     public void timeTrialFail() {
 
         ghostTimeTrialTime.setAlpha(0.0f);
-        Toast.makeText(getApplicationContext(), "You Lost Time Trial Mode!", Toast.LENGTH_SHORT).show();
+        if (coinsCollectedData.features.size()==0){
+            Toast.makeText(getApplicationContext(), "You Have No Coins To Lose!", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            Toast.makeText(getApplicationContext(), "You Lost A Coin!", Toast.LENGTH_SHORT).show();
+            coinsCollectedData.features.remove(0);
+        }
 
     }
 
