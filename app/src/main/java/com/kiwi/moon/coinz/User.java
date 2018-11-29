@@ -49,6 +49,9 @@ public class User {
 
     public List<Coin> coins;
 
+    public boolean ghostMode = false;
+    public boolean timeTrialMode = false;
+
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     String TAG = "mapActivity";
