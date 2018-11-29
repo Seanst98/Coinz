@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -68,6 +69,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class mapActivity extends AppCompatActivity implements
         OnMapReadyCallback, LocationEngineListener, PermissionsListener, DownloadCompleteRunner{
@@ -88,6 +91,13 @@ public class mapActivity extends AppCompatActivity implements
 
     String data;
     TextView totalCoins;
+    TextView ghostTimeTrialTime;
+    float timeCount = 0;
+
+    Timer ghostTimer;
+    CountDownTimer timeTrialTimer;
+
+
     private String downloadDate = "";   //Format:YYYY/MM/DD
     private String coinsDownloadDate = "";
     private String fireStoreDate = "";
@@ -203,8 +213,10 @@ public class mapActivity extends AppCompatActivity implements
         //Set up any text boxes on the screen
         //*******************************************
         totalCoins = (TextView) findViewById(R.id.totalCoins);
+        ghostTimeTrialTime = (TextView) findViewById(R.id.ghostTimeTrialTime);
 
         totalCoins.setText("Coins Collected: " + 0);
+        ghostTimeTrialTime.setText("Time");
     }
 
     @Override
@@ -499,6 +511,15 @@ public class mapActivity extends AppCompatActivity implements
         Toast.makeText(getApplicationContext(), "Coin collected!",
                 Toast.LENGTH_SHORT).show();
 
+        if (user.dayCoins == 50) {
+            if (user.ghostMode){
+                ghostWin();
+            }
+            else if (user.timeTrialMode){
+                timeTrialWin();
+            }
+        }
+
 
     }
 
@@ -656,8 +677,68 @@ public class mapActivity extends AppCompatActivity implements
             mapView.onStart();
         }
 
+        ghostTimeTrialTime.setAlpha(0.0f);
+
+
+        if (user.ghostMode){
+            ghostTimeTrialTime.setAlpha(1.0f);
+            if (ghostTimer == null){
+                ghostTimer = new Timer();
+                ghostTimer.scheduleAtFixedRate(new TimerTask() {
+                    @Override
+                    public void run() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                ghostTimeTrialTime.setText("Time: " + timeCount);
+                                timeCount++;
+                            }
+                        });
+                    }
+                }, 1000, 1000);
+            }
+        }
+
+        if (user.timeTrialMode) {
+            ghostTimeTrialTime.setAlpha(1.0f);
+            if (timeTrialTimer == null){
+                timeTrialTimer = new CountDownTimer(120000, 1000) {
+                    @Override
+                    public void onTick(long millisUntilFinished) {
+                        ghostTimeTrialTime.setText("Time Left: " + millisUntilFinished/1000);
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        timeTrialFail();
+                    }
+                }.start();
+            }
+        }
 
     }
+
+    public void timeTrialFail() {
+
+        ghostTimeTrialTime.setAlpha(0.0f);
+        Toast.makeText(getApplicationContext(), "You Lost Time Trial Mode!", Toast.LENGTH_SHORT).show();
+
+    }
+
+    public void timeTrialWin(){
+
+        ghostTimeTrialTime.setAlpha(0.0f);
+        Toast.makeText(getApplicationContext(), "You Won Time Trial Mode!", Toast.LENGTH_SHORT).show();
+
+    }
+
+    public void ghostWin(){
+
+        ghostTimeTrialTime.setAlpha(0.0f);
+        Toast.makeText(getApplicationContext(), "You Collected All The Coins!", Toast.LENGTH_SHORT).show();
+
+    }
+
 
     @Override
     public void onResume() {
