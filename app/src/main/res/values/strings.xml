@@ -35,5 +35,6 @@
     <string name="logOut">Log Out</string>
     <string name="updateEmailTxt">Enter Your New Email</string>
     <string name="updatePasswordTxt">Enter Your New Password</string>
-
+    <string name="activateGhost">Activate Ghost Mode</string>
+    <string name="activateTimeTrial">Activate Time Trial Mode</string>
 </resources>
