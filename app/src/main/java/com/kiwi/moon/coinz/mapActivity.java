@@ -1,6 +1,7 @@
 package com.kiwi.moon.coinz;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
@@ -10,6 +11,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,28 +20,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.support.v7.widget.Toolbar;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.reflect.TypeToken;
 import com.mapbox.android.core.location.LocationEngine;
 import com.mapbox.android.core.location.LocationEngineListener;
 import com.mapbox.android.core.location.LocationEnginePriority;
 import com.mapbox.android.core.location.LocationEngineProvider;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
-import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.Geometry;
@@ -58,17 +48,13 @@ import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerPlugin;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -102,7 +88,6 @@ public class mapActivity extends AppCompatActivity implements
     private String coinsDownloadDate = "";
     private String fireStoreDate = "";
     private String currentUser = "";
-    private String coinsCollected = "";
     private final String preferencesFile = "MyPrefsFile";   //For storing preferences
     Date now = new Date();
     String currentDate = new SimpleDateFormat("yyyy/MM/dd").format(now);
@@ -113,8 +98,8 @@ public class mapActivity extends AppCompatActivity implements
 
     User user = User.getinstance();
 
-    private JsonData jsonData;
-    private JsonData coinsCollectedData;
+    private JsonData jsonData;   //Holds data about the coins on the map
+    private JsonData coinsCollectedData;   //Holds data about the coins collected
 
 
     @Override
@@ -130,8 +115,13 @@ public class mapActivity extends AppCompatActivity implements
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
+        }
+        else {
+            Log.d(TAG, "Action bar is null");
+        }
 
 
         //*******************************************
@@ -147,42 +137,49 @@ public class mapActivity extends AppCompatActivity implements
 
                         int id = menuItem.getItemId();
 
-                        switch (id) {
+                        //*******************************************
+                        //Go to whichever activity the user selects
+                        //*******************************************
 
-                            case R.id.drawer_bank:
-                                Toast.makeText(getApplicationContext(), "bank selected", Toast.LENGTH_SHORT).show();
+                        //Protection from opening the activities without the data downloaded
+                        if (jsonData.getRates().DOLR.equals("")){
+                            Toast.makeText(getApplicationContext(), "Please wait until the map data has finished downloading", Toast.LENGTH_LONG).show();
+                        }
+                        else {
 
+                            switch (id) {
 
-                                if (jsonData.rates.DOLR.equals("")){
-                                    Toast.makeText(getApplicationContext(), "Please wait until the map data has finished downloading", Toast.LENGTH_LONG).show();
-
-                                }
-                                else {
+                                //Goto the bank activity passing the coins collected data
+                                case R.id.drawer_bank:
                                     Intent intent = new Intent(mapActivity.this, BankActivity.class);
                                     intent.putExtra("coinsCollected", coinsCollectedData.toJson());
                                     Log.d(TAG, "MAP TO BANK STORED COINS ARE: " + coinsCollectedData.toJson());
                                     startActivity(intent);
-                                }
+                                    Toast.makeText(getApplicationContext(), "bank selected", Toast.LENGTH_SHORT).show();
+                                    break;
 
-                                break;
+                                //Goto the optional features activity
+                                case R.id.drawer_optional:
+                                    Toast.makeText(getApplicationContext(), "optional selected", Toast.LENGTH_SHORT).show();
+                                    Intent intent1 = new Intent(mapActivity.this, OptionalFeaturesActivity.class);
+                                    startActivity(intent1);
+                                    break;
 
-                            case R.id.drawer_optional:
-                                Toast.makeText(getApplicationContext(), "optional selected", Toast.LENGTH_SHORT).show();
-                                Intent intent1 = new Intent(mapActivity.this, OptionalFeaturesActivity.class);
-                                startActivity(intent1);
-                                break;
+                                //Goto the personal info activity
+                                case R.id.drawer_personal:
+                                    Toast.makeText(getApplicationContext(), "personal selected", Toast.LENGTH_SHORT).show();
+                                    Intent intent2 = new Intent(mapActivity.this, PersonalActivity.class);
+                                    startActivity(intent2);
+                                    break;
 
-                            case R.id.drawer_personal:
-                                Toast.makeText(getApplicationContext(), "personal selected", Toast.LENGTH_SHORT).show();
-                                Intent intent2 = new Intent(mapActivity.this, PersonalActivity.class);
-                                startActivity(intent2);
-                                break;
+                                //Goto the statistics activity
+                                case R.id.drawer_statistics:
+                                    Toast.makeText(getApplicationContext(), "statistics selected", Toast.LENGTH_SHORT).show();
+                                    Intent intent3 = new Intent(mapActivity.this, StatisticsActivity.class);
+                                    startActivity(intent3);
+                                    break;
+                            }
 
-                            case R.id.drawer_statistics:
-                                Toast.makeText(getApplicationContext(), "statistics selected", Toast.LENGTH_SHORT).show();
-                                Intent intent3 = new Intent(mapActivity.this, StatisticsActivity.class);
-                                startActivity(intent3);
-                                break;
                         }
 
                         //Set item as selected to persist highlight
@@ -214,11 +211,14 @@ public class mapActivity extends AppCompatActivity implements
         //*******************************************
         totalCoins = (TextView) findViewById(R.id.totalCoins);
         ghostTimeTrialTime = (TextView) findViewById(R.id.ghostTimeTrialTime);
-
         totalCoins.setText("Coins Collected: " + 0);
         ghostTimeTrialTime.setText("Time");
     }
 
+    //*******************************************
+    //This is necessary for highlighting the
+    //navigation drawer options when clicked
+    //*******************************************
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
@@ -229,13 +229,18 @@ public class mapActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(menuItem);
     }
 
+    //*******************************************
+    //Override the DownloadCompleteRunner function
+    //*******************************************
     @Override
     public void downloadComplete(String result) {
         data = result;
         displayMarkers();
-
     }
 
+    //*******************************************
+    //Parse the json data and display the markers
+    //*******************************************
     public void displayMarkers() {
 
         String dg = "";
@@ -282,65 +287,84 @@ public class mapActivity extends AppCompatActivity implements
         List<Coin> coins = new ArrayList<>();
         List<Coin> coins2 = new ArrayList<>();
 
-        for (int i = 0; i < fs.size(); i++) {
-            Geometry g = fs.get(i).geometry();
-            String gt = g.toJson();
-            Point p = Point.fromJson(gt);
+        if (fs != null){
+            for (int i = 0; i < fs.size(); i++) {
+                Geometry g = fs.get(i).geometry();
 
-            LatLng latLng = new LatLng(p.latitude(), p.longitude());
+                String gt = "";
+                if (g !=null){
+                    gt = g.toJson();
+                }
+                else {
+                    Log.d(TAG, "g is null");
+                }
+                Point p = Point.fromJson(gt);
 
-            JsonObject obj = fs.get(i).properties();
-            JsonElement currencyt = obj.get("currency");
-            JsonElement idt = obj.get("id");
-            JsonElement valuet = obj.get("value");
-            JsonElement marker_symbolt = obj.get("marker-symbol");
-            JsonElement marker_colort = obj.get("marker-color");
+                LatLng latLng = new LatLng(p.latitude(), p.longitude());
 
-            String currency = currencyt.getAsString();
-            String id = idt.getAsString();
-            String value = valuet.getAsString();
-            String marker_symbol = marker_symbolt.getAsString();
-            String marker_color = marker_colort.getAsString();
+                JsonObject obj = fs.get(i).properties();
+                JsonElement currencyt = obj.get("currency");
+                JsonElement idt = obj.get("id");
+                JsonElement valuet = obj.get("value");
+                JsonElement marker_symbolt = obj.get("marker-symbol");
+                JsonElement marker_colort = obj.get("marker-color");
 
-            Icon icon;
+                String currency = currencyt.getAsString();
+                String id = idt.getAsString();
+                String value = valuet.getAsString();
+                String marker_symbol = marker_symbolt.getAsString();
+                String marker_color = marker_colort.getAsString();
 
-            if (marker_color.equals("#ffdf00")) {
-                icon = iconYellow;
+                Icon icon = null;
+
+                switch (marker_color) {
+
+                    case "#ffdf00":
+                        icon = iconYellow;
+                        break;
+
+                    case "#0000ff":
+                        icon = iconBlue;
+                        break;
+
+                    case "#ff0000":
+                        icon = iconRed;
+                        break;
+
+                    default:
+                        icon = iconGreen;
+                }
+
+                Properties props = new Properties(id, value, currency, marker_symbol, marker_color);
+                Coin coin = new Coin("Feature", g, props);
+                coins.add(coin);
+                coins2.add(coin);
+
+                //Marker marker = map.addMarker(new MarkerOptions().title(value).snippet(currency).icon(icon).position(latLng));
+                map.addMarker(new MarkerOptions().title(value).snippet(currency).icon(icon).position(latLng));
+
             }
-            else if (marker_color.equals("#0000ff")) {
-                icon = iconBlue;
-            }
-            else if (marker_color.equals("#ff0000")){
-                icon = iconRed;
-            }
-            else {
-                icon = iconGreen;
-            }
-
-            Properties props = new Properties(id, value, currency, marker_symbol, marker_color);
-            Coin coin = new Coin("Feature", g, props);
-            coins.add(coin);
-            coins2.add(coin);
-
-            Marker marker = map.addMarker(new MarkerOptions().title(value).snippet(currency).icon(icon).position(latLng));
-
-
+        }
+        else {
+            Log.d(TAG, "fs is null");
         }
 
         jsonData = new JsonData(fc.type(), dg, tg, app, rates, coins);
 
 
+        //*******************************************
+        //If the last time we saved the coins collected
+        //was not today, then reset the coins collected
+        //and update the date saying when we last had
+        //stored collected coins
+        //*******************************************
         if (coinsCollectedData == null || !currentDate.equals(coinsDownloadDate)){
-
-            Log.d(TAG, "CLEARING COINS SINCE NULL OR NEW DAY");
-            Log.d(TAG, "current: " + currentDate.toString());
-            Log.d(TAG, "last coins: " + coinsDownloadDate.toString());
 
             coinsCollectedData = new JsonData(fc.type(), dg, tg, app, rates, coins2);
 
-            while (!coinsCollectedData.features.isEmpty()){
+            while (!coinsCollectedData.getFeatures().isEmpty()){
 
-                coinsCollectedData.features.remove(0);
+                coinsCollectedData.getFeatures().remove(0);
             }
 
             coinsDownloadDate = currentDate;
@@ -348,11 +372,14 @@ public class mapActivity extends AppCompatActivity implements
         }
     }
 
+    //*******************************************
+    //When the map is ready, set up location and
+    //downlaod the markers if needed
+    //*******************************************
     @Override
     public void onMapReady(MapboxMap mapboxMap) {
         if (mapboxMap == null) {
             Log.d(TAG, "[onMapReady] mapBox is null");
-
         }
         else {
             map = mapboxMap;
@@ -366,12 +393,12 @@ public class mapActivity extends AppCompatActivity implements
             //Get markers
             if (!currentDate.equals(downloadDate)) {
                 DownLoadFileTask downLoadFileTask = new DownLoadFileTask();
-                downLoadFileTask.delegate = this;
+                downLoadFileTask.delegate = this;   //Set the delegate so the class knows to use this activity's downloadComplete function
                 Log.d(TAG, "Downloading file from " + "http://homepages.inf.ed.ac.uk/stg/coinz/" + currentDate + "/coinzmap.geojson");
                 downLoadFileTask.execute("http://homepages.inf.ed.ac.uk/stg/coinz/" + currentDate + "/coinzmap.geojson");
                 downloadDate = currentDate;
-                Log.d(TAG, "[OnMapReady] Downloading map since it is a new day");
             }
+            //If the user is different from the previous user download the markers again
             else if (!currentUser.equals(mAuth.getUid())){
                 currentUser = mAuth.getUid();
                 DownLoadFileTask downLoadFileTask = new DownLoadFileTask();
@@ -381,7 +408,7 @@ public class mapActivity extends AppCompatActivity implements
                 downloadDate = currentDate;
                 Log.d(TAG, "[OnMapReady] Downloading map since it is a new day");
             }
-            else {
+            else {   //If the map stored is up to date/has been downloaded before
 
                 //Restore preferences
                 SharedPreferences settings = getSharedPreferences(preferencesFile, Context.MODE_PRIVATE);
@@ -392,17 +419,24 @@ public class mapActivity extends AppCompatActivity implements
 
                 data = json;
 
+                //Display the markers
+                //We call this here since we already have the markers as they were stored in shared preferences
                 displayMarkers();
             }
         }
     }
 
+
+    //*******************************************
+    //Ask for permission by the user to find their
+    //lcoation and use it
+    //*******************************************
     private void enableLocation() {
-        if (PermissionsManager.areLocationPermissionsGranted(this)) {
+        if (PermissionsManager.areLocationPermissionsGranted(this)) {   //If we have permission to access the location
             Log.d(TAG, "Permissions are granted");
             initializeLocationEngine();
             initializeLocationLayer();
-        } else {
+        } else {   //If we don't have permission to access the lcoation
             Log.d(TAG, "Permissions are not granted");
             permissionsManager = new PermissionsManager(this);
             permissionsManager.requestLocationPermissions(this);
@@ -410,6 +444,9 @@ public class mapActivity extends AppCompatActivity implements
 
     }
 
+    //*******************************************
+    //Initialize the location engine
+    //*******************************************
     @SuppressWarnings("MissingPermission")
     private void initializeLocationEngine() {
         locationEngine = new LocationEngineProvider(this)
@@ -429,6 +466,9 @@ public class mapActivity extends AppCompatActivity implements
         }
     }
 
+    //*******************************************
+    //Initialize the location layer
+    //*******************************************
     @SuppressWarnings({"MissingPermission", "ResourceType"})
     private void initializeLocationLayer(){
         if (mapView == null) {
@@ -447,11 +487,18 @@ public class mapActivity extends AppCompatActivity implements
 
     }
 
+    //*******************************************
+    //Set the camera position
+    //*******************************************
     private void setCameraPosition(Location location) {
         com.mapbox.mapboxsdk.geometry.LatLng latLng = new com.mapbox.mapboxsdk.geometry.LatLng(location.getLatitude(), location.getLongitude());
         map.animateCamera(CameraUpdateFactory.newLatLng((latLng)));
     }
 
+
+    //*******************************************
+    //Check the markers for if we can collect them
+    //*******************************************
     public void checkMarkers() {
         LatLng olatLng= new LatLng(originLocation.getLatitude(), originLocation.getLongitude());
 
@@ -461,7 +508,7 @@ public class mapActivity extends AppCompatActivity implements
 
             Double dist = olatLng.distanceTo(markers.get(i).getPosition());
 
-            if (dist <= 25) {
+            if (dist <= 25) {   //If we are within 25 metres of the coin
 
                 Log.d(TAG, "WITHIN 25m");
                 removeMarker(markers.get(i), i);
@@ -470,6 +517,10 @@ public class mapActivity extends AppCompatActivity implements
         }
     }
 
+    //*******************************************
+    //Remove the marker from the map and update
+    //the relevant data
+    //*******************************************
     public void removeMarker(Marker marker, int i) {
 
         Log.d(TAG, "START OF FUNC");
@@ -477,7 +528,7 @@ public class mapActivity extends AppCompatActivity implements
 
         user.dayCoins++;
         user.totalCoins++;
-        switch (marker.getSnippet()) {
+        switch (marker.getSnippet()) {   //Update the user's statistics on the value collected
 
             case "SHIL":
                 user.shil = user.shil + Double.parseDouble(marker.getTitle());
@@ -498,20 +549,24 @@ public class mapActivity extends AppCompatActivity implements
 
         totalCoins.setText("Coins Collected: " + user.dayCoins);
 
-        Log.d(TAG, "Removing Marker At: " + jsonData.features.get(i).geometry);
-        coinsCollectedData.features.add(jsonData.features.get(i));
+        Log.d(TAG, "Removing Marker At: " + jsonData.getFeatures().get(i).geometry);
+        coinsCollectedData.getFeatures().add(jsonData.getFeatures().get(i));   //Add the coin to the user's collection
         Log.d(TAG, "COINSCOLLECTED ADD: " + coinsCollectedData.toJson());
-        jsonData.features.removeAll(coinsCollectedData.features);
+        jsonData.getFeatures().removeAll(coinsCollectedData.getFeatures());   //Remove it from the map's collection
         Log.d(TAG, "COINSCOLLECTED REMOVE " + coinsCollectedData.toJson());
-        map.removeMarker(marker);
+        map.removeMarker(marker);   //Remove the marker from the mapbox map
         marker.remove();
 
-        user.updateUser();
+        user.updateUser();   //Update the user
 
         Toast.makeText(getApplicationContext(), "Coin collected!",
                 Toast.LENGTH_SHORT).show();
 
 
+        //*******************************************
+        //Deal with what happens when the user collects
+        //a coin and in a bonus mode
+        //*******************************************
         if (user.timeTrialMode){
             timeTrialTimer.cancel();
             createTimeTrialTimer();
@@ -529,6 +584,9 @@ public class mapActivity extends AppCompatActivity implements
 
     }
 
+    //*******************************************
+    //When the location of the player changes
+    //*******************************************
     @Override
     public void onLocationChanged(Location location) {
         if (location == null) {
@@ -537,25 +595,37 @@ public class mapActivity extends AppCompatActivity implements
             Log.d(TAG, "[onLocationChanged] location is not null");
 
 
+            //*******************************************
+            //If the player has actually moved
+            //the player must have moved for the program
+            //to calculate distance moved
+            //*******************************************
             if (originLocation!=null) {
+
                 LatLng latLng = new LatLng(originLocation.getLatitude(), originLocation.getLongitude());
                 LatLng latLng1 = new LatLng(location.getLatitude(), location.getLongitude());
 
-                Double dist = latLng.distanceTo(latLng1);
+                Double dist = latLng.distanceTo(latLng1);   //Get distance moved
 
                 user.dayWalked = user.dayWalked + dist;
                 user.totalWalked = user.totalWalked + dist;
+                user.bankGold = user.bankGold + (dist / 10000);   //Bonus feature where moving gives GOLD
 
                 user.updateUser();
             }
 
+            //Update location and camera
             originLocation = location;
             setCameraPosition(location);
 
+            //Check if we are near enough to a marker now that we have moved
             checkMarkers();
         }
     }
 
+    //*******************************************
+    //Once the program is connected to the location
+    //*******************************************
     @Override
     @SuppressWarnings("MissingPermission")
     public void onConnected() {
@@ -563,17 +633,29 @@ public class mapActivity extends AppCompatActivity implements
         locationEngine.requestLocationUpdates();
     }
 
+    //*******************************************
+    //When the user wants a reason for the permissions
+    //*******************************************
     @Override
     public void onExplanationNeeded(List<String> permissionsToExplain){
         Log.d(TAG, "Permissions: " + permissionsToExplain.toString());
         // Present toast or dialog.
+        Toast.makeText(getApplicationContext(), "We Need Your Location For You To Play The Game", Toast.LENGTH_SHORT).show();
     }
 
+    //*******************************************
+    //When we receive the result from asking for
+    //permissions
+    //*******************************************
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         permissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
+    //*******************************************
+    //When we receive the result from asking for
+    //permissions we can enable location tracking
+    //*******************************************
     @Override
     public void onPermissionResult(boolean granted) {
         Log.d(TAG, "[onPermissionResult] granted == " + granted);
@@ -581,9 +663,14 @@ public class mapActivity extends AppCompatActivity implements
             enableLocation();
         } else {
             // Open a dialogue with the user
+            Toast.makeText(getApplicationContext(), "We Need Your Location For You To Play The Game", Toast.LENGTH_SHORT).show();
         }
     }
 
+    //*******************************************
+    //Stop the location listener
+    //Prevents memory leaks
+    //*******************************************
     private void stopLocationListener() {
         Log.d(TAG, "Stopping Location Engine Listener");
         if (locationEngine !=null) locationEngine.removeLocationUpdates();
@@ -592,6 +679,9 @@ public class mapActivity extends AppCompatActivity implements
         if (locationEngine !=null) locationEngine = null;
     }
 
+    //*******************************************
+    //When the activity starts
+    //*******************************************
     @Override
     @SuppressWarnings({"MissingPermission"})
     protected void onStart() {
@@ -600,11 +690,11 @@ public class mapActivity extends AppCompatActivity implements
         Log.d(TAG, "[OnStart] is called");
 
         if (locationLayerPlugin != null) {
-            locationLayerPlugin.onStart();
+            locationLayerPlugin.onStart();   //Start the location layer plugin
         }
 
         if (locationEngine != null) {
-            locationEngine.requestLocationUpdates();
+            locationEngine.requestLocationUpdates();   //Start the location engine
         }
 
         //Restore preferences
@@ -614,12 +704,14 @@ public class mapActivity extends AppCompatActivity implements
         downloadDate = settings.getString("lastDownloadDate", "");
         fireStoreDate = settings.getString("lastFireStoreDate", "");
         currentUser = settings.getString("currentUser", "");
-        coinsCollected = settings.getString("coinsCollected", "");
+        String coinsCollected = settings.getString("coinsCollected", "");
         coinsDownloadDate = settings.getString("coinsLastDownloadDate", "");
 
         Log.d(TAG, "THE STORED COINS ARE: " + coinsCollected);
 
 
+        //If there are problems with the json
+        //or we don't have any json
         if (coinsCollected.equals("[]")){
             Log.d(TAG, "coins collected is []");
         }
@@ -632,19 +724,19 @@ public class mapActivity extends AppCompatActivity implements
         }
         else {
 
-            coinsCollectedData = new JsonData(coinsCollected);
+            coinsCollectedData = new JsonData(coinsCollected);   //Create the coinsCollectedData
 
         }
 
 
         //OK Here's an explanation of why I do this
-        //So I needed the User class to be a singleton and for that I need a private constructor
-        //I also need a listener for when the user data is loaded so that I can begin displaying
-        //the map etc...
-        //So I have this listener here to only slow down the map from displaying
-        //This way the user's data is loaded before the map displays and prevents any errors
-
-        if (!user.loaded){
+        //I need to download the user data before the game can start
+        //This is why I have a listener so that when the user's data has been retrieved from
+        //Firebase, we can start the game and not experience any problems
+        //This can be considered hacky, however, as of now there is no better solution since
+        //we can't sleep the thread
+        //This only happens once when the game starts so it is not expensive
+        if (!user.loaded){   //If we haven't retrieved the user data before
             User usr = new User(1);
             usr.setCustomObjectListener(new User.myCustomObjectListener() {
                 @Override
@@ -662,15 +754,15 @@ public class mapActivity extends AppCompatActivity implements
                     fireStoreDate = currentDate;
                     totalCoins.setText("Coins Collected: " + user.dayCoins);
 
-                    mapView.onStart();
+                    mapView.onStart();   //Start the map (the game)
 
                 }
             });
         }
-        else {
+        else {   //If we already have retrieved user data
             Log.d(TAG, "MAPVIEW START CALLED");
 
-            if (!currentDate.equals(fireStoreDate)) {
+            if (!currentDate.equals(fireStoreDate)) {   //If it's a new day then update Firebase info
                 user.dayCoins = 0;
                 user.dayWalked = 0;
                 user.coinsDepositedDay = 0;
@@ -680,16 +772,23 @@ public class mapActivity extends AppCompatActivity implements
             fireStoreDate = currentDate;
             totalCoins.setText("Coins Collected: " + user.dayCoins);
 
-            mapView.onStart();
+            mapView.onStart();   //Start the map (the game)
         }
 
-        ghostTimeTrialTime.setAlpha(0.0f);
 
+        //*******************************************
+        //Deal with the bonus features that require timers
+        //*******************************************
+        ghostTimeTrialTime.setAlpha(0.0f);   //Ghost mode and time trial mode share the same text box
+                                            //Make the text box invisible
 
+        //If the user is using ghost mode
+        //We don't need to make a method of creating a timer for ghost mode as this is only done
+        //once
         if (user.ghostMode){
-            ghostTimeTrialTime.setAlpha(1.0f);
+            ghostTimeTrialTime.setAlpha(1.0f);   //Make the text box invisible
             if (ghostTimer == null){
-                ghostTimer = new Timer();
+                ghostTimer = new Timer();   //Create a new timer that counts up every second
                 ghostTimer.scheduleAtFixedRate(new TimerTask() {
                     @Override
                     public void run() {
@@ -701,14 +800,23 @@ public class mapActivity extends AppCompatActivity implements
                             }
                         });
                     }
-                }, 1000, 1000);
+                }, 1000, 1000);   //Update every second
             }
         }
 
+        //If the user is using time trial mode
+        //We methodise creating a time trial timer since we have to create a new timer every time a
+        //coin has been collected i.e. the timer is reset whenever we collect a coin
         if (user.timeTrialMode) {
-            createTimeTrialTimer();
+            createTimeTrialTimer();   //Create a timer
         }
 
+
+        //*******************************************
+        //Cancel the timers if the user is not in a
+        //bonus mode anymore (when the user de-activates
+        //a mode)
+        //*******************************************
         if (!user.timeTrialMode){
             if (timeTrialTimer!=null){
                 timeTrialTimer.cancel();
@@ -722,11 +830,14 @@ public class mapActivity extends AppCompatActivity implements
 
     }
 
+    //*******************************************
+    //Create a time trial timer that counts down
+    //*******************************************
     public void createTimeTrialTimer(){
 
         ghostTimeTrialTime.setAlpha(1.0f);
         if (timeTrialTimer == null){
-            timeTrialTimer = new CountDownTimer(120000, 1000) {
+            timeTrialTimer = new CountDownTimer(120000, 1000) {   //120 seconds to collect a coin, update every second
                 @Override
                 public void onTick(long millisUntilFinished) {
                     ghostTimeTrialTime.setText("Time Left: " + millisUntilFinished/1000);
@@ -741,40 +852,74 @@ public class mapActivity extends AppCompatActivity implements
 
     }
 
+    //*******************************************
+    //When the user fails time trial
+    //Remove a coin and display a message or
+    //give a message if there are no coins to lose
+    //*******************************************
     public void timeTrialFail() {
 
         ghostTimeTrialTime.setAlpha(0.0f);
-        if (coinsCollectedData.features.size()==0){
+        if (coinsCollectedData.getFeatures().size()==0){
             Toast.makeText(getApplicationContext(), "You Have No Coins To Lose!", Toast.LENGTH_SHORT).show();
         }
         else {
             Toast.makeText(getApplicationContext(), "You Lost A Coin!", Toast.LENGTH_SHORT).show();
-            coinsCollectedData.features.remove(coinsCollectedData.features.size()-1);
+            coinsCollectedData.getFeatures().remove(coinsCollectedData.getFeatures().size()-1);
         }
 
     }
 
+    //*******************************************
+    //If the user has collected all the coins
+    //and is in time trial mode
+    //display a message congratulating them
+    //For now, there is a reward, however, the
+    //amount needs to be optimised for fun play
+    //
+    //It should be noted that while I wanted the
+    //player to be able to do time trial mode with
+    //any amount of coins left to collect, the reward should
+    //really be proportionate to the coins collected
+    //while in time trial mode
+    //*******************************************
     public void timeTrialWin(){
 
         ghostTimeTrialTime.setAlpha(0.0f);
         Toast.makeText(getApplicationContext(), "You Won Time Trial Mode!", Toast.LENGTH_SHORT).show();
-
+        user.bankGold = user.bankGold + 25;
+        user.updateUser();
     }
 
+    //*******************************************
+    //If the user has collected all the coins and
+    //is in ghost mode then check whether they beat
+    //their previous time and reward appropriately
+    //
+    //As with time trial mode the reward amount should
+    //be optimised for fun play
+    //*******************************************
     public void ghostWin(){
 
         ghostTimeTrialTime.setAlpha(0.0f);
         if (timeCount<user.ghostTime){
             Toast.makeText(getApplicationContext(), "You Beat Your Previous Time!", Toast.LENGTH_SHORT).show();
             user.ghostTime = timeCount;
+            user.bankGold = user.bankGold + 50;
             user.updateUser();
         }
         else{
+            user.bankGold = user.bankGold + 20;
+            user.updateUser();
             Toast.makeText(getApplicationContext(), "You Collected All The Coins But Did Not Beat Your Previous Time", Toast.LENGTH_SHORT).show();
         }
     }
 
 
+    //*******************************************
+    //Overriding some activity functions but, for now,
+    //not using them aside from calling map functions
+    //*******************************************
     @Override
     public void onResume() {
         super.onResume();
@@ -785,15 +930,19 @@ public class mapActivity extends AppCompatActivity implements
     public void onPause() {
         super.onPause();
         mapView.onPause();
-
-        user.updateUser();
     }
 
+    //*******************************************
+    //When the activity is finished with
+    //*******************************************
     @Override
     public void onStop() {
         super.onStop();
-        mapView.onStop();
+        mapView.onStop();   //Stop the map
 
+        //*******************************************
+        //Prevent location memory leaks
+        //*******************************************
         if (locationLayerPlugin != null) {
             locationLayerPlugin.onStop();
         }
@@ -802,6 +951,9 @@ public class mapActivity extends AppCompatActivity implements
             stopLocationListener();
         }
 
+        //*******************************************
+        //Store the data in shared preferences or to Firebase
+        //*******************************************
         //All objects are from android.context.Context
         SharedPreferences settings = getSharedPreferences(preferencesFile, Context.MODE_PRIVATE);
 
@@ -823,23 +975,59 @@ public class mapActivity extends AppCompatActivity implements
 
     }
 
+    //*******************************************
+    //When the user presses back, confirm their choice,
+    //cancel any timers if they do want to leave
+    //*******************************************
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
 
-        user.ghostMode=false;
-        user.timeTrialMode=false;
+        //Open a dialog with the user to confirm them wanting to leave the map
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
 
-        if (ghostTimer!=null){
-            ghostTimer.cancel();
-        }
-        if (timeTrialTimer!=null){
-            timeTrialTimer.cancel();
-        }
+                switch (i){
+                    case DialogInterface.BUTTON_POSITIVE:   //If the user does want to back out of the map
+                        user.ghostMode=false;
+                        user.timeTrialMode=false;
 
-        mAuth.signOut();
+                        //Cancel timers if necessary
+                        if (ghostTimer!=null){
+                            Log.d(TAG, "Cancelling the ghost timer");
+                            ghostTimer.cancel();
+                        }
+                        if (timeTrialTimer!=null){
+                            Log.d(TAG, "Cancelling the time trial timer");
+                            timeTrialTimer.cancel();
+                        }
+
+                        //We cannot do super.onBackPressed
+                        //So we simply start the activity
+                        Intent intent = new Intent(mapActivity.this, loginActivity.class);
+                        startActivity(intent);
+                        finish();   //This prevents the user from backing back into the map activity
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        break;
+                }
+            }
+        };
+
+        //Dialog builder / dialog display
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Are You Sure You Want To Leave The Game? You Will Lose Progress In The Bonus Game Modes. The Coins You Have Collected Are Safe Though.")
+                .setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show();
+
+
     }
 
+    //*******************************************
+    //Overriding some activity functions but, for now,
+    //not using them aside from calling map functions
+    //*******************************************
     @Override
     public void onLowMemory() {
         super.onLowMemory();

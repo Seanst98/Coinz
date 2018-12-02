@@ -44,6 +44,10 @@ public class PersonalActivity extends AppCompatActivity {
         emailInput = (EditText) findViewById(R.id.updateEmailtxt);
         passwordInput = (EditText) findViewById(R.id.updatePasswordtxt);
 
+
+        //*******************************************
+        //Listeners for if a card is pressed
+        //*******************************************
         //If deposit card is pressed
         final CardView cardUpdateEmail = findViewById(R.id.cardUpdateEmail);
         cardUpdateEmail.setOnClickListener(new View.OnClickListener() {
@@ -51,7 +55,7 @@ public class PersonalActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 //Call function to validate email inputs
-                updateEmail();
+                emailVal();
             }
         });
 
@@ -61,7 +65,7 @@ public class PersonalActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 //Call function to validate password inputs
-                updatePassword();
+                passwordVal();
             }
         });
 
@@ -86,6 +90,52 @@ public class PersonalActivity extends AppCompatActivity {
         });
     }
 
+    //*******************************************
+    //Validate against empty text field for email
+    //*******************************************
+    public void emailVal() {
+
+        if (emailInput.getText() == null){
+            Toast.makeText(getApplicationContext(), "Please Enter An Email" , Toast.LENGTH_SHORT).show();
+        }
+        else if (emailInput.getText().toString().equals("")){
+            Toast.makeText(getApplicationContext(), "Please Enter An Email", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            if (user == null){
+                Log.d(TAG, "User is null");
+            }
+            else {
+                updateEmail();
+            }
+        }
+    }
+
+    //*******************************************
+    //Validate against empty password text field
+    //*******************************************
+    public void passwordVal() {
+
+        if (passwordInput.getText() == null){
+            Toast.makeText(getApplicationContext(), "Please Enter A Password" , Toast.LENGTH_SHORT).show();
+        }
+        else if (emailInput.getText().toString().equals("")){
+            Toast.makeText(getApplicationContext(), "Please Enter A Password", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            if (user == null){
+                Log.d(TAG, "User is null");
+            }
+            else {
+                updatePassword();
+            }
+        }
+    }
+
+    //*******************************************
+    //Update the Firebase email of user
+    //Display an error message or success message
+    //*******************************************
     public void updateEmail(){
 
         String newEmail = emailInput.getText().toString();
@@ -98,11 +148,18 @@ public class PersonalActivity extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(), "Successfully Changed Email", Toast.LENGTH_SHORT).show();
                             Log.d(TAG, "User email address updated.");
                         }
+                        else {
+                            Toast.makeText(getApplicationContext(), "Email Update Unsuccessful", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
 
     }
 
+    //*******************************************
+    //Update the Firebase password of user
+    //Display an error message or success message
+    //*******************************************
     public void updatePassword(){
 
         String newPassword = passwordInput.getText().toString();
@@ -115,11 +172,18 @@ public class PersonalActivity extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(), "Successfully Changed Password", Toast.LENGTH_SHORT).show();
                             Log.d(TAG, "User password updated.");
                         }
+                        else {
+                            Toast.makeText(getApplicationContext(), "Password Update Unsuccessful", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
 
     }
 
+    //*******************************************
+    //Open a dialog with the user if they are sure
+    //that they want to delete their account
+    //*******************************************
     public void deleteAccDialog() {
 
         //Open a dialog with the user to confirm their account deletion
@@ -137,12 +201,26 @@ public class PersonalActivity extends AppCompatActivity {
             }
         };
 
+        //Dialog builder / dialog display
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Are You Sure You Want To Delete Your Account?")
                 .setPositiveButton("Yes", dialogClickListener)
                 .setNegativeButton("No", dialogClickListener).show();
     }
 
+    //*******************************************
+    //Delete the user's account
+    //
+    //Deletion of coins that have been sent as gifts
+    //are not deleted as the receiving user may want
+    //these or know of these coins
+    //
+    //Firebase data is also not deleted as it holds
+    //no personal information of the user
+    //The reason for this is that this data can
+    //possibly be of use later on down the line
+    //Perhaps for user combined statistics
+    //*******************************************
     public void deleteAcc(){
 
         //Deletes the user's firebase account and deletes shared preferenes
@@ -166,6 +244,9 @@ public class PersonalActivity extends AppCompatActivity {
 
     }
 
+    //*******************************************
+    //We must clear the shared preferences too
+    //*******************************************
     public void clearSharedPrefs(){
 
         //Find the shared preferences file and clear it
@@ -178,6 +259,9 @@ public class PersonalActivity extends AppCompatActivity {
         editor.apply();
     }
 
+    //*******************************************
+    //Log Out
+    //*******************************************
     public void logOut(){
 
         //Logs the user out and takes them to the main menu

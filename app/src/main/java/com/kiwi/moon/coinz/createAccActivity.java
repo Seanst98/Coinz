@@ -33,6 +33,7 @@ public class createAccActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
+        //Get text entered into edit text fields
         emailInput = (EditText) findViewById(R.id.enterEmail);
         passwordInput = (EditText) findViewById(R.id.enterPassword);
         passwordConfInput = (EditText) findViewById(R.id.enterPassword2);
@@ -72,11 +73,9 @@ public class createAccActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                // Sign in success, update UI with the signed-in user's information
+                                // Account creation success
                                 Log.d(TAG, "createUserWithEmail:success");
-                                FirebaseUser user = mAuth.getCurrentUser();
-                                //updateUI(user);
-                                //Start Activity to the create account screen
+                                //Start Activity to the map activity
                                 Intent myIntent = new Intent(createAccActivity.this, mapActivity.class);
                                 startActivity(myIntent);
                             } else {
@@ -84,10 +83,8 @@ public class createAccActivity extends AppCompatActivity {
                                 Log.w(TAG, "createUserWithEmail:failure", task.getException());
                                 Toast.makeText(getApplicationContext(), "Creation Failed. Try A Different Email/Password",
                                         Toast.LENGTH_SHORT).show();
-                                //updateUI(null);
                             }
 
-                            // ...
                         }
                     });
         }

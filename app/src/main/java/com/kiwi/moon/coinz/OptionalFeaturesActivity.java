@@ -25,6 +25,9 @@ public class OptionalFeaturesActivity extends AppCompatActivity {
         ghostText = (TextView) findViewById(R.id.textGhost);
         timeTrialText = (TextView) findViewById(R.id.textTimeTrial);
 
+        //*******************************************
+        //If we are already in a mode then update UI
+        //*******************************************
         if (user.ghostMode){
             ghostText.setText("De-Activate Ghost Mode");
         }
@@ -64,6 +67,10 @@ public class OptionalFeaturesActivity extends AppCompatActivity {
         });
     }
 
+    //*******************************************
+    //Validate ghost mode and if passes then set
+    //user ghost mode to true and update UI
+    //*******************************************
     public void activateGhost(){
 
         if (user.dayCoins != 0){
@@ -82,6 +89,9 @@ public class OptionalFeaturesActivity extends AppCompatActivity {
         }
     }
 
+    //*******************************************
+    //De-Activate ghost mode
+    //*******************************************
     public void deactivateGhost(){
         Toast.makeText(getApplicationContext(), "Ghost Mode Has Been De-Activated", Toast.LENGTH_SHORT).show();
         user.ghostMode=false;
@@ -89,6 +99,10 @@ public class OptionalFeaturesActivity extends AppCompatActivity {
 
     }
 
+    //*******************************************
+    //Validate time trial mode and if passes then set
+    //user time trial mode to true and update UI
+    //*******************************************
     public void activateTimeTrial(){
 
         if (user.ghostMode){
@@ -106,6 +120,9 @@ public class OptionalFeaturesActivity extends AppCompatActivity {
         }
     }
 
+    //*******************************************
+    //De-Activate time trial mode
+    //*******************************************
     public void deactivateTimeTrial() {
         Toast.makeText(getApplicationContext(), "Time Trial Has Been De-Activated", Toast.LENGTH_SHORT).show();
         user.timeTrialMode=false;

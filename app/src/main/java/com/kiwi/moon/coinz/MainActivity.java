@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
 
+        //Set the buttons to take the user to the login screen or create account screen
         final Button loginButton = findViewById(R.id.loginButton);
 
         final Button createAcc = findViewById(R.id.createAccButton);

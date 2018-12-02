@@ -19,23 +19,55 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+//*******************************************
+//JsonData that stores important information
+//about the json
+//*******************************************
 public class JsonData {
 
-    public String type;
+    private String type;
+
+    public String getType() {
+        return type;
+    }
 
     @SerializedName("date-generated")
-    public String date_generated;
+    private String date_generated;
+
+    public String getDate_generated() {
+        return date_generated;
+    }
 
     @SerializedName("time-generated")
-    public String time_generated;
+    private String time_generated;
+
+    public String getTime_generated() {
+        return time_generated;
+    }
 
     @SerializedName("approximate-time-remaining")
-    public String approximate_time_remaining;
+    private String approximate_time_remaining;
 
-    public Rates rates;
+    public String getApproximate_time_remaining() {
+        return approximate_time_remaining;
+    }
 
-    public List<Coin> features;
+    private Rates rates;
 
+    public Rates getRates() {
+        return rates;
+    }
+
+    private List<Coin> features;
+
+    public List<Coin> getFeatures() {
+        return features;
+    }
+
+
+    //*******************************************
+    //Constructor that takes in the JsonData variables
+    //*******************************************
     public JsonData(String t, String d, String tg, String app, Rates r, List<Coin> f) {
         type = t;
         date_generated = d;
@@ -45,6 +77,9 @@ public class JsonData {
         features = f;
     }
 
+    //*******************************************
+    //Constructor that takes in the json String
+    //*******************************************
     public JsonData(String json) {
         String dg = "";
         String tg = "";
@@ -108,8 +143,6 @@ public class JsonData {
             Coin coin = new Coin("Feature", g, props);
             coins.add(coin);
 
-
-
         }
 
         type = fc.type();
@@ -121,6 +154,9 @@ public class JsonData {
     }
 
 
+    //*******************************************
+    //Function to build this class into a json string
+    //*******************************************
     public String toJson() {
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();

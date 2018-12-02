@@ -1,5 +1,8 @@
 package com.kiwi.moon.coinz;
 
+//*******************************************
+//Rates class that holds the rates of the day
+//*******************************************
 public class Rates {
 
     public String SHIL;

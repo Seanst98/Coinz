@@ -39,6 +39,7 @@ public class loginActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
+        //Get the text entered into the edit text fields
         emailInput = (EditText) findViewById(R.id.enterEmail);
         passwordInput = (EditText) findViewById(R.id.enterPassword);
 
@@ -50,7 +51,7 @@ public class loginActivity extends AppCompatActivity {
 
             public void onClick(View v) {
 
-                //Call function to create an account
+                //Call function to login
                 signIn(emailInput.getText().toString(), passwordInput.getText().toString());
             }
         });
@@ -90,7 +91,6 @@ public class loginActivity extends AppCompatActivity {
                             Log.w(TAG, "sign in failure", task.getException());
                             Toast.makeText(getApplicationContext(), "Sign In Failed",
                                     Toast.LENGTH_SHORT).show();
-                            //Update UI
                         }
                     }
                 });

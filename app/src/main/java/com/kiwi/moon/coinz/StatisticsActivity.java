@@ -2,31 +2,9 @@ package com.kiwi.moon.coinz;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.EditText;
 import android.widget.TextView;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
-
-import org.w3c.dom.Text;
-
 public class StatisticsActivity extends AppCompatActivity {
-
-    //Access a cloud firestore instance from the bank activity
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-    private String TAG = "mapActivity";
-
-    private TextView distanceWalkedDay;
-    private TextView coinsCollectedDay;
-    private TextView bankGold;
-    private TextView distanceWalked;
-    private TextView coinsCollected;
-    private TextView dolr;
-    private TextView shil;
-    private TextView peny;
-    private TextView quid;
 
     private User user = User.getinstance();
 
@@ -35,15 +13,29 @@ public class StatisticsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistics);
 
-        distanceWalkedDay = (TextView) findViewById(R.id.distanceWalkedDaytxt);
-        coinsCollectedDay = (TextView) findViewById(R.id.coinsCollectedDaytxt);
-        bankGold = (TextView) findViewById(R.id.bankGoldtxt);
-        distanceWalked = (TextView) findViewById(R.id.distanceWalkedtxt);
-        coinsCollected = (TextView) findViewById(R.id.coinsCollectedtxt);
-        dolr = (TextView) findViewById(R.id.dolrtxt);
-        shil = (TextView) findViewById(R.id.shiltxt);
-        peny = (TextView) findViewById(R.id.penytxt);
-        quid = (TextView) findViewById(R.id.quidtxt);
+
+        //*******************************************
+        //Set the text fields with the user's statistics
+        //*******************************************
+        TextView distanceWalkedDay;
+        TextView coinsCollectedDay;
+        TextView bankGold;
+        TextView distanceWalked;
+        TextView coinsCollected;
+        TextView dolr;
+        TextView shil;
+        TextView peny;
+        TextView quid;
+
+        distanceWalkedDay = findViewById(R.id.distanceWalkedDaytxt);
+        coinsCollectedDay = findViewById(R.id.coinsCollectedDaytxt);
+        bankGold = findViewById(R.id.bankGoldtxt);
+        distanceWalked = findViewById(R.id.distanceWalkedtxt);
+        coinsCollected = findViewById(R.id.coinsCollectedtxt);
+        dolr = findViewById(R.id.dolrtxt);
+        shil = findViewById(R.id.shiltxt);
+        peny = findViewById(R.id.penytxt);
+        quid = findViewById(R.id.quidtxt);
 
 
         distanceWalkedDay.setText("You Have Walked " + user.dayWalked + " Metres Today");

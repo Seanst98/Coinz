@@ -16,20 +16,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+//*******************************************
+//User class
+//*******************************************
 public class User {
 
-    private static User user = new User();
+    private static User user = new User();   //Singleton instance
 
+    //Private constructor for using as a singleton
     private User(){
         this.listener = null;
         getUser();
     };
 
+    //Second constructor for the listener when we want to prevent the map from
+    //starting before the user data has been loaded
     public User(int a) {
         this.listener = null;
         getUser();
     }
 
+    //Get the singleton instance
     public static User getinstance(){
         return user;
     }
@@ -56,8 +63,6 @@ public class User {
 
     public boolean loaded = false;
 
-    public List<Coin> coins;
-
     public boolean ghostMode = false;
     public boolean timeTrialMode = false;
 
@@ -68,49 +73,60 @@ public class User {
     public void getUser() {
 
         db = FirebaseFirestore.getInstance();
-        DocumentReference docRef = db.collection("users").document(mAuth.getUid());
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
 
-                        dayCoins = document.getLong("Day Coins").intValue();
-                        Log.d(TAG, "DAY COINS: " + dayCoins);
-                        dayWalked = document.getLong("Day Walked").doubleValue();
-                        Log.d(TAG, "DAY WALKED: " + dayWalked);
-                        bankGold = document.getLong("Bank GOLD").doubleValue();
-                        totalCoins = document.getLong("Total Coins").intValue();
-                        totalWalked = document.getLong("Total Walked").doubleValue();
-                        dolr = document.getLong("DOLR Collected").doubleValue();
-                        shil = document.getLong("SHIL Collected").doubleValue();
-                        quid = document.getLong("QUID Collected").doubleValue();
-                        peny = document.getLong("PENY Collected").doubleValue();
-                        dolrCoins = document.getLong("DOLR Coins").intValue();
-                        shilCoins = document.getLong("SHIL Coins").intValue();
-                        quidCoins = document.getLong("QUID Coins").intValue();
-                        penyCoins = document.getLong("PENY Coins").intValue();
-                        coinsDepositedDay = document.getLong("Day Coins Deposited").intValue();
-                        ghostTime = document.getLong("Ghost Time").intValue();
-                        loaded = true;
+        if (mAuth.getUid()!=null) {   //Prevent null ptrs
+            DocumentReference docRef = db.collection("users").document(mAuth.getUid());
+            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document!=null){   //Prevent null ptrs
+                            //However, document should never return null
+                            //The safeguard is still put into place to remove warnings
+                            if (document.exists()) {
+
+                                dayCoins = document.getLong("Day Coins").intValue();
+                                dayWalked = document.getLong("Day Walked").doubleValue();
+                                bankGold = document.getLong("Bank GOLD").doubleValue();
+                                totalCoins = document.getLong("Total Coins").intValue();
+                                totalWalked = document.getLong("Total Walked").doubleValue();
+                                dolr = document.getLong("DOLR Collected").doubleValue();
+                                shil = document.getLong("SHIL Collected").doubleValue();
+                                quid = document.getLong("QUID Collected").doubleValue();
+                                peny = document.getLong("PENY Collected").doubleValue();
+                                dolrCoins = document.getLong("DOLR Coins").intValue();
+                                shilCoins = document.getLong("SHIL Coins").intValue();
+                                quidCoins = document.getLong("QUID Coins").intValue();
+                                penyCoins = document.getLong("PENY Coins").intValue();
+                                coinsDepositedDay = document.getLong("Day Coins Deposited").intValue();
+                                ghostTime = document.getLong("Ghost Time").intValue();
+                                loaded = true;
+
+                            } else {
+                                Log.d(TAG, "No such document");
+                                Log.d(TAG, "Creating the user on firebase");
+                                updateUser();
+                            }
+
+                            if (listener!=null){
+                                Log.d(TAG, "On data loaded is called from user");
+                                listener.onDataLoaded();
+                            }
+                        }
+                        else {
+                            Log.d(TAG, "document is null");
+                        }
 
                     } else {
-                        Log.d(TAG, "No such document");
-                        Log.d(TAG, "Creating the user on firebase");
-                        updateUser();
+                        Log.d(TAG, "get failed with ", task.getException());
                     }
-
-                    if (listener!=null){
-                        Log.d(TAG, "On data loaded is called from user");
-                        listener.onDataLoaded();
-                    }
-
-                } else {
-                    Log.d(TAG, "get failed with ", task.getException());
                 }
-            }
-        });
+            });
+        }
+        else {
+            Log.d(TAG, "mAuth is null");
+        }
 
     }
 
@@ -134,33 +150,37 @@ public class User {
         userStore.put("Day Coins Deposited", coinsDepositedDay);
         userStore.put("Ghost Time", ghostTime);
 
-        db.collection("users").document(mAuth.getUid())
-                .set(userStore)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "Document Snapshot successfully written!");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d(TAG, "Error writing document", e);
-                    }
-                });
+        if (mAuth.getUid()!=null){
+            db.collection("users").document(mAuth.getUid())
+                    .set(userStore)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG, "Document Snapshot successfully written!");
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.d(TAG, "Error writing document", e);
+                        }
+                    });
+        }
+        else {
+            Log.d(TAG, "mAuth is null");
+        }
 
     }
 
     public interface myCustomObjectListener {
 
-        public void onDataLoaded();
+        void onDataLoaded();
     }
 
-    private myCustomObjectListener listener = null;
+    private myCustomObjectListener listener;
 
     public void setCustomObjectListener(myCustomObjectListener listener) {
         this.listener = listener;
     }
-
 
 }

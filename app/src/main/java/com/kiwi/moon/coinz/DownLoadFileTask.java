@@ -11,9 +11,15 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+//*******************************************
+//DownloadFileTask class that downloads a string
+//from a webpage
+//*******************************************
 public class DownLoadFileTask extends AsyncTask<String, Void, String> {
 
-    public DownloadCompleteRunner delegate = null;
+    public DownloadCompleteRunner delegate = null;   //Delegate specifies which
+                                                    //implementation of the downloadComplete
+                                                    //fucntion to call
 
     @Override
     protected String doInBackground(String... urls) {
