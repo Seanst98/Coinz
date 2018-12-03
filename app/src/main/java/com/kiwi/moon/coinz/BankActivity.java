@@ -295,7 +295,7 @@ public class BankActivity extends AppCompatActivity {
             else if ((user.coinsDepositedDay + Integer.parseInt(coinsInput.getText().toString())) > 25){
                 Toast.makeText(getApplicationContext(), "You Can't Deposit More Than 25 Coins Per Day", Toast.LENGTH_SHORT).show();
             }
-            if (coinsCollectedData.getFeatures().size() == 0){   //If you don't have any coins to deposit
+            else if (coinsCollectedData.getFeatures().size() == 0){   //If you don't have any coins to deposit
                 Toast.makeText(getApplicationContext(), "You Don't Have Any Coins To Deposit! Go Collect Some", Toast.LENGTH_SHORT).show();
             }
             else {

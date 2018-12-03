@@ -155,26 +155,22 @@ public class mapActivity extends AppCompatActivity implements
                                     intent.putExtra("coinsCollected", coinsCollectedData.toJson());
                                     Log.d(TAG, "MAP TO BANK STORED COINS ARE: " + coinsCollectedData.toJson());
                                     startActivity(intent);
-                                    Toast.makeText(getApplicationContext(), "bank selected", Toast.LENGTH_SHORT).show();
                                     break;
 
                                 //Goto the optional features activity
                                 case R.id.drawer_optional:
-                                    Toast.makeText(getApplicationContext(), "optional selected", Toast.LENGTH_SHORT).show();
                                     Intent intent1 = new Intent(mapActivity.this, OptionalFeaturesActivity.class);
                                     startActivity(intent1);
                                     break;
 
                                 //Goto the personal info activity
                                 case R.id.drawer_personal:
-                                    Toast.makeText(getApplicationContext(), "personal selected", Toast.LENGTH_SHORT).show();
                                     Intent intent2 = new Intent(mapActivity.this, PersonalActivity.class);
                                     startActivity(intent2);
                                     break;
 
                                 //Goto the statistics activity
                                 case R.id.drawer_statistics:
-                                    Toast.makeText(getApplicationContext(), "statistics selected", Toast.LENGTH_SHORT).show();
                                     Intent intent3 = new Intent(mapActivity.this, StatisticsActivity.class);
                                     startActivity(intent3);
                                     break;
