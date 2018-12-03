@@ -532,18 +532,22 @@ public class mapActivity extends AppCompatActivity implements
 
             case "SHIL":
                 user.shil = user.shil + Double.parseDouble(marker.getTitle());
+                user.shilCoins = user.shilCoins + 1;
                 break;
 
             case "DOLR":
                 user.dolr = user.dolr + Double.parseDouble(marker.getTitle());
+                user.dolrCoins = user.dolrCoins + 1;
                 break;
 
             case "PENY":
                 user.peny = user.peny + Double.parseDouble(marker.getTitle());
+                user.penyCoins = user.penyCoins + 1;
                 break;
 
             case "QUID":
                 user.quid = user.quid + Double.parseDouble(marker.getTitle());
+                user.quidCoins = user.quidCoins + 1;
                 break;
         }
 
