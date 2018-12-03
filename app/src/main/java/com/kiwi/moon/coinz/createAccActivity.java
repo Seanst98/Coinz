@@ -47,8 +47,7 @@ public class createAccActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 //Call function to create an account
-                createAcc(emailInput.getText().toString(), passwordInput.getText().toString(),
-                        passwordConfInput.getText().toString());
+                emailPasswordVal();
             }
         });
 
@@ -58,8 +57,39 @@ public class createAccActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         //Check if user is signed in (non-null)
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+        //FirebaseUser currentUser = mAuth.getCurrentUser();
+        //This can be updated to possibly allow for ability to skip login if already logged in
 
+    }
+
+    //*******************************************
+    //Validate against empty text field for email
+    //and passwords
+    //*******************************************
+    public void emailPasswordVal() {
+
+        if (emailInput.getText() == null){
+            Toast.makeText(getApplicationContext(), "Please Enter An Email" , Toast.LENGTH_SHORT).show();
+        }
+        else if (emailInput.getText().toString().equals("")){
+            Toast.makeText(getApplicationContext(), "Please Enter An Email", Toast.LENGTH_SHORT).show();
+        }
+        else if (passwordInput.getText() == null){
+            Toast.makeText(getApplicationContext(), "Please Enter A Password" , Toast.LENGTH_SHORT).show();
+        }
+        else if (passwordInput.getText().toString().equals("")){
+            Toast.makeText(getApplicationContext(), "Please Enter A Password", Toast.LENGTH_SHORT).show();
+        }
+        else if (passwordConfInput.getText() == null){
+            Toast.makeText(getApplicationContext(), "Please Enter A Confirmation Password" , Toast.LENGTH_SHORT).show();
+        }
+        else if (passwordConfInput.getText().toString().equals("")){
+            Toast.makeText(getApplicationContext(), "Please Enter A Confirmation Password", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            createAcc(emailInput.getText().toString(), passwordInput.getText().toString(),
+                    passwordConfInput.getText().toString());
+        }
     }
 
     public void createAcc(String email, String password, String passwordConf){

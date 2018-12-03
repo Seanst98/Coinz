@@ -51,8 +51,8 @@ public class loginActivity extends AppCompatActivity {
 
             public void onClick(View v) {
 
-                //Call function to login
-                signIn(emailInput.getText().toString(), passwordInput.getText().toString());
+                //Call function to validate email and password
+                emailPasswordVal();
             }
         });
     }
@@ -67,6 +67,29 @@ public class loginActivity extends AppCompatActivity {
     @Override
     public void onStop() {
         super.onStop();
+    }
+
+    //*******************************************
+    //Validate against empty text field for email
+    //and password
+    //*******************************************
+    public void emailPasswordVal() {
+
+        if (emailInput.getText() == null){
+            Toast.makeText(getApplicationContext(), "Please Enter An Email" , Toast.LENGTH_SHORT).show();
+        }
+        else if (emailInput.getText().toString().equals("")){
+            Toast.makeText(getApplicationContext(), "Please Enter An Email", Toast.LENGTH_SHORT).show();
+        }
+        else if (passwordInput.getText() == null){
+            Toast.makeText(getApplicationContext(), "Please Enter A Password" , Toast.LENGTH_SHORT).show();
+        }
+        else if (passwordInput.getText().toString().equals("")){
+            Toast.makeText(getApplicationContext(), "Please Enter A Password", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            signIn(emailInput.getText().toString(), passwordInput.getText().toString());
+        }
     }
 
     public void signIn(String email, String password) {

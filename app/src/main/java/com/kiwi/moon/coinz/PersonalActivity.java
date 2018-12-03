@@ -119,7 +119,7 @@ public class PersonalActivity extends AppCompatActivity {
         if (passwordInput.getText() == null){
             Toast.makeText(getApplicationContext(), "Please Enter A Password" , Toast.LENGTH_SHORT).show();
         }
-        else if (emailInput.getText().toString().equals("")){
+        else if (passwordInput.getText().toString().equals("")){
             Toast.makeText(getApplicationContext(), "Please Enter A Password", Toast.LENGTH_SHORT).show();
         }
         else {
