@@ -392,6 +392,8 @@ public class BankActivity extends AppCompatActivity {
         coinsCollectedTxt.setText("You Have " + coinsCollectedData.getFeatures().size() + " Coins To Deposit Or Gift");
         goldInBankTxt.setText("You Have " + user.bankGold + " GOLD In The Bank");
 
+        Log.d(TAG, "starting bank day walked is: " + user.dayWalked);
+
     }
 
     //*******************************************
@@ -413,14 +415,13 @@ public class BankActivity extends AppCompatActivity {
 
         //Apply the edits
         editor.apply();
-
-        //Save data in FireStore
-        user.updateUser();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        //Save data in FireStore
+        user.updateUser();
     }
 }
 

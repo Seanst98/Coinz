@@ -86,15 +86,17 @@ public class User {
                             //The safeguard is still put into place to remove warnings
                             if (document.exists()) {
 
+                                Log.d(TAG, "Document data: " + document.getData());
+                                dayWalked = document.getDouble("Day Walked");
+                                Log.d(TAG, "Double day walked: " + dayWalked);
                                 dayCoins = document.getLong("Day Coins").intValue();
-                                dayWalked = document.getLong("Day Walked").doubleValue();
-                                bankGold = document.getLong("Bank GOLD").doubleValue();
+                                bankGold = document.getDouble("Bank GOLD");
                                 totalCoins = document.getLong("Total Coins").intValue();
-                                totalWalked = document.getLong("Total Walked").doubleValue();
-                                dolr = document.getLong("DOLR Collected").doubleValue();
-                                shil = document.getLong("SHIL Collected").doubleValue();
-                                quid = document.getLong("QUID Collected").doubleValue();
-                                peny = document.getLong("PENY Collected").doubleValue();
+                                totalWalked = document.getDouble("Total Walked");
+                                dolr = document.getDouble("DOLR Collected");
+                                shil = document.getDouble("SHIL Collected");
+                                quid = document.getDouble("QUID Collected");
+                                peny = document.getDouble("PENY Collected");
                                 dolrCoins = document.getLong("DOLR Coins").intValue();
                                 shilCoins = document.getLong("SHIL Coins").intValue();
                                 quidCoins = document.getLong("QUID Coins").intValue();
@@ -110,7 +112,6 @@ public class User {
                             }
 
                             if (listener!=null){
-                                Log.d(TAG, "On data loaded is called from user");
                                 listener.onDataLoaded();
                             }
                         }
