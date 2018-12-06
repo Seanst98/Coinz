@@ -22,7 +22,7 @@ public class User{
 
     private static User user = new User();   //Singleton instance
 
-    public userListener delegate;   //Delegate used for starting map when data is loaded
+    public UserListener delegate;   //Delegate used for starting map when data is loaded
 
     //Private constructor for using as a singleton
     private User(){

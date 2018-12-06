@@ -59,7 +59,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class mapActivity extends AppCompatActivity implements
-        OnMapReadyCallback, LocationEngineListener, PermissionsListener, DownloadCompleteRunner, userListener{
+        OnMapReadyCallback, LocationEngineListener, PermissionsListener, DownloadCompleteRunner, UserListener{
 
     //*******************************************
     //Declare variables
@@ -813,7 +813,9 @@ public class mapActivity extends AppCompatActivity implements
     }
 
     //*******************************************
-    //Override the userListener function
+    //Override the userListener function so that
+    //when the user data is downloaded we can start
+    //the map/set some data
     //*******************************************
     @Override
     public void onDataLoaded() {
