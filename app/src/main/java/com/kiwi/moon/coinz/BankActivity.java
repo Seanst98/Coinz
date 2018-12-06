@@ -207,8 +207,8 @@ public class BankActivity extends AppCompatActivity {
         else if (Integer.parseInt(giftAmountInput.getText().toString()) < 1){
             Toast.makeText(getApplicationContext(), "Please Enter An Amount To Gift Greater Than 0" , Toast.LENGTH_SHORT).show();
         }
-        else if (Integer.parseInt(giftAmountInput.getText().toString()) > 25){
-            Toast.makeText(getApplicationContext(), "Please Enter An Amount To Gift Less than 26" , Toast.LENGTH_SHORT).show();
+        else if (Integer.parseInt(giftAmountInput.getText().toString()) > 50){
+            Toast.makeText(getApplicationContext(), "Please Enter An Amount To Gift Less than 51" , Toast.LENGTH_SHORT).show();
         }
         //NAME VALIDATION
         else if (coinsCollectedData.getFeatures().size() < Integer.parseInt(giftAmountInput.getText().toString())){
