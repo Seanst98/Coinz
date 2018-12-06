@@ -49,8 +49,6 @@ public class BankActivity extends AppCompatActivity {
     private EditText giftNameInput;
     private EditText giftAmountInput;
 
-    private final String preferencesFile = "MyPrefsFile";   //For storing preferences
-
     JsonData coinsReceived;
 
 
@@ -63,12 +61,12 @@ public class BankActivity extends AppCompatActivity {
         //*******************************************
         //Get the text boxes from the layout
         //*******************************************
-        coinsInput = (EditText) findViewById(R.id.depositCoins);
-        coinsCollectedTxt = (TextView) findViewById(R.id.coinsCollectedtxt);
-        goldInBankTxt = (TextView) findViewById(R.id.goldInBanktxt);
+        coinsInput = findViewById(R.id.depositCoins);
+        coinsCollectedTxt = findViewById(R.id.coinsCollectedtxt);
+        goldInBankTxt = findViewById(R.id.goldInBanktxt);
 
-        giftNameInput = (EditText) findViewById(R.id.giftnametxt);
-        giftAmountInput = (EditText) findViewById(R.id.giftamounttxt);
+        giftNameInput = findViewById(R.id.giftnametxt);
+        giftAmountInput = findViewById(R.id.giftamounttxt);
 
 
         //*******************************************
@@ -126,10 +124,16 @@ public class BankActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
 
                             //If there are no documents resulting from the query
-                            if (task.getResult().size() == 0) {
 
-                                Toast.makeText(getApplicationContext(),"No One Has Sent You Any Coins", Toast.LENGTH_SHORT).show();
-                                Log.d(TAG, "No Documents To Receive");
+                            if (task.getResult()!=null){
+                                if (task.getResult().size() == 0) {
+
+                                    Toast.makeText(getApplicationContext(),"No One Has Sent You Any Coins", Toast.LENGTH_SHORT).show();
+                                    Log.d(TAG, "No Documents To Receive");
+                                }
+                            }
+                            else {
+                                Log.d(TAG, "[bank] task.getResult is null");
                             }
 
                             //*******************************************
@@ -240,7 +244,13 @@ public class BankActivity extends AppCompatActivity {
         Map<String, Object> userStore = new HashMap<>();
         userStore.put("Coins" , storable.toJson());
         userStore.put("ForUID", giftNameInput.getText().toString());
-        userStore.put("FromUID", mAuth.getUid());
+
+        if (mAuth.getUid()!=null){
+            userStore.put("FromUID", mAuth.getUid());
+        }
+        else {
+            Log.d(TAG, "[bank] mAuth is null");
+        }
 
         db.collection("availableCoins").document()
                 .set(userStore)
@@ -407,6 +417,7 @@ public class BankActivity extends AppCompatActivity {
         super.onPause();
 
         //We do this in onPause as we want this effect to happen before reaching map activity to read it
+        String preferencesFile = "MyPrefsFile";   //For storing preferences
         SharedPreferences settings = getSharedPreferences(preferencesFile, Context.MODE_PRIVATE);
 
         //We need an Editor object to make preference changes
