@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".BankActivity">
 
+    <!--Edit Text to put the number of coins the user wants to deposit-->
     <EditText
         android:id="@+id/depositCoins"
         android:layout_width="76dp"
@@ -23,6 +24,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/depositCoinstxt" />
 
+    <!--Text View that displays the number of coins the user has to deposit or gift-->
     <TextView
         android:id="@+id/coinsCollectedtxt"
         android:layout_width="wrap_content"
@@ -33,6 +35,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!--Text View that displays how much GOLD the user has in the bank-->
     <TextView
         android:id="@+id/goldInBanktxt"
         android:layout_width="wrap_content"
@@ -43,7 +46,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/coinsCollectedtxt" />
 
-
+    <!--Text View that tells a user to enter a number to deposit coins-->
     <TextView
         android:id="@+id/depositCoinstxt"
         android:layout_width="289dp"
@@ -59,6 +62,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/goldInBanktxt" />
 
+    <!--Edit Text to put the UID of the user they want to gift coins to-->
     <EditText
         android:id="@+id/giftnametxt"
         android:layout_width="294dp"
@@ -76,6 +80,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cardDeposit" />
 
+    <!--Edit Text to put the number of coins they would like to gift-->
     <EditText
         android:id="@+id/giftamounttxt"
         android:layout_width="wrap_content"
@@ -94,6 +99,7 @@
         app:layout_constraintTop_toBottomOf="@+id/giftnametxt" />
 
 
+    <!--Card View for pressing to deposit coins-->
     <android.support.v7.widget.CardView
         android:id="@+id/cardDeposit"
         android:layout_width="300dp"
@@ -129,7 +135,7 @@
 
     </android.support.v7.widget.CardView>
 
-
+    <!--Card View for pressing to gift coins-->
     <android.support.v7.widget.CardView
         android:id="@+id/cardGift"
         android:layout_width="300dp"
@@ -162,6 +168,7 @@
         </RelativeLayout>
     </android.support.v7.widget.CardView>
 
+    <!--Card View for pressing to check if any other user has sent you some coins-->
     <android.support.v7.widget.CardView
         android:id="@+id/cardRetrieve"
         android:layout_width="300dp"

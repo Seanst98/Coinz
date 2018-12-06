@@ -8,6 +8,7 @@
     android:fitsSystemWindows="true" >
 
 
+    <!--Constraint that holds the game's display (not the navigation drawer)-->
     <android.support.constraint.ConstraintLayout
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:mapbox="http://schemas.android.com/apk/res-auto"
@@ -16,6 +17,7 @@
         android:layout_height="match_parent"
         tools:context=".mapActivity">
 
+        <!--The map-->
         <com.mapbox.mapboxsdk.maps.MapView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -31,7 +33,7 @@
 
         </com.mapbox.mapboxsdk.maps.MapView>
 
-
+        <!--Text View displaying how many coins the player has collected today-->
         <TextView
             android:id="@+id/totalCoins"
             android:layout_width="85dp"
@@ -42,6 +44,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
+        <!--Text View that displays the different timers when the bonus modes are active-->
         <TextView
             android:id="@+id/ghostTimeTrialTime"
             android:layout_width="85dp"
@@ -52,7 +55,12 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
-
+        <!--
+        Toolbar so the user can press it and open up the navigation drawer.
+        While the user can swipe from the left of the screen to open up the
+        nav drawer, this toolbar helps guide the user to know to do this
+        and also provides another way of opening the nav drawer
+        -->
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
@@ -68,6 +76,7 @@
 
     </android.support.constraint.ConstraintLayout>
 
+    <!--Navigation drawer that slides out in front of the map-->
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"
         android:layout_width="wrap_content"

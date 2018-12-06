@@ -88,7 +88,6 @@ public class User {
 
                                 Log.d(TAG, "Document data: " + document.getData());
                                 dayWalked = document.getDouble("Day Walked");
-                                Log.d(TAG, "Double day walked: " + dayWalked);
                                 dayCoins = document.getLong("Day Coins").intValue();
                                 bankGold = document.getDouble("Bank GOLD");
                                 totalCoins = document.getLong("Total Coins").intValue();

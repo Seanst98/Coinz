@@ -9,6 +9,7 @@
     android:background="@drawable/subu"
     tools:showIn="@layout/activity_main">
 
+    <!--Button to go to the login screen-->
     <Button
         android:id="@+id/loginButton"
         android:layout_width="122dp"
@@ -24,6 +25,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <!--Button to go to the create account screen-->
     <Button
         android:id="@+id/createAccButton"
         android:layout_width="122dp"
@@ -43,6 +45,7 @@
         app:layout_constraintTop_toBottomOf="@+id/loginButton"
         app:layout_constraintVertical_bias="0.0" />
 
+    <!--Text View that displays the title of the game-->
     <TextView
         android:id="@+id/title"
         android:layout_width="122dp"
