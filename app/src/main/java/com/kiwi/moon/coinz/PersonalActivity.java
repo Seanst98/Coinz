@@ -12,14 +12,12 @@ import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 public class PersonalActivity extends AppCompatActivity {
 
@@ -41,8 +39,8 @@ public class PersonalActivity extends AppCompatActivity {
         setContentView(R.layout.activity_personal);
 
 
-        emailInput = (EditText) findViewById(R.id.updateEmailtxt);
-        passwordInput = (EditText) findViewById(R.id.updatePasswordtxt);
+        emailInput = findViewById(R.id.updateEmailtxt);
+        passwordInput = findViewById(R.id.updatePasswordtxt);
 
 
         //*******************************************
