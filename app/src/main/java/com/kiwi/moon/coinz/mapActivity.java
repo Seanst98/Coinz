@@ -617,7 +617,7 @@ public class mapActivity extends AppCompatActivity implements
 
                 user.dayWalked = user.dayWalked + dist;
                 user.totalWalked = user.totalWalked + dist;
-                user.bankGold = user.bankGold + (dist / 10000);   //Bonus feature where moving gives GOLD
+                user.bankGold = user.bankGold + (dist / 100);   //Bonus feature where moving gives GOLD
 
                 user.updateUser();
             }

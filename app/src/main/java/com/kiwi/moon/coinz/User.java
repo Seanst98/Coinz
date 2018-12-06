@@ -13,7 +13,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 //*******************************************
@@ -66,9 +65,9 @@ public class User {
     public boolean ghostMode = false;
     public boolean timeTrialMode = false;
 
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
-    FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    String TAG = "mapActivity";
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private String TAG = "mapActivity";
 
     public void getUser() {
 

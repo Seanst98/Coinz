@@ -37,4 +37,5 @@
     <string name="updatePasswordTxt">Enter Your New Password</string>
     <string name="activateGhost">Activate Ghost Mode</string>
     <string name="activateTimeTrial">Activate Time Trial Mode</string>
+    <string name="menu">Menu</string>
 </resources>
