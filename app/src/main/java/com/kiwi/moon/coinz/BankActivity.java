@@ -380,7 +380,7 @@ public class BankActivity extends AppCompatActivity {
     //Currency to GOLD conversion
     //*******************************************
     public double exchangeConversion(double amount, double rate){
-        return amount/rate;
+        return amount*rate;
     }
 
     //*******************************************
