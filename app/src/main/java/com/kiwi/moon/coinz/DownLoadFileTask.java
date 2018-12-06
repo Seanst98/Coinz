@@ -2,7 +2,6 @@ package com.kiwi.moon.coinz;
 
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -46,7 +45,7 @@ public class DownLoadFileTask extends AsyncTask<String, Void, String> {
     }
 
     @NonNull
-    private String readStream(InputStream stream) throws IOException {
+    private String readStream(InputStream stream){
         //Read input from stream, build result as a string
         return convertStreamToString(stream);
     }
