@@ -3,8 +3,6 @@ package com.kiwi.moon.coinz;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
@@ -17,7 +15,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 
 public class loginActivity extends AppCompatActivity {
@@ -34,14 +31,14 @@ public class loginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         mAuth = FirebaseAuth.getInstance();
 
         //Get the text entered into the edit text fields
-        emailInput = (EditText) findViewById(R.id.enterEmail);
-        passwordInput = (EditText) findViewById(R.id.enterPassword);
+        emailInput = findViewById(R.id.enterEmail);
+        passwordInput = findViewById(R.id.enterPassword);
 
 
         final CardView cardView = findViewById(R.id.cardView);
@@ -61,7 +58,7 @@ public class loginActivity extends AppCompatActivity {
     public void onStart(){
         super.onStart();
         //Check if user is signed in (non-null)
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+        //FirebaseUser currentUser = mAuth.getCurrentUser();
     }
 
     @Override
@@ -104,7 +101,6 @@ public class loginActivity extends AppCompatActivity {
                             Log.d(TAG, "sign in success");
                             Toast.makeText(getApplicationContext(), "Authentication success.",
                                     Toast.LENGTH_SHORT).show();
-                            FirebaseUser user = mAuth.getCurrentUser();
                             //Take to map
                             Intent myIntent = new Intent(loginActivity.this, mapActivity.class);
                             startActivity(myIntent);
