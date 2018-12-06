@@ -4,12 +4,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 public class OptionalFeaturesActivity extends AppCompatActivity {
 
@@ -22,8 +18,8 @@ public class OptionalFeaturesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_optional_features);
 
-        ghostText = (TextView) findViewById(R.id.textGhost);
-        timeTrialText = (TextView) findViewById(R.id.textTimeTrial);
+        ghostText = findViewById(R.id.textGhost);
+        timeTrialText = findViewById(R.id.textTimeTrial);
 
         //*******************************************
         //If we are already in a mode then update UI
