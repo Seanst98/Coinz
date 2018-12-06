@@ -101,7 +101,7 @@ public class User{
                             } else {
                                 Log.d(TAG, "No such document");
                                 Log.d(TAG, "Creating the user on firebase");
-                                updateUser();
+                                createAccount();
                             }
 
                             if (delegate!=null){
@@ -125,6 +125,68 @@ public class User{
     }
 
     public void updateUser() {
+
+        //Save data in FireStore
+        Map<String, Object> userStore = new HashMap<>();
+        userStore.put("Day Coins", dayCoins);
+        userStore.put("Day Walked", dayWalked);
+        userStore.put("Total Coins", totalCoins);
+        userStore.put("Total Walked", totalWalked);
+        userStore.put("Bank GOLD", bankGold);
+        userStore.put("SHIL Collected", shil);
+        userStore.put("QUID Collected", quid);
+        userStore.put("PENY Collected", peny);
+        userStore.put("DOLR Collected", dolr);
+        userStore.put("DOLR Coins", dolrCoins);
+        userStore.put("SHIL Coins", shilCoins);
+        userStore.put("PENY Coins", penyCoins);
+        userStore.put("QUID Coins", quidCoins);
+        userStore.put("Day Coins Deposited", coinsDepositedDay);
+        userStore.put("Ghost Time", ghostTime);
+
+        if (mAuth.getUid()!=null){
+            db.collection("users").document(mAuth.getUid())
+                    .set(userStore)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG, "Document Snapshot successfully written!");
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.d(TAG, "Error writing document", e);
+                        }
+                    });
+        }
+        else {
+            Log.d(TAG, "mAuth is null");
+        }
+
+    }
+
+    public void createAccount() {
+        dayCoins = 0;
+        dayWalked = 0;
+        totalCoins = 0;
+        totalWalked = 0;
+        bankGold = 0;
+        shil = 0;
+        peny = 0;
+        quid = 0;
+        dolr = 0;
+        shilCoins = 0;
+        penyCoins = 0;
+        quidCoins = 0;
+        dolrCoins = 0;
+        coinsDepositedDay = 0;
+        ghostTime = 0;
+        loaded = false;
+        ghostMode = false;
+        timeTrialMode = false;
+
+
 
         //Save data in FireStore
         Map<String, Object> userStore = new HashMap<>();

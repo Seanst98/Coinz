@@ -756,6 +756,9 @@ public class mapActivity extends AppCompatActivity implements
 
             mapView.onStart();   //Start the map (the game)
         }
+        else {
+            user.getUser();
+        }
 
 
         //*******************************************
@@ -998,6 +1001,7 @@ public class mapActivity extends AppCompatActivity implements
                     case DialogInterface.BUTTON_POSITIVE:   //If the user does want to back out of the map
                         user.ghostMode=false;
                         user.timeTrialMode=false;
+                        user.loaded=false;
 
                         //Cancel timers if necessary
                         if (ghostTimer!=null){
