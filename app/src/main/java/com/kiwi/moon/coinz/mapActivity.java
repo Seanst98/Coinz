@@ -59,7 +59,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class mapActivity extends AppCompatActivity implements
-        OnMapReadyCallback, LocationEngineListener, PermissionsListener, DownloadCompleteRunner{
+        OnMapReadyCallback, LocationEngineListener, PermissionsListener, DownloadCompleteRunner, userListener{
 
     //*******************************************
     //Declare variables
@@ -95,7 +95,7 @@ public class mapActivity extends AppCompatActivity implements
     //Access a cloud firestore instance from the bank activity
     FirebaseAuth mAuth =  FirebaseAuth.getInstance();
 
-    User user = User.getinstance();
+    User user;
 
     private JsonData jsonData;   //Holds data about the coins on the map
     private JsonData coinsCollectedData;   //Holds data about the coins collected
@@ -107,6 +107,9 @@ public class mapActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_map);
 
         Log.d(TAG, "BEGIN");
+
+        user = User.getinstance();
+        user.delegate = this;
 
         //*******************************************
         //Toolbar for navigation drawer
@@ -735,38 +738,10 @@ public class mapActivity extends AppCompatActivity implements
 
         }
 
-
-        //OK Here's an explanation of why I do this
-        //I need to download the user data before the game can start
-        //This is why I have a listener so that when the user's data has been retrieved from
-        //Firebase, we can start the game and not experience any problems
-        //This can be considered hacky, however, as of now there is no better solution since
-        //we can't sleep the thread
-        //This only happens once when the game starts so it is not expensive
-        if (!user.loaded){   //If we haven't retrieved the user data before
-            User usr = new User(1);
-            usr.setCustomObjectListener(new User.myCustomObjectListener() {
-                @Override
-                public void onDataLoaded() {
-
-                    Log.d(TAG, "MAPVIEW START CALLED");
-
-                    if (!currentDate.equals(fireStoreDate)){
-                        user.dayCoins = 0;
-                        user.dayWalked = 0;
-                        user.coinsDepositedDay = 0;
-
-                        user.updateUser();
-                    }
-                    fireStoreDate = currentDate;
-                    totalCoins.setText("Coins Collected: " + user.dayCoins);
-
-                    mapView.onStart();   //Start the map (the game)
-
-                }
-            });
-        }
-        else {   //If we already have retrieved user data
+        //Start the map if the user data has already been downloaded
+        //Otherwise carry on and wait until it is downloaded
+        Log.d(TAG, "[start] starting check");
+        if (user.loaded){   //If we haven't retrieved the user data before
             Log.d(TAG, "MAPVIEW START CALLED");
 
             if (!currentDate.equals(fireStoreDate)) {   //If it's a new day then update Firebase info
@@ -834,6 +809,29 @@ public class mapActivity extends AppCompatActivity implements
                 ghostTimer.cancel();
             }
         }
+
+    }
+
+    //*******************************************
+    //Override the userListener function
+    //*******************************************
+    @Override
+    public void onDataLoaded() {
+
+        Log.d(TAG, "[onDataLoaded map] data is laoded");
+        Log.d(TAG, "MAPVIEW START CALLED");
+
+        if (!currentDate.equals(fireStoreDate)){
+            user.dayCoins = 0;
+            user.dayWalked = 0;
+            user.coinsDepositedDay = 0;
+
+            user.updateUser();
+        }
+        fireStoreDate = currentDate;
+        totalCoins.setText("Coins Collected: " + user.dayCoins);
+
+        mapView.onStart();   //Start the map (the game)
 
     }
 

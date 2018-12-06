@@ -18,20 +18,15 @@ import java.util.Map;
 //*******************************************
 //User class
 //*******************************************
-public class User {
+public class User{
 
     private static User user = new User();   //Singleton instance
 
+    public userListener delegate;   //Delegate used for starting map when data is loaded
+
     //Private constructor for using as a singleton
     private User(){
-        this.listener = null;
-        getUser();
-    };
-
-    //Second constructor for the listener when we want to prevent the map from
-    //starting before the user data has been loaded
-    public User(int a) {
-        this.listener = null;
+        this.delegate = null;
         getUser();
     }
 
@@ -109,8 +104,8 @@ public class User {
                                 updateUser();
                             }
 
-                            if (listener!=null){
-                                listener.onDataLoaded();
+                            if (delegate!=null){
+                                delegate.onDataLoaded();
                             }
                         }
                         else {
@@ -171,15 +166,5 @@ public class User {
 
     }
 
-    public interface myCustomObjectListener {
-
-        void onDataLoaded();
-    }
-
-    private myCustomObjectListener listener;
-
-    public void setCustomObjectListener(myCustomObjectListener listener) {
-        this.listener = listener;
-    }
 
 }
