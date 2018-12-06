@@ -12,7 +12,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -34,9 +33,9 @@ public class createAccActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         //Get text entered into edit text fields
-        emailInput = (EditText) findViewById(R.id.enterEmail);
-        passwordInput = (EditText) findViewById(R.id.enterPassword);
-        passwordConfInput = (EditText) findViewById(R.id.enterPassword2);
+        emailInput = findViewById(R.id.enterEmail);
+        passwordInput = findViewById(R.id.enterPassword);
+        passwordConfInput = findViewById(R.id.enterPassword2);
 
 
         final CardView cardView = findViewById(R.id.cardView);
