@@ -21,7 +21,6 @@ import android.widget.Toast;
 import android.support.v7.widget.Toolbar;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mapbox.android.core.location.LocationEngine;
@@ -55,6 +54,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -90,10 +90,9 @@ public class mapActivity extends AppCompatActivity implements
     private String currentUser = "";
     private final String preferencesFile = "MyPrefsFile";   //For storing preferences
     Date now = new Date();
-    String currentDate = new SimpleDateFormat("yyyy/MM/dd").format(now);
+    String currentDate = new SimpleDateFormat("yyyy/MM/dd", Locale.ENGLISH).format(now);
 
     //Access a cloud firestore instance from the bank activity
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseAuth mAuth =  FirebaseAuth.getInstance();
 
     User user = User.getinstance();
@@ -196,7 +195,7 @@ public class mapActivity extends AppCompatActivity implements
         //*******************************************
         Mapbox.getInstance(this, getString(R.string.access_token));
 
-        mapView = (MapView) findViewById(R.id.mapboxMapView);
+        mapView = findViewById(R.id.mapboxMapView);
 
 
         mapView.onCreate(savedInstanceState);
@@ -205,8 +204,8 @@ public class mapActivity extends AppCompatActivity implements
         //*******************************************
         //Set up any text boxes on the screen
         //*******************************************
-        totalCoins = (TextView) findViewById(R.id.totalCoins);
-        ghostTimeTrialTime = (TextView) findViewById(R.id.ghostTimeTrialTime);
+        totalCoins = findViewById(R.id.totalCoins);
+        ghostTimeTrialTime = findViewById(R.id.ghostTimeTrialTime);
         totalCoins.setText("Coins Collected: " + 0);
         ghostTimeTrialTime.setText("Time");
     }
@@ -245,10 +244,10 @@ public class mapActivity extends AppCompatActivity implements
 
         Rates rates = null;
 
-        String shil = "";
+        /*String shil = "";
         String dolr = "";
         String quid = "";
-        String peny = "";
+        String peny = "";*/
 
         try {
 
@@ -258,10 +257,10 @@ public class mapActivity extends AppCompatActivity implements
             app = collection.getString("approximate-time-remaining");
 
             JSONObject ratesl = collection.getJSONObject("rates");
-            shil = ratesl.getString("SHIL");
-            dolr = ratesl.getString("DOLR");
-            quid = ratesl.getString("QUID");
-            peny = ratesl.getString("PENY");
+            String shil = ratesl.getString("SHIL");
+            String dolr = ratesl.getString("DOLR");
+            String quid = ratesl.getString("QUID");
+            String peny = ratesl.getString("PENY");
 
             rates = new Rates(shil, dolr, quid, peny);
 
@@ -299,19 +298,28 @@ public class mapActivity extends AppCompatActivity implements
                 LatLng latLng = new LatLng(p.latitude(), p.longitude());
 
                 JsonObject obj = fs.get(i).properties();
-                JsonElement currencyt = obj.get("currency");
-                JsonElement idt = obj.get("id");
-                JsonElement valuet = obj.get("value");
-                JsonElement marker_symbolt = obj.get("marker-symbol");
-                JsonElement marker_colort = obj.get("marker-color");
 
-                String currency = currencyt.getAsString();
-                String id = idt.getAsString();
-                String value = valuet.getAsString();
-                String marker_symbol = marker_symbolt.getAsString();
-                String marker_color = marker_colort.getAsString();
+                String currency="";
+                String id="";
+                String value="";
+                String marker_symbol="";
+                String marker_color="";
 
-                Icon icon = null;
+                if (obj!=null){
+                    JsonElement currencyt = obj.get("currency");
+                    JsonElement idt = obj.get("id");
+                    JsonElement valuet = obj.get("value");
+                    JsonElement marker_symbolt = obj.get("marker-symbol");
+                    JsonElement marker_colort = obj.get("marker-color");
+
+                    currency = currencyt.getAsString();
+                    id = idt.getAsString();
+                    value = valuet.getAsString();
+                    marker_symbol = marker_symbolt.getAsString();
+                    marker_color = marker_colort.getAsString();
+                }
+
+                Icon icon;
 
                 switch (marker_color) {
 
@@ -712,12 +720,11 @@ public class mapActivity extends AppCompatActivity implements
 
         //If there are problems with the json
         //or we don't have any json
-        if (coinsCollected.equals("[]")){
-            Log.d(TAG, "coins collected is []");
-        }
-        else if (coinsCollected == null){
-
+        if (coinsCollected == null){
             Log.d(TAG, "coins collected is null");
+        }
+        else if (coinsCollected.equals("[]")){
+            Log.d(TAG, "coins collected is []");
         }
         else if (coinsCollected.equals("")){
             Log.d(TAG, "coins collected is '' ");

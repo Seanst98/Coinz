@@ -5,11 +5,12 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.kiwi.moon.coinz"
-        minSdkVersion 19
+        minSdkVersion 28
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -45,6 +46,11 @@ dependencies {
     implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-locationlayer:0.6.0'
     //debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.2'
     //releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.2'
+    testImplementation  'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:rules:1.0.2'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.mapbox.mapboxsdk:mapbox-android-navigation:0.22.0'
     implementation 'com.google.firebase:firebase-firestore:17.1.3'
 }
