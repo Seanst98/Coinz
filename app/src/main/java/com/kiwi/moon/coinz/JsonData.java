@@ -10,8 +10,6 @@ import com.google.gson.annotations.SerializedName;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.Geometry;
-import com.mapbox.geojson.Point;
-import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -87,10 +85,10 @@ public class JsonData {
 
         Rates r = null;
 
-        String shil = "";
-        String dolr = "";
-        String quid = "";
-        String peny = "";
+        String shil;
+        String dolr;
+        String quid;
+        String peny;
 
         String TAG = "mapActivity";
 
@@ -119,30 +117,40 @@ public class JsonData {
 
         List<Coin> coins = new ArrayList<>();
 
-        for (int i = 0; i < fs.size(); i++) {
-            Geometry g = fs.get(i).geometry();
-            String gt = g.toJson();
-            Point p = Point.fromJson(gt);
+        if (fs != null){
+            for (int i = 0; i < fs.size(); i++) {
+                Geometry g = fs.get(i).geometry();
 
-            LatLng latLng = new LatLng(p.latitude(), p.longitude());
+                JsonObject obj = fs.get(i).properties();
 
-            JsonObject obj = fs.get(i).properties();
-            JsonElement currencyt = obj.get("currency");
-            JsonElement idt = obj.get("id");
-            JsonElement valuet = obj.get("value");
-            JsonElement marker_symbolt = obj.get("marker-symbol");
-            JsonElement marker_colort = obj.get("marker-color");
+                String currency="";
+                String id="";
+                String value="";
+                String marker_symbol="";
+                String marker_color="";
 
-            String currency = currencyt.getAsString();
-            String id = idt.getAsString();
-            String value = valuet.getAsString();
-            String marker_symbol = marker_symbolt.getAsString();
-            String marker_color = marker_colort.getAsString();
+                if (obj!=null){
+                    JsonElement currencyt = obj.get("currency");
+                    JsonElement idt = obj.get("id");
+                    JsonElement valuet = obj.get("value");
+                    JsonElement marker_symbolt = obj.get("marker-symbol");
+                    JsonElement marker_colort = obj.get("marker-color");
 
-            Properties props = new Properties(id, value, currency, marker_symbol, marker_color);
-            Coin coin = new Coin("Feature", g, props);
-            coins.add(coin);
+                    currency = currencyt.getAsString();
+                    id = idt.getAsString();
+                    value = valuet.getAsString();
+                    marker_symbol = marker_symbolt.getAsString();
+                    marker_color = marker_colort.getAsString();
+                }
 
+                Properties props = new Properties(id, value, currency, marker_symbol, marker_color);
+                Coin coin = new Coin("Feature", g, props);
+                coins.add(coin);
+
+            }
+        }
+        else {
+            Log.d(TAG, "fs is null");
         }
 
         type = fc.type();
