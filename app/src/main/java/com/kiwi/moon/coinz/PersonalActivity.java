@@ -12,6 +12,7 @@ import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -29,6 +30,7 @@ public class PersonalActivity extends AppCompatActivity {
 
     private EditText emailInput;
     private EditText passwordInput;
+    private TextView UIDtxt;
 
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -41,6 +43,8 @@ public class PersonalActivity extends AppCompatActivity {
 
         emailInput = findViewById(R.id.updateEmailtxt);
         passwordInput = findViewById(R.id.updatePasswordtxt);
+        UIDtxt = findViewById(R.id.UIDtxt);
+        UIDtxt.setText("Your UID is: " + mAuth.getUid());
 
 
         //*******************************************
