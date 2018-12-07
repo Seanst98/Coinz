@@ -347,7 +347,6 @@ public class mapActivity extends AppCompatActivity implements
                 coins.add(coin);
                 coins2.add(coin);
 
-                //Marker marker = map.addMarker(new MarkerOptions().title(value).snippet(currency).icon(icon).position(latLng));
                 map.addMarker(new MarkerOptions().title(value).snippet(currency).icon(icon).position(latLng));
 
             }
@@ -560,11 +559,8 @@ public class mapActivity extends AppCompatActivity implements
 
         totalCoins.setText("Coins Collected: " + user.dayCoins);
 
-        Log.d(TAG, "Removing Marker At: " + jsonData.getFeatures().get(i).geometry);
         coinsCollectedData.getFeatures().add(jsonData.getFeatures().get(i));   //Add the coin to the user's collection
-        Log.d(TAG, "COINSCOLLECTED ADD: " + coinsCollectedData.toJson());
         jsonData.getFeatures().removeAll(coinsCollectedData.getFeatures());   //Remove it from the map's collection
-        Log.d(TAG, "COINSCOLLECTED REMOVE " + coinsCollectedData.toJson());
         map.removeMarker(marker);   //Remove the marker from the mapbox map
         marker.remove();
 
@@ -620,7 +616,7 @@ public class mapActivity extends AppCompatActivity implements
 
                 user.dayWalked = user.dayWalked + dist;
                 user.totalWalked = user.totalWalked + dist;
-                user.bankGold = user.bankGold + (dist / 100);   //Bonus feature where moving gives GOLD
+                user.bankGold = user.bankGold + (dist / 100000);   //Bonus feature where moving gives GOLD
 
                 user.updateUser();
             }
