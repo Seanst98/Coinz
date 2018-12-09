@@ -736,9 +736,8 @@ public class mapActivity extends AppCompatActivity implements
 
         //Start the map if the user data has already been downloaded
         //Otherwise carry on and wait until it is downloaded
-        Log.d(TAG, "[start] starting check");
         if (user.loaded){   //If we haven't retrieved the user data before
-            Log.d(TAG, "MAPVIEW START CALLED");
+            Log.d(TAG, "MAPVIEW START CALLED from user loaded");
 
             if (!currentDate.equals(fireStoreDate)) {   //If it's a new day then update Firebase info
                 user.dayCoins = 0;
@@ -819,8 +818,7 @@ public class mapActivity extends AppCompatActivity implements
     @Override
     public void onDataLoaded() {
 
-        Log.d(TAG, "[onDataLoaded map] data is laoded");
-        Log.d(TAG, "MAPVIEW START CALLED");
+        Log.d(TAG, "MAPVIEW START CALLED from data loaded");
 
         if (!currentDate.equals(fireStoreDate)){
             user.dayCoins = 0;
@@ -829,6 +827,7 @@ public class mapActivity extends AppCompatActivity implements
 
             user.updateUser();
         }
+
         fireStoreDate = currentDate;
         totalCoins.setText("Coins Collected: " + user.dayCoins);
 

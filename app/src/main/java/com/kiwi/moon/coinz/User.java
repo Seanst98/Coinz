@@ -27,7 +27,6 @@ public class User{
     //Private constructor for using as a singleton
     private User(){
         this.delegate = null;
-        getUser();
     }
 
     //Get the singleton instance
