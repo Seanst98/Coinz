@@ -166,26 +166,8 @@ public class User{
     }
 
     public void createAccount() {
-        dayCoins = 0;
-        dayWalked = 0;
-        totalCoins = 0;
-        totalWalked = 0;
-        bankGold = 0;
-        shil = 0;
-        peny = 0;
-        quid = 0;
-        dolr = 0;
-        shilCoins = 0;
-        penyCoins = 0;
-        quidCoins = 0;
-        dolrCoins = 0;
-        coinsDepositedDay = 0;
-        ghostTime = 0;
-        loaded = false;
-        ghostMode = false;
-        timeTrialMode = false;
 
-
+        reset();
 
         //Save data in FireStore
         Map<String, Object> userStore = new HashMap<>();
@@ -225,6 +207,27 @@ public class User{
             Log.d(TAG, "mAuth is null");
         }
 
+    }
+
+    public void reset() {
+        dayCoins = 0;
+        dayWalked = 0;
+        totalCoins = 0;
+        totalWalked = 0;
+        bankGold = 0;
+        shil = 0;
+        peny = 0;
+        quid = 0;
+        dolr = 0;
+        shilCoins = 0;
+        penyCoins = 0;
+        quidCoins = 0;
+        dolrCoins = 0;
+        coinsDepositedDay = 0;
+        ghostTime = 0;
+        loaded = false;
+        ghostMode = false;
+        timeTrialMode = false;
     }
 
 

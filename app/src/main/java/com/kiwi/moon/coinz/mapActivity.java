@@ -75,13 +75,13 @@ public class mapActivity extends AppCompatActivity implements
 
     private DrawerLayout drawerLayout;
 
-    String data;
-    TextView totalCoins;
-    TextView ghostTimeTrialTime;
-    int timeCount = 0;
+    private String data;
+    private TextView totalCoins;
+    private TextView ghostTimeTrialTime;
+    private int timeCount = 0;
 
-    Timer ghostTimer;
-    CountDownTimer timeTrialTimer;
+    private Timer ghostTimer;
+    private CountDownTimer timeTrialTimer;
 
 
     private String downloadDate = "";   //Format:YYYY/MM/DD
@@ -90,15 +90,17 @@ public class mapActivity extends AppCompatActivity implements
     private String currentUser = "";
     private final String preferencesFile = "MyPrefsFile";   //For storing preferences
     Date now = new Date();
-    String currentDate = new SimpleDateFormat("yyyy/MM/dd", Locale.ENGLISH).format(now);
+    private String currentDate = new SimpleDateFormat("yyyy/MM/dd", Locale.ENGLISH).format(now);
 
     //Access a cloud firestore instance from the bank activity
-    FirebaseAuth mAuth =  FirebaseAuth.getInstance();
+    private FirebaseAuth mAuth =  FirebaseAuth.getInstance();
 
-    User user;
+    private User user;
 
     private JsonData jsonData;   //Holds data about the coins on the map
     private JsonData coinsCollectedData;   //Holds data about the coins collected
+
+    private boolean backPressed = false;
 
 
     @Override
@@ -187,7 +189,6 @@ public class mapActivity extends AppCompatActivity implements
                         drawerLayout.closeDrawers();
 
                         //Take user to screen depending on menuItem
-
                         return true;
                     }
                 }
@@ -247,11 +248,6 @@ public class mapActivity extends AppCompatActivity implements
 
         Rates rates = null;
 
-        /*String shil = "";
-        String dolr = "";
-        String quid = "";
-        String peny = "";*/
-
         try {
 
             JSONObject collection = new JSONObject(data);
@@ -270,6 +266,11 @@ public class mapActivity extends AppCompatActivity implements
 
         } catch (JSONException e) {
             Log.d(TAG, "JSONException " + e.toString());
+        }
+
+        if (rates == null) {
+            Log.d(TAG, "Rates is null");
+            Toast.makeText(getApplicationContext(), "There was a problem with the downloaded json", Toast.LENGTH_SHORT).show();
         }
 
         IconFactory iconFactory = IconFactory.getInstance(mapActivity.this);
@@ -978,6 +979,10 @@ public class mapActivity extends AppCompatActivity implements
         //Save data in FireStore
         user.updateUser();
 
+        if (backPressed) {
+            user.reset();
+        }
+
     }
 
     //*******************************************
@@ -1026,6 +1031,8 @@ public class mapActivity extends AppCompatActivity implements
         builder.setMessage("Are You Sure You Want To Leave The Game? You Will Lose Progress In The Bonus Game Modes. The Coins You Have Collected Are Safe Though.")
                 .setPositiveButton("Yes", dialogClickListener)
                 .setNegativeButton("No", dialogClickListener).show();
+
+        backPressed = true;
 
 
     }
