@@ -220,6 +220,9 @@ public class BankActivity extends AppCompatActivity {
         else if (coinsCollectedData.getFeatures().size() == 0){
             Toast.makeText(getApplicationContext(), "You Don't Have Any Coins To Gift! Go Collect Some", Toast.LENGTH_SHORT).show();
         }
+        else if (user.coinsDepositedDay!=25) {
+            Toast.makeText(getApplicationContext(), "You Need To Deposit " + (25 - user.coinsDepositedDay) + " Coins Before You Can Gift", Toast.LENGTH_SHORT).show();
+        }
         else {
             gift();
         }
